@@ -5,8 +5,6 @@ import numpy as np
 reader = easyocr.Reader(['ko', 'en'], gpu=True)
 image = cv2.imread("AI/image/temp.jpg", cv2.IMREAD_GRAYSCALE)
 
-
-
 # 이진화/노이즈 제거는 오히려 이미지를 손상시킬 수도 있으니 적당히 상황을 봐 가면서 생각해야할듯.
 # 근데 영수증 사진이래봐야 대부분 영수증 사진을 올곧게 찍을 테니 큰 신경을 쓸 필요가 있을까?하는 의문은 든다.
 
