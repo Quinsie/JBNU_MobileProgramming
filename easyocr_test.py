@@ -1,6 +1,5 @@
 import easyocr
 import cv2
-import numpy as np
 
 reader = easyocr.Reader(['ko', 'en'], gpu=True)
 image = cv2.imread("AI/image/temp.jpg", cv2.IMREAD_GRAYSCALE)
