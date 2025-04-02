@@ -25,3 +25,4 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
 #### 재설치
  - 여러 이유로 인해 환경 재설정 수행중
  - 현재 python 최신버전 제거, 3.9버전으로 재설치.
+ - python, Pytorch, PaddleOCR, CUDA 전부 설치 및 정상작동 확인 완료.
