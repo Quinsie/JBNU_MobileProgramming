@@ -1,6 +1,6 @@
 # JBNU 2025-1 Mobile Programming
 Mobile Prgramming with Kotlin(Android Studio), Python 3
-이 리포지토리는 2025학년도 1학기 전북대학교 모바일프로그래밍 프로젝트 진행상황을 기록한 리포지토리입니다.
+이 리포지토리는 전북대학교 2025학년도 1학기 모바일프로그래밍 프로젝트 진행상황을 기록한 리포지토리입니다.
 
 ---
 ### 2025-03-18
