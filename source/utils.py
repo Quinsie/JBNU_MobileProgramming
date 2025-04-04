@@ -1,5 +1,6 @@
 # source/utils.py
 
+# 식품명 필터링 함수
 def filter_product_names(texts):
     filtered = []
     
