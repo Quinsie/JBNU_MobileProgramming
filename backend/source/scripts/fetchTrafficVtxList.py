@@ -1,4 +1,5 @@
 # backend/source/scripts/fetchTrafficVtxList.py
+# 전주시 도로교통정보 API로부터 특정 도로의 특정 위치의 혼잡도를 알려주는 정보 중 혼잡도는 제외하고, 도로ID와 LAT/LONG을 backend/data/raw/staticInfo/traf_vtxlist.json에 저장.
 
 import os
 import json

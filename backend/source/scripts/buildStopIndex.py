@@ -1,4 +1,5 @@
 # /backend/source/scripts/buildStopIndex.py
+# 정류장을 기준으로 지나가는 노선STDID와 그 노선의 방향 (상/하행선)을 backend/data/processed/stop_to_routes/ 에 노선STDID.json별로 저장.
 
 import os
 import json

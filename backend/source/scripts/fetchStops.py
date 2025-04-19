@@ -1,4 +1,5 @@
 # backend/source/scripts/fetchStops.py
+# 버스 노선별 정보 제공 API로부터 노선 STDID별 정차하는 모든 정류장을 backend/data/raw/staticInfo/stops/ 에 노선 STDID별로 저장.
 
 import os
 import json

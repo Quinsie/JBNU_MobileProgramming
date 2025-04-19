@@ -1,4 +1,5 @@
 # backend/source/scripts/fetchRouteId.py
+# 버스 전체노선 API로부터 "버스 번호(실제로 사람이 보는)"를 가져와서 backend/data/raw/staticInfo/routes.json에 저장.
 
 import os
 import json

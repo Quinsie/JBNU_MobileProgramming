@@ -1,4 +1,5 @@
 # backend/source/scripts/mapVtxToRoadId.py
+# 6과 7에서 저장한 정보를 기반으로, 7의 정보를 6에 맞춰 매핑한 뒤 backend/data/vtx_mapped/ 에 노선STDID.json별로 저장.
 
 import json
 import os

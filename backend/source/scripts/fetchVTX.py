@@ -1,4 +1,5 @@
 # backend/source/scripts/fetchVTX.py
+# 버스 노선별 경로 중간부분을 ID와 LAT, LONG으로 딴 정보를 제공하는 API로부터 해당 정보를 도로ID, LAT, LONG으로 구성된 정보를 backend/data/raw/staticInfo/vtx/ 아래에 버스 노선 STDID.json별로 저장
 
 import os
 import json

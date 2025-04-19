@@ -1,4 +1,5 @@
 # backend/souce/scripts/fetchSubList.py
+# 버스 노선별 sublist를 제공하는 API로부터 노선 번호(사람이 인식하는)별로 여러 보조노선들을 backend/data/raw/staticInfo/subList/에 노선 STDID.json별로 저장.
 
 import os
 import json

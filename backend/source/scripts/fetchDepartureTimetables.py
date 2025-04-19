@@ -1,4 +1,5 @@
 # backend/source/scripts/fetchDepartureTimetables.py
+# API로부터 각 노선STDID별 시간표를 가져와서 backend/data/raw/staticInfo/departure_timetables/ 노선STDID.json별로 저장.
 
 import os
 import json
@@ -7,7 +8,7 @@ import requests
 
 URL = "http://www.jeonjuits.go.kr/bis/selectBisRouteTimeInfo.do" # 전주시 BIS 시간표 API (시점 시간표)
 SUBLIST_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "subList"))
-SAVE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed", "departure_timetables"))
+SAVE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "departure_timetables"))
 os.makedirs(SAVE_PATH, exist_ok=True)
 
 def fetch_timetables():
