@@ -1,0 +1,95 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305100362,
+      "LNG": 127.13218022,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001783,
+      "STOP_NAME": "평화코오롱아파트",
+      "SERVICE_ID": 30362,
+      "NODE_ID": 305100362,
+      "STOP_ORD": 1,
+      "LAT": 35.7944849
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 305100315,
+      "LNG": 127.130503,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001783,
+      "STOP_NAME": "평화삼성강남아파트",
+      "SERVICE_ID": 30315,
+      "NODE_ID": 305100315,
+      "STOP_ORD": 2,
+      "LAT": 35.78842983
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 312100169,
+      "LNG": 127.12479192,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001783,
+      "STOP_NAME": "동적골",
+      "SERVICE_ID": 30169,
+      "NODE_ID": 312100169,
+      "STOP_ORD": 3,
+      "LAT": 35.75288396
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 305032730,
+      "LNG": 127.121644,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001783,
+      "STOP_NAME": "원당교차로",
+      "SERVICE_ID": 36664,
+      "NODE_ID": 305032730,
+      "STOP_ORD": 4,
+      "LAT": 35.753344
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 305032710,
+      "LNG": 127.11821,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001783,
+      "STOP_NAME": "모악산마실길 시점",
+      "SERVICE_ID": 36644,
+      "NODE_ID": 305032710,
+      "STOP_ORD": 5,
+      "LAT": 35.751946
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 305100172,
+      "LNG": 127.115401,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001783,
+      "STOP_NAME": "비송골",
+      "SERVICE_ID": 30172,
+      "NODE_ID": 305100172,
+      "STOP_ORD": 6,
+      "LAT": 35.753034
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 7,
+      "STOP_ID": 305100174,
+      "LNG": 127.111776,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001783,
+      "STOP_NAME": "추동",
+      "SERVICE_ID": 30174,
+      "NODE_ID": 305100174,
+      "STOP_ORD": 7,
+      "LAT": 35.754399
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305032648,
+      "LNG": 127.1481832,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "흑석골종점",
+      "SERVICE_ID": 36582,
+      "NODE_ID": 305032648,
+      "STOP_ORD": 1,
+      "LAT": 35.795091
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 305100399,
+      "LNG": 127.149764,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "전주천년한지관",
+      "SERVICE_ID": 30399,
+      "NODE_ID": 305100399,
+      "STOP_ORD": 2,
+      "LAT": 35.797747
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 305100429,
+      "LNG": 127.15072101,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "흑석대승푸른맨션",
+      "SERVICE_ID": 30429,
+      "NODE_ID": 305100429,
+      "STOP_ORD": 3,
+      "LAT": 35.79953534
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 305100460,
+      "LNG": 127.1503762,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "흑석송원아파트",
+      "SERVICE_ID": 30460,
+      "NODE_ID": 305100460,
+      "STOP_ORD": 4,
+      "LAT": 35.80190147
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 305032809,
+      "LNG": 127.149672,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "흑석로 흑석골입구",
+      "SERVICE_ID": 36743,
+      "NODE_ID": 305032809,
+      "STOP_ORD": 5,
+      "LAT": 35.803555
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 305100497,
+      "LNG": 127.14953021,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "공수내다리",
+      "SERVICE_ID": 30497,
+      "NODE_ID": 305100497,
+      "STOP_ORD": 6,
+      "LAT": 35.80524638
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 7,
+      "STOP_ID": 305100558,
+      "LNG": 127.14973099,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "남부시장",
+      "SERVICE_ID": 30558,
+      "NODE_ID": 305100558,
+      "STOP_ORD": 7,
+      "LAT": 35.81132263
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 8,
+      "STOP_ID": 305100589,
+      "LNG": 127.14712199,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001792,
+      "STOP_NAME": "풍남문",
+      "SERVICE_ID": 30589,
+      "NODE_ID": 305100589,
+      "STOP_ORD": 8,
+      "LAT": 35.81349842
+    }
+  ]
+}

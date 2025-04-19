@@ -1,0 +1,69 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "82-2",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 312101166,
+      "LNG": 127.22481892,
+      "BRT_SUBID": "E",
+      "ROUTE_ID": 305001746,
+      "STOP_NAME": "소양행정복지센터",
+      "SERVICE_ID": 31165,
+      "NODE_ID": 312101166,
+      "STOP_ORD": 1,
+      "LAT": 35.85333055
+    },
+    {
+      "ROUTE_NAME": "82-2",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 312101195,
+      "LNG": 127.22892691,
+      "BRT_SUBID": "E",
+      "ROUTE_ID": 305001746,
+      "STOP_NAME": "소양119지역대",
+      "SERVICE_ID": 31194,
+      "NODE_ID": 312101195,
+      "STOP_ORD": 2,
+      "LAT": 35.85441152
+    },
+    {
+      "ROUTE_NAME": "82-2",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 312101216,
+      "LNG": 127.23294515,
+      "BRT_SUBID": "E",
+      "ROUTE_ID": 305001746,
+      "STOP_NAME": "소양",
+      "SERVICE_ID": 31215,
+      "NODE_ID": 312101216,
+      "STOP_ORD": 3,
+      "LAT": 35.85562696
+    },
+    {
+      "ROUTE_NAME": "82-2",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 312101126,
+      "LNG": 127.23898968,
+      "BRT_SUBID": "E",
+      "ROUTE_ID": 305001746,
+      "STOP_NAME": "하망표",
+      "SERVICE_ID": 31125,
+      "NODE_ID": 312101126,
+      "STOP_ORD": 4,
+      "LAT": 35.85008537
+    },
+    {
+      "ROUTE_NAME": "82-2",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 312101032,
+      "LNG": 127.2395354,
+      "BRT_SUBID": "E",
+      "ROUTE_ID": 305001746,
+      "STOP_NAME": "상망표",
+      "SERVICE_ID": 31031,
+      "NODE_ID": 312101032,
+      "STOP_ORD": 5,
+      "LAT": 35.84107106
+    }
+  ]
+}

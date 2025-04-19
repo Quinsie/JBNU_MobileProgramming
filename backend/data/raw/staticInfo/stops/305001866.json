@@ -1,0 +1,82 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305100589,
+      "LNG": 127.14712199,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001866,
+      "STOP_NAME": "풍남문",
+      "SERVICE_ID": 30589,
+      "NODE_ID": 305100589,
+      "STOP_ORD": 1,
+      "LAT": 35.81349842
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 305100573,
+      "LNG": 127.1488857,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001866,
+      "STOP_NAME": "남부시장",
+      "SERVICE_ID": 30573,
+      "NODE_ID": 305100573,
+      "STOP_ORD": 2,
+      "LAT": 35.81273721
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 305100546,
+      "LNG": 127.154303,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001866,
+      "STOP_NAME": "서학로교육대학교",
+      "SERVICE_ID": 30546,
+      "NODE_ID": 305100546,
+      "STOP_ORD": 3,
+      "LAT": 35.809433
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 305032531,
+      "LNG": 127.1578615,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001866,
+      "STOP_NAME": "남고사아파트입구",
+      "SERVICE_ID": 36465,
+      "NODE_ID": 305032531,
+      "STOP_ORD": 4,
+      "LAT": 35.8066136
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 305100496,
+      "LNG": 127.1564333,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001866,
+      "STOP_NAME": "남고사",
+      "SERVICE_ID": 30496,
+      "NODE_ID": 305100496,
+      "STOP_ORD": 5,
+      "LAT": 35.80516956
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 305100457,
+      "LNG": 127.154627,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001866,
+      "STOP_NAME": "삼경사",
+      "SERVICE_ID": 30457,
+      "NODE_ID": 305100457,
+      "STOP_ORD": 6,
+      "LAT": 35.802012
+    }
+  ]
+}

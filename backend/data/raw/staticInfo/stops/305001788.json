@@ -1,0 +1,108 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305100173,
+      "LNG": 127.111779,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "추동",
+      "SERVICE_ID": 30173,
+      "NODE_ID": 305100173,
+      "STOP_ORD": 1,
+      "LAT": 35.754315
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 305100170,
+      "LNG": 127.115338,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "비송골",
+      "SERVICE_ID": 30170,
+      "NODE_ID": 305100170,
+      "STOP_ORD": 2,
+      "LAT": 35.753006
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 305032711,
+      "LNG": 127.118211,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "모악산마실길 시점",
+      "SERVICE_ID": 36645,
+      "NODE_ID": 305032711,
+      "STOP_ORD": 3,
+      "LAT": 35.751884
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 305032731,
+      "LNG": 127.121723,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "원당교차로",
+      "SERVICE_ID": 36665,
+      "NODE_ID": 305032731,
+      "STOP_ORD": 4,
+      "LAT": 35.753317
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 312100171,
+      "LNG": 127.12504,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "동적골",
+      "SERVICE_ID": 30171,
+      "NODE_ID": 312100171,
+      "STOP_ORD": 5,
+      "LAT": 35.752845
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 9,
+      "STOP_ID": 305100279,
+      "LNG": 127.129321,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "전주교도소",
+      "SERVICE_ID": 30279,
+      "NODE_ID": 305100279,
+      "STOP_ORD": 6,
+      "LAT": 35.779327
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 12,
+      "STOP_ID": 305100314,
+      "LNG": 127.13073783,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "평화삼성강남아파트",
+      "SERVICE_ID": 30314,
+      "NODE_ID": 305100314,
+      "STOP_ORD": 7,
+      "LAT": 35.78844676
+    },
+    {
+      "ROUTE_NAME": "10",
+      "ROUTE_ORD": 15,
+      "STOP_ID": 305100348,
+      "LNG": 127.13225296,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001788,
+      "STOP_NAME": "평화코오롱아파트",
+      "SERVICE_ID": 30348,
+      "NODE_ID": 305100348,
+      "STOP_ORD": 8,
+      "LAT": 35.79356814
+    }
+  ]
+}

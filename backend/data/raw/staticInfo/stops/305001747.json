@@ -1,0 +1,56 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "76",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305032720,
+      "LNG": 127.198945,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001747,
+      "STOP_NAME": "어두마을",
+      "SERVICE_ID": 36654,
+      "NODE_ID": 305032720,
+      "STOP_ORD": 1,
+      "LAT": 35.764145
+    },
+    {
+      "ROUTE_NAME": "76",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 305032718,
+      "LNG": 127.204283,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001747,
+      "STOP_NAME": "한일장신대",
+      "SERVICE_ID": 36652,
+      "NODE_ID": 305032718,
+      "STOP_ORD": 2,
+      "LAT": 35.765582
+    },
+    {
+      "ROUTE_NAME": "76",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 312100217,
+      "LNG": 127.2099731,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001747,
+      "STOP_NAME": "상관농협",
+      "SERVICE_ID": 30217,
+      "NODE_ID": 312100217,
+      "STOP_ORD": 3,
+      "LAT": 35.7686679
+    },
+    {
+      "ROUTE_NAME": "76",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 312100227,
+      "LNG": 127.20863961,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001747,
+      "STOP_NAME": "상관주민센터",
+      "SERVICE_ID": 30227,
+      "NODE_ID": 312100227,
+      "STOP_ORD": 4,
+      "LAT": 35.77032849
+    }
+  ]
+}

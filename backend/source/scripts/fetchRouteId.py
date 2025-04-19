@@ -5,12 +5,12 @@ import json
 import requests
 
 URL = "http://www.jeonjuits.go.kr/bis/selectGrpRouteList.do" # 버스 전체노선 API
-DATA = {"locale": "ko-kr"}
+payload = {"locale": "ko-kr"}
 PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "routes.json"))
 
 def fetchRoutes():
     try:
-        res = requests.post(URL, data=DATA, timeout = 5) # 타임아웃 5씩 주면서 데이터 요청
+        res = requests.post(URL, data = payload, timeout = 5) # 타임아웃 5씩 주면서 데이터 요청
         res.raise_for_status()
         json_data = res.json()
         

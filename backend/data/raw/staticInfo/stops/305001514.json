@@ -1,0 +1,108 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 306100900,
+      "LNG": 127.14549767,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "모래내시장",
+      "SERVICE_ID": 30900,
+      "NODE_ID": 306100900,
+      "STOP_ORD": 1,
+      "LAT": 35.83305726
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 306101085,
+      "LNG": 127.153069,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "명주골네거리.대자인병원",
+      "SERVICE_ID": 31084,
+      "NODE_ID": 306101085,
+      "STOP_ORD": 2,
+      "LAT": 35.845872
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 306101103,
+      "LNG": 127.16063486,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "동부대로전주역",
+      "SERVICE_ID": 31102,
+      "NODE_ID": 306101103,
+      "STOP_ORD": 3,
+      "LAT": 35.84881087
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 305032353,
+      "LNG": 127.16803,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "동부대로고려병원",
+      "SERVICE_ID": 36247,
+      "NODE_ID": 305032353,
+      "STOP_ORD": 4,
+      "LAT": 35.840845
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 306101077,
+      "LNG": 127.18129329,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "금상동성당",
+      "SERVICE_ID": 31076,
+      "NODE_ID": 306101077,
+      "STOP_ORD": 5,
+      "LAT": 35.84501386
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 305032795,
+      "LNG": 127.182964,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "수곡길 입구",
+      "SERVICE_ID": 36729,
+      "NODE_ID": 305032795,
+      "STOP_ORD": 6,
+      "LAT": 35.842825
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 7,
+      "STOP_ID": 306101036,
+      "LNG": 127.18588406,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "금하마을",
+      "SERVICE_ID": 31035,
+      "NODE_ID": 306101036,
+      "STOP_ORD": 7,
+      "LAT": 35.84144892
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 8,
+      "STOP_ID": 306101013,
+      "LNG": 127.1931949,
+      "BRT_SUBID": "C",
+      "ROUTE_ID": 305001514,
+      "STOP_NAME": "금상동",
+      "SERVICE_ID": 31012,
+      "NODE_ID": 306101013,
+      "STOP_ORD": 8,
+      "LAT": 35.83934701
+    }
+  ]
+}

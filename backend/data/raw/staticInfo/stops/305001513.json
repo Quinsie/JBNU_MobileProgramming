@@ -1,0 +1,95 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 306100900,
+      "LNG": 127.14549767,
+      "BRT_SUBID": "B",
+      "ROUTE_ID": 305001513,
+      "STOP_NAME": "모래내시장",
+      "SERVICE_ID": 30900,
+      "NODE_ID": 306100900,
+      "STOP_ORD": 1,
+      "LAT": 35.83305726
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 306100966,
+      "LNG": 127.15480906,
+      "BRT_SUBID": "B",
+      "ROUTE_ID": 305001513,
+      "STOP_NAME": "안골",
+      "SERVICE_ID": 30966,
+      "NODE_ID": 306100966,
+      "STOP_ORD": 2,
+      "LAT": 35.83654835
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 306101012,
+      "LNG": 127.16748582,
+      "BRT_SUBID": "B",
+      "ROUTE_ID": 305001513,
+      "STOP_NAME": "안덕원로.고려병원",
+      "SERVICE_ID": 31011,
+      "NODE_ID": 306101012,
+      "STOP_ORD": 3,
+      "LAT": 35.83923015
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 306101077,
+      "LNG": 127.18129329,
+      "BRT_SUBID": "B",
+      "ROUTE_ID": 305001513,
+      "STOP_NAME": "금상동성당",
+      "SERVICE_ID": 31076,
+      "NODE_ID": 306101077,
+      "STOP_ORD": 4,
+      "LAT": 35.84501386
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 305032795,
+      "LNG": 127.182964,
+      "BRT_SUBID": "B",
+      "ROUTE_ID": 305001513,
+      "STOP_NAME": "수곡길 입구",
+      "SERVICE_ID": 36729,
+      "NODE_ID": 305032795,
+      "STOP_ORD": 5,
+      "LAT": 35.842825
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 306101036,
+      "LNG": 127.18588406,
+      "BRT_SUBID": "B",
+      "ROUTE_ID": 305001513,
+      "STOP_NAME": "금하마을",
+      "SERVICE_ID": 31035,
+      "NODE_ID": 306101036,
+      "STOP_ORD": 6,
+      "LAT": 35.84144892
+    },
+    {
+      "ROUTE_NAME": "80",
+      "ROUTE_ORD": 7,
+      "STOP_ID": 306101013,
+      "LNG": 127.1931949,
+      "BRT_SUBID": "B",
+      "ROUTE_ID": 305001513,
+      "STOP_NAME": "금상동",
+      "SERVICE_ID": 31012,
+      "NODE_ID": 306101013,
+      "STOP_ORD": 7,
+      "LAT": 35.83934701
+    }
+  ]
+}

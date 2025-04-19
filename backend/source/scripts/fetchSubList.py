@@ -16,7 +16,7 @@ def fetchSubLists():
     os.makedirs(PATH, exist_ok = True)
 
     for num in route_list:
-        payload = {
+        payload = { # 버스 번호 기준으로 분선을 파악하기 위해 num을 인자로 줌 (기존 저장 데이터 기준)
             "locale": "ko-kr",
             "brt_no": num
         }

@@ -1,0 +1,108 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305100456,
+      "LNG": 127.154738,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "삼경사",
+      "SERVICE_ID": 30456,
+      "NODE_ID": 305100456,
+      "STOP_ORD": 1,
+      "LAT": 35.801974
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 305100495,
+      "LNG": 127.156491,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "남고사",
+      "SERVICE_ID": 30495,
+      "NODE_ID": 305100495,
+      "STOP_ORD": 2,
+      "LAT": 35.804978
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 305032530,
+      "LNG": 127.1579338,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "남고사아파트입구",
+      "SERVICE_ID": 36464,
+      "NODE_ID": 305032530,
+      "STOP_ORD": 3,
+      "LAT": 35.8065327
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 305100018,
+      "LNG": 127.158111,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "남고사입구",
+      "SERVICE_ID": 32018,
+      "NODE_ID": 305100018,
+      "STOP_ORD": 4,
+      "LAT": 35.807525
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 305102021,
+      "LNG": 127.15377155,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "동서학거산황궁아파트",
+      "SERVICE_ID": 32021,
+      "NODE_ID": 305102021,
+      "STOP_ORD": 5,
+      "LAT": 35.80678798
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 305102019,
+      "LNG": 127.153369,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "교육대학교",
+      "SERVICE_ID": 32019,
+      "NODE_ID": 305102019,
+      "STOP_ORD": 6,
+      "LAT": 35.809193
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 7,
+      "STOP_ID": 305100558,
+      "LNG": 127.14973099,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "남부시장",
+      "SERVICE_ID": 30558,
+      "NODE_ID": 305100558,
+      "STOP_ORD": 7,
+      "LAT": 35.81132263
+    },
+    {
+      "ROUTE_NAME": "16",
+      "ROUTE_ORD": 8,
+      "STOP_ID": 305100589,
+      "LNG": 127.14712199,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001867,
+      "STOP_NAME": "풍남문",
+      "SERVICE_ID": 30589,
+      "NODE_ID": 305100589,
+      "STOP_ORD": 8,
+      "LAT": 35.81349842
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "26",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305032675,
+      "LNG": 127.0199833,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001549,
+      "STOP_NAME": "이서회차지",
+      "SERVICE_ID": 36609,
+      "NODE_ID": 305032675,
+      "STOP_ORD": 1,
+      "LAT": 35.817095
+    },
+    {
+      "ROUTE_NAME": "26",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 312100641,
+      "LNG": 127.02284987,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001549,
+      "STOP_NAME": "새터",
+      "SERVICE_ID": 30641,
+      "NODE_ID": 312100641,
+      "STOP_ORD": 2,
+      "LAT": 35.81687624
+    },
+    {
+      "ROUTE_NAME": "26",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 312100598,
+      "LNG": 127.02552285,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001549,
+      "STOP_NAME": "신지산마을",
+      "SERVICE_ID": 30598,
+      "NODE_ID": 312100598,
+      "STOP_ORD": 3,
+      "LAT": 35.81442794
+    },
+    {
+      "ROUTE_NAME": "26",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 312100557,
+      "LNG": 127.02724655,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001549,
+      "STOP_NAME": "신월마을",
+      "SERVICE_ID": 30557,
+      "NODE_ID": 312100557,
+      "STOP_ORD": 4,
+      "LAT": 35.81129292
+    },
+    {
+      "ROUTE_NAME": "26",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 312100550,
+      "LNG": 127.0280378,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001549,
+      "STOP_NAME": "지산마을",
+      "SERVICE_ID": 30550,
+      "NODE_ID": 312100550,
+      "STOP_ORD": 5,
+      "LAT": 35.81026017
+    },
+    {
+      "ROUTE_NAME": "26",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 312100498,
+      "LNG": 127.0307315,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001549,
+      "STOP_NAME": "콩쥐팥쥐마을",
+      "SERVICE_ID": 30498,
+      "NODE_ID": 312100498,
+      "STOP_ORD": 6,
+      "LAT": 35.80543569
+    }
+  ]
+}

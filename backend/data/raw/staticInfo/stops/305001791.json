@@ -1,0 +1,95 @@
+{
+  "resultList": [
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 1,
+      "STOP_ID": 305100589,
+      "LNG": 127.14712199,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001791,
+      "STOP_NAME": "풍남문",
+      "SERVICE_ID": 30589,
+      "NODE_ID": 305100589,
+      "STOP_ORD": 1,
+      "LAT": 35.81349842
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 2,
+      "STOP_ID": 305100573,
+      "LNG": 127.1488857,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001791,
+      "STOP_NAME": "남부시장",
+      "SERVICE_ID": 30573,
+      "NODE_ID": 305100573,
+      "STOP_ORD": 2,
+      "LAT": 35.81273721
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 3,
+      "STOP_ID": 305100511,
+      "LNG": 127.14952214,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001791,
+      "STOP_NAME": "공수내다리",
+      "SERVICE_ID": 30511,
+      "NODE_ID": 305100511,
+      "STOP_ORD": 3,
+      "LAT": 35.80600343
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 4,
+      "STOP_ID": 305100463,
+      "LNG": 127.150183,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001791,
+      "STOP_NAME": "흑석송원아파트",
+      "SERVICE_ID": 30463,
+      "NODE_ID": 305100463,
+      "STOP_ORD": 4,
+      "LAT": 35.802306
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 5,
+      "STOP_ID": 305100431,
+      "LNG": 127.1505434,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001791,
+      "STOP_NAME": "흑석대승푸른맨션",
+      "SERVICE_ID": 30431,
+      "NODE_ID": 305100431,
+      "STOP_ORD": 5,
+      "LAT": 35.79957576
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 6,
+      "STOP_ID": 305100400,
+      "LNG": 127.149636,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001791,
+      "STOP_NAME": "전주천년한지관",
+      "SERVICE_ID": 30400,
+      "NODE_ID": 305100400,
+      "STOP_ORD": 6,
+      "LAT": 35.797703
+    },
+    {
+      "ROUTE_NAME": "17",
+      "ROUTE_ORD": 7,
+      "STOP_ID": 305032649,
+      "LNG": 127.1481829,
+      "BRT_SUBID": "0",
+      "ROUTE_ID": 305001791,
+      "STOP_NAME": "흑석골종점",
+      "SERVICE_ID": 36583,
+      "NODE_ID": 305032649,
+      "STOP_ORD": 7,
+      "LAT": 35.7951631
+    }
+  ]
+}
