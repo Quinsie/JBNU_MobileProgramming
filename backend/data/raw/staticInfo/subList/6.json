@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001100,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "605",
+      "BRT_MAXINTERVAL": "20",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "6",
+      "BRT_ID": "6",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2200",
+      "BRT_MININTERVAL": "13"
+    },
+    {
+      "BRT_SNAME": "이편한세상 우아",
+      "BRT_SUBID": "C",
+      "BRT_STDID": 305001409,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "605",
+      "BRT_MAXINTERVAL": "20",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "6",
+      "BRT_ID": "6",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "625",
+      "BRT_MININTERVAL": "20"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "삼례역",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001889,
+      "BRT_NO": "36",
+      "BRT_ENAME": "고산터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "36",
+      "BRT_FIRSTTIME": "1150",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1150"
+    },
+    {
+      "BRT_SNAME": "고산터미널",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001890,
+      "BRT_NO": "36",
+      "BRT_ENAME": "삼례역",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "36",
+      "BRT_FIRSTTIME": "1020",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1020"
+    },
+    {
+      "BRT_SNAME": "삼례터미널",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001082,
+      "BRT_ENAME": "고산터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "720",
+      "BRT_MAXINTERVAL": "310",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "36",
+      "BRT_ID": "36",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1915",
+      "BRT_MININTERVAL": "120"
+    },
+    {
+      "BRT_SNAME": "고산터미널",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001083,
+      "BRT_ENAME": "삼례터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "620",
+      "BRT_MAXINTERVAL": "260",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "36",
+      "BRT_ID": "36",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2030",
+      "BRT_MININTERVAL": "120"
+    },
+    {
+      "BRT_SNAME": "삼례터미널",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001891,
+      "BRT_NO": "36",
+      "BRT_ENAME": "완주국민체육센터",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "36",
+      "BRT_FIRSTTIME": "2135",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2135"
+    }
+  ]
+}

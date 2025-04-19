@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001211,
+      "BRT_ENAME": "백제대",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "825",
+      "BRT_MAXINTERVAL": "266",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "546",
+      "BRT_ID": "546",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2115",
+      "BRT_MININTERVAL": "248"
+    },
+    {
+      "BRT_SNAME": "백제대",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001212,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "633",
+      "BRT_MAXINTERVAL": "257",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "546",
+      "BRT_ID": "546",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1850",
+      "BRT_MININTERVAL": "232"
+    }
+  ]
+}

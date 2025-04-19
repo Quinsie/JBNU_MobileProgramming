@@ -1,0 +1,66 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "감수리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001653,
+      "BRT_ENAME": "금구",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "610",
+      "BRT_MAXINTERVAL": "79",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "684",
+      "BRT_ID": "684",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2210",
+      "BRT_MININTERVAL": "38"
+    },
+    {
+      "BRT_SNAME": "금구",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001654,
+      "BRT_ENAME": "감수리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "750",
+      "BRT_MAXINTERVAL": "79",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "684",
+      "BRT_ID": "684",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2230",
+      "BRT_MININTERVAL": "29"
+    },
+    {
+      "BRT_SNAME": "감수리",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001655,
+      "BRT_NO": "684",
+      "BRT_ENAME": "신성리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "684",
+      "BRT_FIRSTTIME": "1530",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1530"
+    },
+    {
+      "BRT_SNAME": "신성리",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001656,
+      "BRT_ENAME": "감수리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "710",
+      "BRT_MAXINTERVAL": "600",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "684",
+      "BRT_ID": "684",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1710",
+      "BRT_MININTERVAL": "600"
+    }
+  ]
+}

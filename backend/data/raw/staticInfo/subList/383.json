@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001756,
+      "BRT_ENAME": "우석대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "626",
+      "BRT_MAXINTERVAL": "27",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "383",
+      "BRT_ID": "383",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2246",
+      "BRT_MININTERVAL": "27"
+    },
+    {
+      "BRT_SNAME": "우석대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001757,
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "619",
+      "BRT_MAXINTERVAL": "27",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "383",
+      "BRT_ID": "383",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2239",
+      "BRT_MININTERVAL": "27"
+    }
+  ]
+}

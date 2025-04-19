@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001608,
+      "BRT_ENAME": "전북대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "45",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "74",
+      "BRT_ID": "74",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2225",
+      "BRT_MININTERVAL": "33"
+    },
+    {
+      "BRT_SNAME": "전북대종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001609,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "45",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "74",
+      "BRT_ID": "74",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2225",
+      "BRT_MININTERVAL": "33"
+    }
+  ]
+}

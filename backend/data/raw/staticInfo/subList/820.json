@@ -1,0 +1,78 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001584,
+      "BRT_ENAME": "소양회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "615",
+      "BRT_MAXINTERVAL": "38",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "820",
+      "BRT_ID": "820",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2209",
+      "BRT_MININTERVAL": "13"
+    },
+    {
+      "BRT_SNAME": "소양회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001583,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "628",
+      "BRT_MAXINTERVAL": "40",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "820",
+      "BRT_ID": "820",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2205",
+      "BRT_MININTERVAL": "17"
+    },
+    {
+      "BRT_SNAME": "예수병원",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001585,
+      "BRT_NO": "820",
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "820",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "안덕원로.고려병원",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001586,
+      "BRT_NO": "820",
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "820",
+      "BRT_FIRSTTIME": "610",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "610"
+    },
+    {
+      "BRT_SNAME": "소양회차지",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "C",
+      "BRT_STDID": 305001587,
+      "BRT_NO": "820",
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "820",
+      "BRT_FIRSTTIME": "2220",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2220"
+    }
+  ]
+}

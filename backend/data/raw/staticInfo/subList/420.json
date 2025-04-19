@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001646,
+      "BRT_ENAME": "중인동",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "628",
+      "BRT_MAXINTERVAL": "54",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "420",
+      "BRT_ID": "420",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2230",
+      "BRT_MININTERVAL": "29"
+    },
+    {
+      "BRT_SNAME": "중인동",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001645,
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "628",
+      "BRT_MAXINTERVAL": "56",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "420",
+      "BRT_ID": "420",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2215",
+      "BRT_MININTERVAL": "20"
+    }
+  ]
+}

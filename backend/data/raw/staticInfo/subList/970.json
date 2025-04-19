@@ -1,0 +1,52 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "에코시티종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001257,
+      "BRT_ENAME": "전북도립미술관",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "602",
+      "BRT_MAXINTERVAL": "24",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "970",
+      "BRT_ID": "970",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2232",
+      "BRT_MININTERVAL": "17"
+    },
+    {
+      "BRT_SNAME": "전북도립미술관",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001258,
+      "BRT_ENAME": "에코시티종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "610",
+      "BRT_MAXINTERVAL": "40",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "970",
+      "BRT_ID": "970",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2232",
+      "BRT_MININTERVAL": "17"
+    },
+    {
+      "BRT_SNAME": "전북도립미술관",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001280,
+      "BRT_ENAME": "에코시티종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "847",
+      "BRT_MAXINTERVAL": "237",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "970",
+      "BRT_ID": "970",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2012",
+      "BRT_MININTERVAL": "218"
+    }
+  ]
+}

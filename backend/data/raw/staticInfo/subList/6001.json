@@ -1,0 +1,48 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001764,
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "20",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "6001",
+      "BRT_ID": "6001",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2154",
+      "BRT_MININTERVAL": "12"
+    },
+    {
+      "BRT_SNAME": "전북대학교.농협앞",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001603,
+      "BRT_NO": "6001",
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "6001",
+      "BRT_FIRSTTIME": "605",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "605"
+    },
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001604,
+      "BRT_NO": "6001",
+      "BRT_ENAME": "충경로 객사",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "6001",
+      "BRT_FIRSTTIME": "2205",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2205"
+    }
+  ]
+}

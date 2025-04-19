@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001094,
+      "BRT_ENAME": "송천동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "607",
+      "BRT_MAXINTERVAL": "29",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "104",
+      "BRT_ID": "104",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2225",
+      "BRT_MININTERVAL": "26"
+    },
+    {
+      "BRT_SNAME": "송천동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001095,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "558",
+      "BRT_MAXINTERVAL": "35",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "104",
+      "BRT_ID": "104",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2225",
+      "BRT_MININTERVAL": "26"
+    }
+  ]
+}

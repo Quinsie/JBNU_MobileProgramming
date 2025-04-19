@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "민목리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001717,
+      "BRT_ENAME": "상관농협로컬푸드",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "805",
+      "BRT_MAXINTERVAL": "175",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "70",
+      "BRT_ID": "70",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2150",
+      "BRT_MININTERVAL": "90"
+    },
+    {
+      "BRT_SNAME": "상관농협로컬푸드",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001716,
+      "BRT_ENAME": "민목리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "750",
+      "BRT_MAXINTERVAL": "220",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "70",
+      "BRT_ID": "70",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2220",
+      "BRT_MININTERVAL": "79"
+    },
+    {
+      "BRT_SNAME": "민목리",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001718,
+      "BRT_NO": "70",
+      "BRT_ENAME": "상관농협로컬푸드",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "70",
+      "BRT_FIRSTTIME": "635",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "635"
+    },
+    {
+      "BRT_SNAME": "상관농협로컬푸드",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001748,
+      "BRT_NO": "70",
+      "BRT_ENAME": "민목리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "70",
+      "BRT_FIRSTTIME": "2120",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2120"
+    }
+  ]
+}

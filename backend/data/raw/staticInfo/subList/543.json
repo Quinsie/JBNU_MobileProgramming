@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001207,
+      "BRT_ENAME": "코아루종점.청완초교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "636",
+      "BRT_MAXINTERVAL": "234",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "543",
+      "BRT_ID": "543",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2122",
+      "BRT_MININTERVAL": "213"
+    },
+    {
+      "BRT_SNAME": "둔산라송아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001208,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "818",
+      "BRT_MAXINTERVAL": "232",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "543",
+      "BRT_ID": "543",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1930",
+      "BRT_MININTERVAL": "209"
+    }
+  ]
+}

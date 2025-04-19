@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "풍남문",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001476,
+      "BRT_ENAME": "은석마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "900",
+      "BRT_MAXINTERVAL": "145",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "13",
+      "BRT_ID": "13",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1125",
+      "BRT_MININTERVAL": "145"
+    },
+    {
+      "BRT_SNAME": "풍남문",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001479,
+      "BRT_ENAME": "풍남문",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1445",
+      "BRT_MAXINTERVAL": "185",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "13",
+      "BRT_ID": "13",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1750",
+      "BRT_MININTERVAL": "185"
+    }
+  ]
+}

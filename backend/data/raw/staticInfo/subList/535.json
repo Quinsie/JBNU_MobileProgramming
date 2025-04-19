@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001199,
+      "BRT_ENAME": "고산터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "624",
+      "BRT_MAXINTERVAL": "47",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "535",
+      "BRT_ID": "535",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2226",
+      "BRT_MININTERVAL": "18"
+    },
+    {
+      "BRT_SNAME": "고산터미널",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001200,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "612",
+      "BRT_MAXINTERVAL": "31",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "535",
+      "BRT_ID": "535",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2212",
+      "BRT_MININTERVAL": "17"
+    },
+    {
+      "BRT_SNAME": "전라감영.완산경찰서",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001326,
+      "BRT_NO": "535",
+      "BRT_ENAME": "고산터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "535",
+      "BRT_FIRSTTIME": "612",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "612"
+    },
+    {
+      "BRT_SNAME": "원상림",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001377,
+      "BRT_NO": "535",
+      "BRT_ENAME": "고산터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "535",
+      "BRT_FIRSTTIME": "638",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "638"
+    }
+  ]
+}

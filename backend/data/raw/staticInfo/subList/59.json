@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "어린이창의체험관",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001825,
+      "BRT_ENAME": "만경강변 진조리.은평",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "655",
+      "BRT_MAXINTERVAL": "175",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "59",
+      "BRT_ID": "59",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2210",
+      "BRT_MININTERVAL": "130"
+    },
+    {
+      "BRT_SNAME": "만경강변 진조리.은평",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001826,
+      "BRT_ENAME": "어린이창의체험관",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "185",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "59",
+      "BRT_ID": "59",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2115",
+      "BRT_MININTERVAL": "130"
+    }
+  ]
+}

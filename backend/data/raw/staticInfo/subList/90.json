@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "원안덕마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001698,
+      "BRT_ENAME": "전북도립미술관",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "725",
+      "BRT_MAXINTERVAL": "210",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "90",
+      "BRT_ID": "90",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2045",
+      "BRT_MININTERVAL": "190"
+    },
+    {
+      "BRT_SNAME": "전북도립미술관",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001700,
+      "BRT_ENAME": "원안덕마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "700",
+      "BRT_MAXINTERVAL": "210",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "90",
+      "BRT_ID": "90",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2020",
+      "BRT_MININTERVAL": "190"
+    },
+    {
+      "BRT_SNAME": "탑선마을",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001699,
+      "BRT_ENAME": "전북도립미술관",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "612",
+      "BRT_MAXINTERVAL": "210",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "90",
+      "BRT_ID": "90",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2225",
+      "BRT_MININTERVAL": "173"
+    },
+    {
+      "BRT_SNAME": "전북도립미술관",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001701,
+      "BRT_ENAME": "탑선마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "840",
+      "BRT_MAXINTERVAL": "210",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "90",
+      "BRT_ID": "90",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2200",
+      "BRT_MININTERVAL": "190"
+    }
+  ]
+}

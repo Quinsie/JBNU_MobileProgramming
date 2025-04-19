@@ -1,0 +1,78 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "상망표",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001673,
+      "BRT_ENAME": "앞멀",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1213",
+      "BRT_MAXINTERVAL": "250",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "82-1",
+      "BRT_ID": "82",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "1813",
+      "BRT_MININTERVAL": "110"
+    },
+    {
+      "BRT_SNAME": "상망표",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001726,
+      "BRT_ENAME": "앞멀",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "713",
+      "BRT_MAXINTERVAL": "117",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "82-1",
+      "BRT_ID": "82",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "910",
+      "BRT_MININTERVAL": "117"
+    },
+    {
+      "BRT_SNAME": "상망표",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001724,
+      "BRT_NO": "82-1",
+      "BRT_ENAME": "소양행정복지센터",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "82",
+      "BRT_FIRSTTIME": "1353",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "1353"
+    },
+    {
+      "BRT_SNAME": "소양행정복지센터",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "C",
+      "BRT_STDID": 305001725,
+      "BRT_NO": "82-1",
+      "BRT_ENAME": "앞멀",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "82",
+      "BRT_FIRSTTIME": "1430",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "1430"
+    },
+    {
+      "BRT_SNAME": "상리",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "D",
+      "BRT_STDID": 305001722,
+      "BRT_NO": "82-1",
+      "BRT_ENAME": "앞멀",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "82",
+      "BRT_FIRSTTIME": "2025",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "2025"
+    }
+  ]
+}

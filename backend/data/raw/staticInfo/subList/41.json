@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "하나로마트종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001808,
+      "BRT_ENAME": "삼화동",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "654",
+      "BRT_MAXINTERVAL": "168",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "41",
+      "BRT_ID": "41",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2040",
+      "BRT_MININTERVAL": "116"
+    },
+    {
+      "BRT_SNAME": "삼화동",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001809,
+      "BRT_ENAME": "하나로마트종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "148",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "41",
+      "BRT_ID": "41",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2137",
+      "BRT_MININTERVAL": "106"
+    }
+  ]
+}

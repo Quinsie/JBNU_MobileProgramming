@@ -1,0 +1,52 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "구암",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001542,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "640",
+      "BRT_MAXINTERVAL": "340",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "24",
+      "BRT_ID": "24",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1725",
+      "BRT_MININTERVAL": "100"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001543,
+      "BRT_ENAME": "구암",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "625",
+      "BRT_MAXINTERVAL": "165",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "24",
+      "BRT_ID": "24",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2135",
+      "BRT_MININTERVAL": "70"
+    },
+    {
+      "BRT_SNAME": "구암",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001358,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "800",
+      "BRT_MAXINTERVAL": "630",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "24",
+      "BRT_ID": "24",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2020",
+      "BRT_MININTERVAL": "110"
+    }
+  ]
+}

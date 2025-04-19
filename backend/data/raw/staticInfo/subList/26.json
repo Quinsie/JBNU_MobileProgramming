@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "콩쥐팥쥐마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001548,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "740",
+      "BRT_MAXINTERVAL": "220",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "26",
+      "BRT_ID": "26",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1835",
+      "BRT_MININTERVAL": "85"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001549,
+      "BRT_ENAME": "콩쥐팥쥐마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "735",
+      "BRT_MAXINTERVAL": "220",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "26",
+      "BRT_ID": "26",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1830",
+      "BRT_MININTERVAL": "85"
+    }
+  ]
+}

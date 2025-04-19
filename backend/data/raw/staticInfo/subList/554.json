@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "삼천동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001647,
+      "BRT_ENAME": "둔산코아루2차아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "619",
+      "BRT_MAXINTERVAL": "40",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "554",
+      "BRT_ID": "554",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2153",
+      "BRT_MININTERVAL": "29"
+    },
+    {
+      "BRT_SNAME": "둔산코아루2차아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001648,
+      "BRT_ENAME": "삼천동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "40",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "554",
+      "BRT_ID": "554",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2213",
+      "BRT_MININTERVAL": "29"
+    },
+    {
+      "BRT_SNAME": "충경로 객사",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305000409,
+      "BRT_NO": "554",
+      "BRT_ENAME": "둔산코아루2차아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "554",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "삼천동종점",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305200173,
+      "BRT_NO": "554",
+      "BRT_ENAME": "에코스위첸",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "554",
+      "BRT_FIRSTTIME": "2233",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2233"
+    }
+  ]
+}

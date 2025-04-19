@@ -1,0 +1,20 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001892,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "2215",
+      "BRT_MAXINTERVAL": "24",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "6-1",
+      "BRT_ID": "6",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "2255",
+      "BRT_MININTERVAL": "15"
+    }
+  ]
+}

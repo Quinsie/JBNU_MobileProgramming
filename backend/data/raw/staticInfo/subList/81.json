@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "모래내시장",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001864,
+      "BRT_ENAME": "소양",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "850",
+      "BRT_MAXINTERVAL": "240",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "81",
+      "BRT_ID": "81",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1950",
+      "BRT_MININTERVAL": "200"
+    },
+    {
+      "BRT_SNAME": "소양",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001865,
+      "BRT_ENAME": "모래내시장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "620",
+      "BRT_MAXINTERVAL": "240",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "81",
+      "BRT_ID": "81",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2020",
+      "BRT_MININTERVAL": "180"
+    }
+  ]
+}

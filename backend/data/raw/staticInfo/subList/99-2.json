@@ -1,0 +1,20 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "진조리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001834,
+      "BRT_ENAME": "진조리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "650",
+      "BRT_MAXINTERVAL": "120",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "99-2",
+      "BRT_ID": "99",
+      "BRT_CLASS": "2",
+      "BRT_LASTTIME": "2040",
+      "BRT_MININTERVAL": "110"
+    }
+  ]
+}

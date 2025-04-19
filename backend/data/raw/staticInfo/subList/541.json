@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001203,
+      "BRT_ENAME": "신하리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "748",
+      "BRT_MAXINTERVAL": "223",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "541",
+      "BRT_ID": "541",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1846",
+      "BRT_MININTERVAL": "216"
+    },
+    {
+      "BRT_SNAME": "신하리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001204,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "605",
+      "BRT_MAXINTERVAL": "234",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "541",
+      "BRT_ID": "541",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2038",
+      "BRT_MININTERVAL": "206"
+    }
+  ]
+}

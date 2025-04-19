@@ -1,0 +1,20 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001425,
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "610",
+      "BRT_MAXINTERVAL": "47",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "220",
+      "BRT_ID": "220",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2220",
+      "BRT_MININTERVAL": "27"
+    }
+  ]
+}

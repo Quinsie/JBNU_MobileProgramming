@@ -1,0 +1,52 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "약암마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001697,
+      "BRT_ENAME": "다리목",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "705",
+      "BRT_MAXINTERVAL": "260",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "87-2",
+      "BRT_ID": "87",
+      "BRT_CLASS": "2",
+      "BRT_LASTTIME": "2100",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "약암마을",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001745,
+      "BRT_ENAME": "소양행정복지센터",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1050",
+      "BRT_MAXINTERVAL": "385",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "87-2",
+      "BRT_ID": "87",
+      "BRT_CLASS": "2",
+      "BRT_LASTTIME": "2240",
+      "BRT_MININTERVAL": "325"
+    },
+    {
+      "BRT_SNAME": "소양행정복지센터",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001744,
+      "BRT_ENAME": "다리목",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1200",
+      "BRT_MAXINTERVAL": "385",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "87-2",
+      "BRT_ID": "87",
+      "BRT_CLASS": "2",
+      "BRT_LASTTIME": "1825",
+      "BRT_MININTERVAL": "385"
+    }
+  ]
+}

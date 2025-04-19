@@ -1,0 +1,82 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "원마다리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001527,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "715",
+      "BRT_MAXINTERVAL": "150",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "20",
+      "BRT_ID": "20",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1255",
+      "BRT_MININTERVAL": "90"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001528,
+      "BRT_ENAME": "원마다리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "700",
+      "BRT_MAXINTERVAL": "150",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "20",
+      "BRT_ID": "20",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1240",
+      "BRT_MININTERVAL": "90"
+    },
+    {
+      "BRT_SNAME": "산정리종점",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001529,
+      "BRT_NO": "20",
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "20",
+      "BRT_FIRSTTIME": "555",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "555"
+    },
+    {
+      "BRT_SNAME": "산정리종점",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001530,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1430",
+      "BRT_MAXINTERVAL": "160",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "20",
+      "BRT_ID": "20",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2035",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001531,
+      "BRT_ENAME": "산정리종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1415",
+      "BRT_MAXINTERVAL": "160",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "20",
+      "BRT_ID": "20",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2020",
+      "BRT_MININTERVAL": "94"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001752,
+      "BRT_ENAME": "대성동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "607",
+      "BRT_MAXINTERVAL": "29",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "110",
+      "BRT_ID": "110",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2226",
+      "BRT_MININTERVAL": "15"
+    },
+    {
+      "BRT_SNAME": "대성동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001753,
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "607",
+      "BRT_MAXINTERVAL": "29",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "110",
+      "BRT_ID": "110",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2226",
+      "BRT_MININTERVAL": "15"
+    },
+    {
+      "BRT_SNAME": "한국전기안전공사본사",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001101,
+      "BRT_NO": "110",
+      "BRT_ENAME": "대성동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "110",
+      "BRT_FIRSTTIME": "605",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "605"
+    },
+    {
+      "BRT_SNAME": "고속버스터미널입구.전북일보사",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001102,
+      "BRT_NO": "110",
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "110",
+      "BRT_FIRSTTIME": "605",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "605"
+    }
+  ]
+}

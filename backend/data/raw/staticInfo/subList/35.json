@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "삼례역",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001887,
+      "BRT_ENAME": "고산터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1035",
+      "BRT_MAXINTERVAL": "290",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "35",
+      "BRT_ID": "35",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1525",
+      "BRT_MININTERVAL": "290"
+    },
+    {
+      "BRT_SNAME": "고산터미널",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001888,
+      "BRT_ENAME": "삼례역",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "933",
+      "BRT_MAXINTERVAL": "287",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "35",
+      "BRT_ID": "35",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1420",
+      "BRT_MININTERVAL": "287"
+    },
+    {
+      "BRT_SNAME": "삼례터미널",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001080,
+      "BRT_ENAME": "고산터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "620",
+      "BRT_MAXINTERVAL": "315",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "35",
+      "BRT_ID": "35",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2030",
+      "BRT_MININTERVAL": "110"
+    },
+    {
+      "BRT_SNAME": "고산터미널",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001081,
+      "BRT_ENAME": "삼례터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "715",
+      "BRT_MAXINTERVAL": "290",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "35",
+      "BRT_ID": "35",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2125",
+      "BRT_MININTERVAL": "140"
+    }
+  ]
+}

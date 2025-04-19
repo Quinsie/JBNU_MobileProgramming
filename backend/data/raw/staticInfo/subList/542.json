@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001205,
+      "BRT_ENAME": "둔산코아루2차아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "723",
+      "BRT_MAXINTERVAL": "267",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "542",
+      "BRT_ID": "542",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2010",
+      "BRT_MININTERVAL": "248"
+    },
+    {
+      "BRT_SNAME": "둔산코아루2차아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001206,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "923",
+      "BRT_MAXINTERVAL": "277",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "542",
+      "BRT_ID": "542",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2220",
+      "BRT_MININTERVAL": "248"
+    }
+  ]
+}

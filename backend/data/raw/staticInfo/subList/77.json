@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "대흥마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001720,
+      "BRT_ENAME": "상관농협로컬푸드",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "652",
+      "BRT_MAXINTERVAL": "155",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "77",
+      "BRT_ID": "77",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1940",
+      "BRT_MININTERVAL": "90"
+    },
+    {
+      "BRT_SNAME": "상관농협로컬푸드",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001719,
+      "BRT_ENAME": "대흥마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "840",
+      "BRT_MAXINTERVAL": "160",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "77",
+      "BRT_ID": "77",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1920",
+      "BRT_MININTERVAL": "90"
+    }
+  ]
+}

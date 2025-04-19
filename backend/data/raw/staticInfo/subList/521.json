@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001402,
+      "BRT_ENAME": "후와리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "836",
+      "BRT_MAXINTERVAL": "439",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "521",
+      "BRT_ID": "521",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1555",
+      "BRT_MININTERVAL": "439"
+    },
+    {
+      "BRT_SNAME": "후와리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001403,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1019",
+      "BRT_MAXINTERVAL": "442",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "521",
+      "BRT_ID": "521",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1741",
+      "BRT_MININTERVAL": "442"
+    }
+  ]
+}

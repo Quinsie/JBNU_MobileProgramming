@@ -1,0 +1,66 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001109,
+      "BRT_ENAME": "오천마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "713",
+      "BRT_MAXINTERVAL": "94",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "55",
+      "BRT_ID": "55",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1818",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "오천마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001110,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "708",
+      "BRT_MAXINTERVAL": "94",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "55",
+      "BRT_ID": "55",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1948",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305200828,
+      "BRT_ENAME": "완주군청",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1955",
+      "BRT_MAXINTERVAL": "100",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "55",
+      "BRT_ID": "55",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2135",
+      "BRT_MININTERVAL": "100"
+    },
+    {
+      "BRT_SNAME": "완주군청",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305200829,
+      "BRT_NO": "55",
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "55",
+      "BRT_FIRSTTIME": "2135",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2135"
+    }
+  ]
+}

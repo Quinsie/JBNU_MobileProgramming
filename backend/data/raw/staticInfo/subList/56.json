@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001111,
+      "BRT_ENAME": "설경마을종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "824",
+      "BRT_MAXINTERVAL": "190",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "56",
+      "BRT_ID": "56",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1754",
+      "BRT_MININTERVAL": "190"
+    },
+    {
+      "BRT_SNAME": "설경마을종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001112,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "954",
+      "BRT_MAXINTERVAL": "190",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "56",
+      "BRT_ID": "56",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1924",
+      "BRT_MININTERVAL": "190"
+    },
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305200771,
+      "BRT_NO": "56",
+      "BRT_ENAME": "구억마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "56",
+      "BRT_FIRSTTIME": "2110",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2110"
+    },
+    {
+      "BRT_SNAME": "용진주유소",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001284,
+      "BRT_NO": "56",
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "56",
+      "BRT_FIRSTTIME": "644",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "644"
+    }
+  ]
+}

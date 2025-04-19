@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "송천동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001610,
+      "BRT_ENAME": "원당리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "622",
+      "BRT_MAXINTERVAL": "120",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "87",
+      "BRT_ID": "87",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2140",
+      "BRT_MININTERVAL": "93"
+    },
+    {
+      "BRT_SNAME": "원당리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001611,
+      "BRT_ENAME": "송천동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "622",
+      "BRT_MAXINTERVAL": "113",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "87",
+      "BRT_ID": "87",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2140",
+      "BRT_MININTERVAL": "91"
+    }
+  ]
+}

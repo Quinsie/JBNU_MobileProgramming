@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305200617,
+      "BRT_ENAME": "삼례터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "612",
+      "BRT_MAXINTERVAL": "49",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "350",
+      "BRT_ID": "350",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2227",
+      "BRT_MININTERVAL": "15"
+    },
+    {
+      "BRT_SNAME": "삼례터미널",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305200618,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "637",
+      "BRT_MAXINTERVAL": "51",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "350",
+      "BRT_ID": "350",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2227",
+      "BRT_MININTERVAL": "20"
+    }
+  ]
+}

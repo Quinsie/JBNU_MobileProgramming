@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001115,
+      "BRT_ENAME": "터지내마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "911",
+      "BRT_MAXINTERVAL": "209",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "58",
+      "BRT_ID": "58",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2210",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "터지내마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001116,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "731",
+      "BRT_MAXINTERVAL": "190",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "58",
+      "BRT_ID": "58",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2015",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001285,
+      "BRT_ENAME": "전당리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "736",
+      "BRT_MAXINTERVAL": "384",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "58",
+      "BRT_ID": "58",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2020",
+      "BRT_MININTERVAL": "380"
+    },
+    {
+      "BRT_SNAME": "전당리",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001286,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "906",
+      "BRT_MAXINTERVAL": "394",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "58",
+      "BRT_ID": "58",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2200",
+      "BRT_MININTERVAL": "380"
+    }
+  ]
+}

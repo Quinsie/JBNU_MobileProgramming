@@ -1,0 +1,32 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "어린이창의체험관",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001018,
+      "BRT_NO": "8490",
+      "BRT_ENAME": "신유강",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "8490",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "신유강",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001019,
+      "BRT_NO": "8490",
+      "BRT_ENAME": "어린이창의체험관",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "8490",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    }
+  ]
+}

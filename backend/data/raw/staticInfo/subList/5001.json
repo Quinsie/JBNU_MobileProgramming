@@ -1,0 +1,34 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대캠퍼스",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001574,
+      "BRT_ENAME": "전주대캠퍼스",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "20",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "5001",
+      "BRT_ID": "5001",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2221",
+      "BRT_MININTERVAL": "10"
+    },
+    {
+      "BRT_SNAME": "전북대학교.농협앞",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001588,
+      "BRT_NO": "5001",
+      "BRT_ENAME": "전주대캠퍼스",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "5001",
+      "BRT_FIRSTTIME": "605",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "605"
+    }
+  ]
+}

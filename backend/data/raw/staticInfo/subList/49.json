@@ -1,0 +1,82 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001462,
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1453",
+      "BRT_MAXINTERVAL": "182",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "49",
+      "BRT_ID": "49",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2147",
+      "BRT_MININTERVAL": "54"
+    },
+    {
+      "BRT_SNAME": "원오신마을회관",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001459,
+      "BRT_NO": "49",
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "49",
+      "BRT_FIRSTTIME": "622",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "622"
+    },
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001460,
+      "BRT_ENAME": "오신마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "708",
+      "BRT_MAXINTERVAL": "293",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "49",
+      "BRT_ID": "49",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1201",
+      "BRT_MININTERVAL": "293"
+    },
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "C",
+      "BRT_STDID": 305001461,
+      "BRT_ENAME": "오신마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "903",
+      "BRT_MAXINTERVAL": "178",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "49",
+      "BRT_ID": "49",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1309",
+      "BRT_MININTERVAL": "67"
+    },
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "D",
+      "BRT_STDID": 305001463,
+      "BRT_ENAME": "만경강변.원화전",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1555",
+      "BRT_MAXINTERVAL": "174",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "49",
+      "BRT_ID": "49",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1849",
+      "BRT_MININTERVAL": "174"
+    }
+  ]
+}

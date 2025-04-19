@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "소양회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001524,
+      "BRT_ENAME": "봉동주공아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "720",
+      "BRT_MAXINTERVAL": "150",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "50",
+      "BRT_ID": "50",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2030",
+      "BRT_MININTERVAL": "110"
+    },
+    {
+      "BRT_SNAME": "봉동주공아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001523,
+      "BRT_ENAME": "소양회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "810",
+      "BRT_MAXINTERVAL": "150",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "50",
+      "BRT_ID": "50",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1900",
+      "BRT_MININTERVAL": "120"
+    }
+  ]
+}

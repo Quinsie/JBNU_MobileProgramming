@@ -1,0 +1,60 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305200940,
+      "BRT_NO": "1994",
+      "BRT_ENAME": "시외고속간이터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "1994",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "시외고속간이터미널",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001432,
+      "BRT_NO": "1994",
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "1994",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "우미린2차아파트",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001096,
+      "BRT_NO": "1994",
+      "BRT_ENAME": "시외고속간이터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "1994",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "시외고속간이터미널",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001097,
+      "BRT_NO": "1994",
+      "BRT_ENAME": "국민연금공단",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "1994",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    }
+  ]
+}

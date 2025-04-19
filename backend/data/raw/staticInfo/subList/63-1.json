@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "흑석골종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001821,
+      "BRT_ENAME": "신덕마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "720",
+      "BRT_MAXINTERVAL": "240",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "63-1",
+      "BRT_ID": "63",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "2145",
+      "BRT_MININTERVAL": "120"
+    },
+    {
+      "BRT_SNAME": "신덕마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001822,
+      "BRT_ENAME": "흑석골종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "818",
+      "BRT_MAXINTERVAL": "240",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "63-1",
+      "BRT_ID": "63",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "2020",
+      "BRT_MININTERVAL": "120"
+    }
+  ]
+}

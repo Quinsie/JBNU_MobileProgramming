@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "송천동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001223,
+      "BRT_ENAME": "관촌터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "609",
+      "BRT_MAXINTERVAL": "29",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "752",
+      "BRT_ID": "752",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2226",
+      "BRT_MININTERVAL": "20"
+    },
+    {
+      "BRT_SNAME": "관촌터미널",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001224,
+      "BRT_ENAME": "송천동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "610",
+      "BRT_MAXINTERVAL": "29",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "752",
+      "BRT_ID": "752",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2227",
+      "BRT_MININTERVAL": "20"
+    }
+  ]
+}

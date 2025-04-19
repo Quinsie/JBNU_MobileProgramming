@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주동물원",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001659,
+      "BRT_ENAME": "국립전주박물관종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "622",
+      "BRT_MAXINTERVAL": "90",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "999",
+      "BRT_ID": "999",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2207",
+      "BRT_MININTERVAL": "35"
+    },
+    {
+      "BRT_SNAME": "전주박물관전주역사박물관",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001660,
+      "BRT_ENAME": "전주동물원",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "622",
+      "BRT_MAXINTERVAL": "90",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "999",
+      "BRT_ID": "999",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2207",
+      "BRT_MININTERVAL": "40"
+    }
+  ]
+}

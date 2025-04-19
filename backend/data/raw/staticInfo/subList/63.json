@@ -1,0 +1,50 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "흑석골종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001818,
+      "BRT_ENAME": "호동마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1130",
+      "BRT_MAXINTERVAL": "370",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "63",
+      "BRT_ID": "63",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1740",
+      "BRT_MININTERVAL": "370"
+    },
+    {
+      "BRT_SNAME": "호동마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001819,
+      "BRT_ENAME": "흑석골종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1210",
+      "BRT_MAXINTERVAL": "378",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "63",
+      "BRT_ID": "63",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1828",
+      "BRT_MININTERVAL": "378"
+    },
+    {
+      "BRT_SNAME": "삼산리",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001820,
+      "BRT_NO": "63",
+      "BRT_ENAME": "흑석골종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "63",
+      "BRT_FIRSTTIME": "605",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "605"
+    }
+  ]
+}

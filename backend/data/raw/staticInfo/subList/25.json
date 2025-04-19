@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "대문안종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001544,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "637",
+      "BRT_MAXINTERVAL": "260",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "25",
+      "BRT_ID": "25",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2140",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001546,
+      "BRT_ENAME": "대문안종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "625",
+      "BRT_MAXINTERVAL": "155",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "25",
+      "BRT_ID": "25",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1715",
+      "BRT_MININTERVAL": "79"
+    },
+    {
+      "BRT_SNAME": "대문안종점",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001545,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "757",
+      "BRT_MAXINTERVAL": "250",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "25",
+      "BRT_ID": "25",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1207",
+      "BRT_MININTERVAL": "250"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001547,
+      "BRT_ENAME": "대문안종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1945",
+      "BRT_MAXINTERVAL": "94",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "25",
+      "BRT_ID": "25",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2120",
+      "BRT_MININTERVAL": "94"
+    }
+  ]
+}

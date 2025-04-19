@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "소양행정복지센터",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001676,
+      "BRT_ENAME": "동상거인경로당",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "825",
+      "BRT_MAXINTERVAL": "190",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "83",
+      "BRT_ID": "83",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2120",
+      "BRT_MININTERVAL": "100"
+    },
+    {
+      "BRT_SNAME": "동상거인경로당",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001677,
+      "BRT_ENAME": "소양행정복지센터",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "900",
+      "BRT_MAXINTERVAL": "160",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "83",
+      "BRT_ID": "83",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2005",
+      "BRT_MININTERVAL": "115"
+    },
+    {
+      "BRT_SNAME": "소양",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001694,
+      "BRT_NO": "83",
+      "BRT_ENAME": "소양",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "83",
+      "BRT_FIRSTTIME": "740",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "740"
+    },
+    {
+      "BRT_SNAME": "동상거인경로당",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001730,
+      "BRT_NO": "83",
+      "BRT_ENAME": "소양행정복지센터",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "83",
+      "BRT_FIRSTTIME": "645",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "645"
+    }
+  ]
+}

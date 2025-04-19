@@ -1,0 +1,26 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "상관주민센터",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001721,
+      "BRT_NO": "76",
+      "BRT_ENAME": "어두마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "76",
+      "BRT_CLASS": "0"
+    },
+    {
+      "BRT_SNAME": "어두마을",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001747,
+      "BRT_NO": "76",
+      "BRT_ENAME": "상관주민센터",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "76",
+      "BRT_CLASS": "0"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001144,
+      "BRT_ENAME": "우석대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "29",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "309",
+      "BRT_ID": "309",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2240",
+      "BRT_MININTERVAL": "13"
+    },
+    {
+      "BRT_SNAME": "우석대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001145,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "29",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "309",
+      "BRT_ID": "309",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2240",
+      "BRT_MININTERVAL": "13"
+    },
+    {
+      "BRT_SNAME": "근영여고",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305000992,
+      "BRT_NO": "309",
+      "BRT_ENAME": "우석대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "309",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "서곡광장",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305000991,
+      "BRT_NO": "309",
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "309",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    }
+  ]
+}

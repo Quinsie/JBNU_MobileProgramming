@@ -1,0 +1,50 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "모산종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001532,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "555",
+      "BRT_MAXINTERVAL": "135",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "21",
+      "BRT_ID": "21",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2135",
+      "BRT_MININTERVAL": "70"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001534,
+      "BRT_ENAME": "모산종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "640",
+      "BRT_MAXINTERVAL": "135",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "21",
+      "BRT_ID": "21",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2110",
+      "BRT_MININTERVAL": "79"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001349,
+      "BRT_NO": "21",
+      "BRT_ENAME": "신일해피트리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "21",
+      "BRT_FIRSTTIME": "2210",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2210"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "감수리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001657,
+      "BRT_ENAME": "오봉리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "810",
+      "BRT_MAXINTERVAL": "600",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "685",
+      "BRT_ID": "685",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1810",
+      "BRT_MININTERVAL": "600"
+    },
+    {
+      "BRT_SNAME": "오봉리",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001658,
+      "BRT_ENAME": "감수리",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "630",
+      "BRT_MAXINTERVAL": "600",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "685",
+      "BRT_ID": "685",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1950",
+      "BRT_MININTERVAL": "200"
+    }
+  ]
+}

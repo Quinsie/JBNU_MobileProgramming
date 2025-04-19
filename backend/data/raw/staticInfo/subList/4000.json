@@ -1,0 +1,50 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대캠퍼스",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001573,
+      "BRT_ENAME": "전주대캠퍼스",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "22",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "4000",
+      "BRT_ID": "4000",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2230",
+      "BRT_MININTERVAL": "9"
+    },
+    {
+      "BRT_SNAME": "마당재",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001607,
+      "BRT_ENAME": "전주대캠퍼스",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "605",
+      "BRT_MAXINTERVAL": "10",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "4000",
+      "BRT_ID": "4000",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "615",
+      "BRT_MININTERVAL": "10"
+    },
+    {
+      "BRT_SNAME": "전주대캠퍼스",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "B",
+      "BRT_STDID": 305001773,
+      "BRT_NO": "4000",
+      "BRT_ENAME": "마당재",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "4000",
+      "BRT_FIRSTTIME": "2242",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2242"
+    }
+  ]
+}

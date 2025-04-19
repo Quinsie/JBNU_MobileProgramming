@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001119,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "550",
+      "BRT_MAXINTERVAL": "24",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "61",
+      "BRT_ID": "61",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2230",
+      "BRT_MININTERVAL": "15"
+    },
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001120,
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "550",
+      "BRT_MAXINTERVAL": "24",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "61",
+      "BRT_ID": "61",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2230",
+      "BRT_MININTERVAL": "15"
+    }
+  ]
+}

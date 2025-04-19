@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001598,
+      "BRT_ENAME": "상하보",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "120",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "401",
+      "BRT_ID": "401",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2125",
+      "BRT_MININTERVAL": "110"
+    },
+    {
+      "BRT_SNAME": "상하보",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001597,
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "120",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "401",
+      "BRT_ID": "401",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2125",
+      "BRT_MININTERVAL": "110"
+    }
+  ]
+}

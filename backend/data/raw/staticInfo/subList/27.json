@@ -1,0 +1,66 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "삼례역",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001671,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "840",
+      "BRT_MAXINTERVAL": "160",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "27",
+      "BRT_ID": "27",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1930",
+      "BRT_MININTERVAL": "120"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001672,
+      "BRT_ENAME": "삼례역",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "730",
+      "BRT_MAXINTERVAL": "160",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "27",
+      "BRT_ID": "27",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1830",
+      "BRT_MININTERVAL": "120"
+    },
+    {
+      "BRT_SNAME": "삼례역",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001533,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "620",
+      "BRT_MAXINTERVAL": "940",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "27",
+      "BRT_ID": "27",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2200",
+      "BRT_MININTERVAL": "940"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001535,
+      "BRT_NO": "27",
+      "BRT_ENAME": "삼례역",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "27",
+      "BRT_FIRSTTIME": "2110",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2110"
+    }
+  ]
+}

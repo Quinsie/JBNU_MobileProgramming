@@ -1,0 +1,64 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305000421,
+      "BRT_ENAME": "양야리경로당",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1144",
+      "BRT_MAXINTERVAL": "265",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "513",
+      "BRT_ID": "513",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2115",
+      "BRT_MININTERVAL": "47"
+    },
+    {
+      "BRT_SNAME": "양야리경로당",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305000475,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1022",
+      "BRT_MAXINTERVAL": "245",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "513",
+      "BRT_ID": "513",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2234",
+      "BRT_MININTERVAL": "63"
+    },
+    {
+      "BRT_SNAME": "원상림",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001276,
+      "BRT_NO": "513",
+      "BRT_ENAME": "양야리경로당",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "513",
+      "BRT_FIRSTTIME": "802",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "802"
+    },
+    {
+      "BRT_SNAME": "양야리경로당",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001275,
+      "BRT_NO": "513",
+      "BRT_ENAME": "원상림",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "513",
+      "BRT_FIRSTTIME": "621",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "621"
+    }
+  ]
+}

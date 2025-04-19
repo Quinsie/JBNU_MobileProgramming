@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001113,
+      "BRT_ENAME": "설경마을종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "649",
+      "BRT_MAXINTERVAL": "191",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "57",
+      "BRT_ID": "57",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1930",
+      "BRT_MININTERVAL": "190"
+    },
+    {
+      "BRT_SNAME": "설경마을종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001114,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "819",
+      "BRT_MAXINTERVAL": "191",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "57",
+      "BRT_ID": "57",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2100",
+      "BRT_MININTERVAL": "190"
+    }
+  ]
+}

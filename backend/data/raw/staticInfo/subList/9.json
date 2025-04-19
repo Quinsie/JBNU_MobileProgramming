@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "송천동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305200566,
+      "BRT_ENAME": "송천동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "558",
+      "BRT_MAXINTERVAL": "18",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "9",
+      "BRT_ID": "9",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2240",
+      "BRT_MININTERVAL": "15"
+    },
+    {
+      "BRT_SNAME": "호성주공",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305200567,
+      "BRT_ENAME": "송천동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "555",
+      "BRT_MAXINTERVAL": "15",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "9",
+      "BRT_ID": "9",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "610",
+      "BRT_MININTERVAL": "15"
+    }
+  ]
+}

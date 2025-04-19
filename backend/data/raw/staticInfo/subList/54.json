@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001107,
+      "BRT_ENAME": "완주군청",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "625",
+      "BRT_MAXINTERVAL": "100",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "54",
+      "BRT_ID": "54",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2045",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "완주군청",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001108,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "610",
+      "BRT_MAXINTERVAL": "100",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "54",
+      "BRT_ID": "54",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2035",
+      "BRT_MININTERVAL": "94"
+    }
+  ]
+}

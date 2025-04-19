@@ -1,0 +1,52 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001191,
+      "BRT_ENAME": "용화마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "924",
+      "BRT_MAXINTERVAL": "229",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "511",
+      "BRT_ID": "511",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2030",
+      "BRT_MININTERVAL": "214"
+    },
+    {
+      "BRT_SNAME": "용화마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001192,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1439",
+      "BRT_MAXINTERVAL": "466",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "511",
+      "BRT_ID": "511",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2225",
+      "BRT_MININTERVAL": "466"
+    },
+    {
+      "BRT_SNAME": "용화마을",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305000997,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "731",
+      "BRT_MAXINTERVAL": "450",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "511",
+      "BRT_ID": "511",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1830",
+      "BRT_MININTERVAL": "209"
+    }
+  ]
+}

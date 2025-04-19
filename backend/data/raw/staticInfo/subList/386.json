@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001758,
+      "BRT_ENAME": "익산더반포레아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "902",
+      "BRT_MAXINTERVAL": "224",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "386",
+      "BRT_ID": "386",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2014",
+      "BRT_MININTERVAL": "224"
+    },
+    {
+      "BRT_SNAME": "익산더반포레아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001759,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "656",
+      "BRT_MAXINTERVAL": "224",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "386",
+      "BRT_ID": "386",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2152",
+      "BRT_MININTERVAL": "224"
+    }
+  ]
+}

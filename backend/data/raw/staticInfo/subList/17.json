@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "풍남문",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001791,
+      "BRT_ENAME": "흑석골종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "700",
+      "BRT_MAXINTERVAL": "285",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "17",
+      "BRT_ID": "17",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1910",
+      "BRT_MININTERVAL": "115"
+    },
+    {
+      "BRT_SNAME": "흑석골종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001792,
+      "BRT_ENAME": "풍남문",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "745",
+      "BRT_MAXINTERVAL": "285",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "17",
+      "BRT_ID": "17",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1940",
+      "BRT_MININTERVAL": "125"
+    }
+  ]
+}

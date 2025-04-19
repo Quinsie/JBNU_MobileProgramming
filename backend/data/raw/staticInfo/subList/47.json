@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "하나로마트종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001812,
+      "BRT_ENAME": "용덕마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "171",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "47",
+      "BRT_ID": "47",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2203",
+      "BRT_MININTERVAL": "104"
+    },
+    {
+      "BRT_SNAME": "용덕마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001813,
+      "BRT_ENAME": "하나로마트종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "650",
+      "BRT_MAXINTERVAL": "156",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "47",
+      "BRT_ID": "47",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2056",
+      "BRT_MININTERVAL": "114"
+    }
+  ]
+}

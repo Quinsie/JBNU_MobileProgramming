@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "삼례역",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001873,
+      "BRT_ENAME": "둔산코아루2차아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "705",
+      "BRT_MAXINTERVAL": "360",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "31",
+      "BRT_ID": "31",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2115",
+      "BRT_MININTERVAL": "225"
+    },
+    {
+      "BRT_SNAME": "둔산코아루2차아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001874,
+      "BRT_ENAME": "삼례역",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "615",
+      "BRT_MAXINTERVAL": "340",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "31",
+      "BRT_ID": "31",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2005",
+      "BRT_MININTERVAL": "220"
+    },
+    {
+      "BRT_SNAME": "삼례터미널",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001414,
+      "BRT_ENAME": "둔산코아루2차아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "900",
+      "BRT_MAXINTERVAL": "250",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "31",
+      "BRT_ID": "31",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1920",
+      "BRT_MININTERVAL": "130"
+    },
+    {
+      "BRT_SNAME": "둔산코아루2차아파트",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001415,
+      "BRT_ENAME": "삼례터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "750",
+      "BRT_MAXINTERVAL": "270",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "31",
+      "BRT_ID": "31",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1805",
+      "BRT_MININTERVAL": "120"
+    }
+  ]
+}

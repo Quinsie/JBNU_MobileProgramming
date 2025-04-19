@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001400,
+      "BRT_ENAME": "봉동주공아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1212",
+      "BRT_MAXINTERVAL": "446",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "520",
+      "BRT_ID": "520",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1938",
+      "BRT_MININTERVAL": "446"
+    },
+    {
+      "BRT_SNAME": "봉동주공아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001401,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "650",
+      "BRT_MAXINTERVAL": "462",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "520",
+      "BRT_ID": "520",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2132",
+      "BRT_MININTERVAL": "420"
+    }
+  ]
+}

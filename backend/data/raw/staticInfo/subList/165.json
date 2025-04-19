@@ -1,0 +1,92 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주동물원",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001141,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "22",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "165",
+      "BRT_ID": "165",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2220",
+      "BRT_MININTERVAL": "10"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001140,
+      "BRT_ENAME": "전주동물원",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "22",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "165",
+      "BRT_ID": "165",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2220",
+      "BRT_MININTERVAL": "10"
+    },
+    {
+      "BRT_SNAME": "전동성당.한옥마을",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001521,
+      "BRT_NO": "165",
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "165",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001522,
+      "BRT_NO": "165",
+      "BRT_ENAME": "호남고속",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "165",
+      "BRT_FIRSTTIME": "2240",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2240"
+    },
+    {
+      "BRT_SNAME": "전주동물원",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "C",
+      "BRT_STDID": 305001519,
+      "BRT_NO": "165",
+      "BRT_ENAME": "효자로전북도청",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "165",
+      "BRT_FIRSTTIME": "2240",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2240"
+    },
+    {
+      "BRT_SNAME": "효자로전북도청",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "C",
+      "BRT_STDID": 305001520,
+      "BRT_NO": "165",
+      "BRT_ENAME": "전주동물원",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "165",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    }
+  ]
+}

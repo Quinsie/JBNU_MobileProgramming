@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "원동마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001537,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "550",
+      "BRT_MAXINTERVAL": "250",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "23",
+      "BRT_ID": "23",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1300",
+      "BRT_MININTERVAL": "79"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001538,
+      "BRT_ENAME": "원동마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "655",
+      "BRT_MAXINTERVAL": "150",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "23",
+      "BRT_ID": "23",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1245",
+      "BRT_MININTERVAL": "100"
+    },
+    {
+      "BRT_SNAME": "대농",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001540,
+      "BRT_ENAME": "이서회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1445",
+      "BRT_MAXINTERVAL": "155",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "23",
+      "BRT_ID": "23",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2100",
+      "BRT_MININTERVAL": "94"
+    },
+    {
+      "BRT_SNAME": "이서회차지",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001541,
+      "BRT_ENAME": "대농",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1430",
+      "BRT_MAXINTERVAL": "155",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "23",
+      "BRT_ID": "23",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2045",
+      "BRT_MININTERVAL": "94"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001564,
+      "BRT_ENAME": "우석대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "626",
+      "BRT_MAXINTERVAL": "27",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "1001",
+      "BRT_ID": "1001",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2218",
+      "BRT_MININTERVAL": "27"
+    },
+    {
+      "BRT_SNAME": "우석대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001563,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "612",
+      "BRT_MAXINTERVAL": "27",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "1001",
+      "BRT_ID": "1001",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2204",
+      "BRT_MININTERVAL": "27"
+    }
+  ]
+}

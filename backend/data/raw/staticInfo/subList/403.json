@@ -1,0 +1,66 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001767,
+      "BRT_ENAME": "화원마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "720",
+      "BRT_MAXINTERVAL": "460",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "403",
+      "BRT_ID": "403",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2210",
+      "BRT_MININTERVAL": "200"
+    },
+    {
+      "BRT_SNAME": "화원마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001768,
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "910",
+      "BRT_MAXINTERVAL": "690",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "403",
+      "BRT_ID": "403",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2040",
+      "BRT_MININTERVAL": "690"
+    },
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "1",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001602,
+      "BRT_NO": "403",
+      "BRT_ENAME": "화원마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "403",
+      "BRT_FIRSTTIME": "1100",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1100"
+    },
+    {
+      "BRT_SNAME": "화원마을",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001601,
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1300",
+      "BRT_MAXINTERVAL": "230",
+      "BRT_GRPNM": "시내",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "403",
+      "BRT_ID": "403",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1650",
+      "BRT_MININTERVAL": "230"
+    }
+  ]
+}

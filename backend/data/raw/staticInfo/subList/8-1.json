@@ -1,0 +1,20 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전북대종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001098,
+      "BRT_ENAME": "전북대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "625",
+      "BRT_MAXINTERVAL": "38",
+      "BRT_GRPNM": "지선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "8-1",
+      "BRT_ID": "8",
+      "BRT_CLASS": "1",
+      "BRT_LASTTIME": "2235",
+      "BRT_MININTERVAL": "24"
+    }
+  ]
+}

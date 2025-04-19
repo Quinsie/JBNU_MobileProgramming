@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001842,
+      "BRT_ENAME": "홍개",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "635",
+      "BRT_MAXINTERVAL": "130",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "43",
+      "BRT_ID": "43",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1200",
+      "BRT_MININTERVAL": "85"
+    },
+    {
+      "BRT_SNAME": "홍개",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001845,
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1415",
+      "BRT_MAXINTERVAL": "115",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "43",
+      "BRT_ID": "43",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2135",
+      "BRT_MININTERVAL": "105"
+    },
+    {
+      "BRT_SNAME": "월드컵경기장",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001843,
+      "BRT_ENAME": "홍개",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1340",
+      "BRT_MAXINTERVAL": "115",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "43",
+      "BRT_ID": "43",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2210",
+      "BRT_MININTERVAL": "70"
+    },
+    {
+      "BRT_SNAME": "홍개",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001844,
+      "BRT_ENAME": "월드컵경기장",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "705",
+      "BRT_MAXINTERVAL": "110",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "43",
+      "BRT_ID": "43",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1230",
+      "BRT_MININTERVAL": "105"
+    }
+  ]
+}

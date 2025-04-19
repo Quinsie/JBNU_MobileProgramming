@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305000429,
+      "BRT_ENAME": "둔산코아루2차아파트",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "700",
+      "BRT_MAXINTERVAL": "145",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "522",
+      "BRT_ID": "522",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2150",
+      "BRT_MININTERVAL": "110"
+    },
+    {
+      "BRT_SNAME": "둔산코아루2차아파트",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305200153,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "700",
+      "BRT_MAXINTERVAL": "140",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "522",
+      "BRT_ID": "522",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2210",
+      "BRT_MININTERVAL": "105"
+    }
+  ]
+}

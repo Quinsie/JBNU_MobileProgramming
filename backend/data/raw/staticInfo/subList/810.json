@@ -1,0 +1,50 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001580,
+      "BRT_ENAME": "소양회차지",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "550",
+      "BRT_MAXINTERVAL": "60",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "810",
+      "BRT_ID": "810",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2140",
+      "BRT_MININTERVAL": "40"
+    },
+    {
+      "BRT_SNAME": "소양회차지",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001581,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "642",
+      "BRT_MAXINTERVAL": "60",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "810",
+      "BRT_ID": "810",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2150",
+      "BRT_MININTERVAL": "27"
+    },
+    {
+      "BRT_SNAME": "산정우정신세계아파트",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001582,
+      "BRT_NO": "810",
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_ID": "810",
+      "BRT_FIRSTTIME": "600",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "600"
+    }
+  ]
+}

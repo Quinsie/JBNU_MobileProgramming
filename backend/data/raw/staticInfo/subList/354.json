@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001149,
+      "BRT_ENAME": "우석대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "110",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "354",
+      "BRT_ID": "354",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2150",
+      "BRT_MININTERVAL": "49"
+    },
+    {
+      "BRT_SNAME": "우석대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001150,
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "600",
+      "BRT_MAXINTERVAL": "110",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "354",
+      "BRT_ID": "354",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2150",
+      "BRT_MININTERVAL": "49"
+    },
+    {
+      "BRT_SNAME": "비전대학교",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001303,
+      "BRT_ENAME": "우석대종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "830",
+      "BRT_MAXINTERVAL": "210",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "354",
+      "BRT_ID": "354",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1830",
+      "BRT_MININTERVAL": "190"
+    },
+    {
+      "BRT_SNAME": "우석대학교",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001304,
+      "BRT_ENAME": "비전대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "650",
+      "BRT_MAXINTERVAL": "210",
+      "BRT_GRPNM": "저상",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "354",
+      "BRT_ID": "354",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1650",
+      "BRT_MININTERVAL": "190"
+    }
+  ]
+}

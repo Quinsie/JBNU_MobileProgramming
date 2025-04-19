@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "풍남문",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001866,
+      "BRT_ENAME": "삼경사",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "630",
+      "BRT_MAXINTERVAL": "240",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "16",
+      "BRT_ID": "16",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2100",
+      "BRT_MININTERVAL": "85"
+    },
+    {
+      "BRT_SNAME": "삼경사",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001867,
+      "BRT_ENAME": "풍남문",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "645",
+      "BRT_MAXINTERVAL": "240",
+      "BRT_GRPNM": "마을",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "16",
+      "BRT_ID": "16",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2115",
+      "BRT_MININTERVAL": "90"
+    }
+  ]
+}

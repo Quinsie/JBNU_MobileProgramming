@@ -6,7 +6,6 @@ import requests
 
 URL = "http://www.jeonjuits.go.kr/bis/selectGrpRouteList.do" # 버스 전체노선 API
 DATA = {"locale": "ko-kr"}
-
 PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "routes.json"))
 
 def fetchRoutes():

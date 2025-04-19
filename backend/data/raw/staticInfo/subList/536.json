@@ -1,0 +1,36 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "평화동종점",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001202,
+      "BRT_ENAME": "제촌",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "652",
+      "BRT_MAXINTERVAL": "137",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "536",
+      "BRT_ID": "536",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2145",
+      "BRT_MININTERVAL": "124"
+    },
+    {
+      "BRT_SNAME": "제촌",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001201,
+      "BRT_ENAME": "평화동종점",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "700",
+      "BRT_MAXINTERVAL": "140",
+      "BRT_GRPNM": "본선",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "536",
+      "BRT_ID": "536",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2145",
+      "BRT_MININTERVAL": "112"
+    }
+  ]
+}

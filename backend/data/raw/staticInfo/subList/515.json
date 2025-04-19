@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001406,
+      "BRT_ENAME": "추동",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "612",
+      "BRT_MAXINTERVAL": "216",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "515",
+      "BRT_ID": "515",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "948",
+      "BRT_MININTERVAL": "216"
+    },
+    {
+      "BRT_SNAME": "추동",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001407,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1508",
+      "BRT_MAXINTERVAL": "227",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "515",
+      "BRT_ID": "515",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1855",
+      "BRT_MININTERVAL": "227"
+    },
+    {
+      "BRT_SNAME": "전주대학교",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001195,
+      "BRT_ENAME": "추동",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "1331",
+      "BRT_MAXINTERVAL": "234",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "515",
+      "BRT_ID": "515",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2056",
+      "BRT_MININTERVAL": "211"
+    },
+    {
+      "BRT_SNAME": "추동",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001196,
+      "BRT_ENAME": "전주대학교",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "756",
+      "BRT_MAXINTERVAL": "209",
+      "BRT_GRPNM": "고정",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "515",
+      "BRT_ID": "515",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1125",
+      "BRT_MININTERVAL": "209"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "resultList": [
+    {
+      "BRT_SNAME": "삼례역",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001881,
+      "BRT_ENAME": "지암마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "845",
+      "BRT_MAXINTERVAL": "520",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "34",
+      "BRT_ID": "34",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2115",
+      "BRT_MININTERVAL": "230"
+    },
+    {
+      "BRT_SNAME": "지암마을",
+      "BRT_SUBID": "0",
+      "BRT_STDID": 305001882,
+      "BRT_ENAME": "삼례역",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "745",
+      "BRT_MAXINTERVAL": "520",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "34",
+      "BRT_ID": "34",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2020",
+      "BRT_MININTERVAL": "235"
+    },
+    {
+      "BRT_SNAME": "삼례터미널",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001078,
+      "BRT_ENAME": "지암마을",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "650",
+      "BRT_MAXINTERVAL": "270",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "1",
+      "BRT_NO": "34",
+      "BRT_ID": "34",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "1925",
+      "BRT_MININTERVAL": "110"
+    },
+    {
+      "BRT_SNAME": "지암마을",
+      "BRT_SUBID": "A",
+      "BRT_STDID": 305001079,
+      "BRT_ENAME": "삼례터미널",
+      "BRT_ILREGINTERVALYN": "N",
+      "BRT_FIRSTTIME": "945",
+      "BRT_MAXINTERVAL": "230",
+      "BRT_GRPNM": "고산",
+      "BRT_DIRECTION": "2",
+      "BRT_NO": "34",
+      "BRT_ID": "34",
+      "BRT_CLASS": "0",
+      "BRT_LASTTIME": "2200",
+      "BRT_MININTERVAL": "130"
+    }
+  ]
+}
