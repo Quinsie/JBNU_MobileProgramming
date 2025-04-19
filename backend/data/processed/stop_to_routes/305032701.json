@@ -1,0 +1,37 @@
+[
+  {
+    "brt_no": "50",
+    "stdid": "305001523",
+    "direction": 2
+  },
+  {
+    "brt_no": "50",
+    "stdid": "305001524",
+    "direction": 1
+  },
+  {
+    "brt_no": "810",
+    "stdid": "305001580",
+    "direction": 1
+  },
+  {
+    "brt_no": "810",
+    "stdid": "305001581",
+    "direction": 2
+  },
+  {
+    "brt_no": "820",
+    "stdid": "305001583",
+    "direction": 2
+  },
+  {
+    "brt_no": "820",
+    "stdid": "305001584",
+    "direction": 1
+  },
+  {
+    "brt_no": "820",
+    "stdid": "305001587",
+    "direction": 2
+  }
+]

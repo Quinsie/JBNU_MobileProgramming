@@ -1,0 +1,52 @@
+[
+  {
+    "brt_no": "513",
+    "stdid": "305000421",
+    "direction": 1
+  },
+  {
+    "brt_no": "54",
+    "stdid": "305001108",
+    "direction": 2
+  },
+  {
+    "brt_no": "515",
+    "stdid": "305001195",
+    "direction": 1
+  },
+  {
+    "brt_no": "513",
+    "stdid": "305001276",
+    "direction": 1
+  },
+  {
+    "brt_no": "514",
+    "stdid": "305001350",
+    "direction": 1
+  },
+  {
+    "brt_no": "520",
+    "stdid": "305001400",
+    "direction": 1
+  },
+  {
+    "brt_no": "521",
+    "stdid": "305001402",
+    "direction": 1
+  },
+  {
+    "brt_no": "515",
+    "stdid": "305001406",
+    "direction": 1
+  },
+  {
+    "brt_no": "50",
+    "stdid": "305001523",
+    "direction": 2
+  },
+  {
+    "brt_no": "55",
+    "stdid": "305200829",
+    "direction": 2
+  }
+]

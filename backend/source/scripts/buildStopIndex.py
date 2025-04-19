@@ -2,52 +2,56 @@
 
 import os
 import json
+from collections import defaultdict
 
-# 경로 설정
 STOPS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "stops"))
 SUBLIST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "subList"))
-SAVE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed", "stop_to_routes.json"))
+SAVE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed", "stop_to_routes"))
+os.makedirs(SAVE_DIR, exist_ok=True)
 
-def build_index():
-    stop_index = dict()
+def load_sublist_mapping():
+    stdid_to_direction = {}
+    stdid_to_brtno = {}
 
-    # 모든 노선번호(subList) 순회
-    for filename in os.listdir(SUBLIST_DIR):
-        if not filename.endswith(".json"):
-            continue
+    for file in os.listdir(SUBLIST_DIR):
+        path = os.path.join(SUBLIST_DIR, file)
+        with open(path, "r", encoding="utf-8") as f:
+            sublist = json.load(f).get("resultList", [])
+        for item in sublist:
+            stdid = str(item.get("BRT_STDID"))
+            direction = item.get("BRT_DIRECTION")
+            brt_no = item.get("BRT_NO")
+            stdid_to_direction[stdid] = direction
+            stdid_to_brtno[stdid] = brt_no
 
-        bus_no = filename.replace(".json", "")
-        filepath = os.path.join(SUBLIST_DIR, filename)
-        with open(filepath, "r", encoding="utf-8") as f:
-            sublist = json.load(f)
+    return stdid_to_direction, stdid_to_brtno
 
-        for sub in sublist.get("resultList", []):
-            stdid = str(sub.get("BRT_STDID"))
-            direction = int(sub.get("BRT_DIRECTION", 0))
+def build_stop_to_routes():
+    stdid_to_direction, stdid_to_brtno = load_sublist_mapping()
+    stop_to_routes = defaultdict(list)
 
-            # 해당 stdid 정류장 목록 불러오기
-            stop_file = os.path.join(STOPS_DIR, f"{stdid}.json")
-            if not os.path.exists(stop_file):
-                continue
+    for file in os.listdir(STOPS_DIR):
+        path = os.path.join(STOPS_DIR, file)
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f).get("resultList", [])
 
-            with open(stop_file, "r", encoding="utf-8") as f:
-                stop_data = json.load(f)
+        stdid = os.path.splitext(file)[0]
+        direction = stdid_to_direction.get(stdid)
+        brt_no = stdid_to_brtno.get(stdid)
 
-            for stop in stop_data.get("resultList", []):
-                stop_id = str(stop.get("STOP_ID"))
+        for stop in data:
+            stop_id = str(stop.get("STOP_ID"))
+            stop_to_routes[stop_id].append({
+                "brt_no": brt_no,
+                "stdid": stdid,
+                "direction": int(direction) if direction else None
+            })
 
-                stop_index.setdefault(stop_id, []).append({
-                    "brt_no": bus_no,
-                    "stdid": stdid,
-                    "direction": direction
-                })
-
-    # 저장
-    os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
-    with open(SAVE_PATH, "w", encoding="utf-8") as f:
-        json.dump(stop_index, f, ensure_ascii=False, indent=2)
-
-    print(f"저장 완료: {SAVE_PATH}")
+    for stop_id, routes in stop_to_routes.items():
+        save_path = os.path.join(SAVE_DIR, f"{stop_id}.json")
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(routes, f, ensure_ascii=False, indent=2)
+        print(f"{stop_id} 저장 완료")
 
 if __name__ == "__main__":
-    build_index()
+    build_stop_to_routes()

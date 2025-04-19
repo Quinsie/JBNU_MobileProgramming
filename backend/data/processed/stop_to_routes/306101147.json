@@ -1,0 +1,32 @@
+[
+  {
+    "brt_no": "165",
+    "stdid": "305001140",
+    "direction": 2
+  },
+  {
+    "brt_no": "165",
+    "stdid": "305001520",
+    "direction": 2
+  },
+  {
+    "brt_no": "82",
+    "stdid": "305001823",
+    "direction": 1
+  },
+  {
+    "brt_no": "59",
+    "stdid": "305001825",
+    "direction": 1
+  },
+  {
+    "brt_no": "94",
+    "stdid": "305001827",
+    "direction": 1
+  },
+  {
+    "brt_no": "97",
+    "stdid": "305001832",
+    "direction": 2
+  }
+]

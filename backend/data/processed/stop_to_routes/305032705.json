@@ -1,0 +1,37 @@
+[
+  {
+    "brt_no": "104",
+    "stdid": "305001095",
+    "direction": 2
+  },
+  {
+    "brt_no": "1994",
+    "stdid": "305001432",
+    "direction": 2
+  },
+  {
+    "brt_no": "5001",
+    "stdid": "305001574",
+    "direction": 1
+  },
+  {
+    "brt_no": "5001",
+    "stdid": "305001588",
+    "direction": 1
+  },
+  {
+    "brt_no": "999",
+    "stdid": "305001659",
+    "direction": 1
+  },
+  {
+    "brt_no": "2001",
+    "stdid": "305001761",
+    "direction": 2
+  },
+  {
+    "brt_no": "2002",
+    "stdid": "305001763",
+    "direction": 2
+  }
+]

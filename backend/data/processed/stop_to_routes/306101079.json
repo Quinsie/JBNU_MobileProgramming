@@ -1,0 +1,92 @@
+[
+  {
+    "brt_no": "508",
+    "stdid": "305001189",
+    "direction": 1
+  },
+  {
+    "brt_no": "508",
+    "stdid": "305001190",
+    "direction": 2
+  },
+  {
+    "brt_no": "536",
+    "stdid": "305001201",
+    "direction": 2
+  },
+  {
+    "brt_no": "536",
+    "stdid": "305001202",
+    "direction": 1
+  },
+  {
+    "brt_no": "542",
+    "stdid": "305001205",
+    "direction": 1
+  },
+  {
+    "brt_no": "542",
+    "stdid": "305001206",
+    "direction": 2
+  },
+  {
+    "brt_no": "545",
+    "stdid": "305001209",
+    "direction": 1
+  },
+  {
+    "brt_no": "545",
+    "stdid": "305001210",
+    "direction": 2
+  },
+  {
+    "brt_no": "546",
+    "stdid": "305001211",
+    "direction": 1
+  },
+  {
+    "brt_no": "546",
+    "stdid": "305001212",
+    "direction": 2
+  },
+  {
+    "brt_no": "337",
+    "stdid": "305001635",
+    "direction": 1
+  },
+  {
+    "brt_no": "337",
+    "stdid": "305001636",
+    "direction": 2
+  },
+  {
+    "brt_no": "82",
+    "stdid": "305001823",
+    "direction": 1
+  },
+  {
+    "brt_no": "82",
+    "stdid": "305001824",
+    "direction": 2
+  },
+  {
+    "brt_no": "59",
+    "stdid": "305001825",
+    "direction": 1
+  },
+  {
+    "brt_no": "59",
+    "stdid": "305001826",
+    "direction": 2
+  },
+  {
+    "brt_no": "94",
+    "stdid": "305001827",
+    "direction": 1
+  },
+  {
+    "brt_no": "94",
+    "stdid": "305001829",
+    "direction": 2
+  }
+]
