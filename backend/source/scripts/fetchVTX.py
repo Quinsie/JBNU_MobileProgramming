@@ -7,10 +7,10 @@ import requests
 
 URL = "http://www.jeonjuits.go.kr/bis/selectBisRouteVtxList.do" # 노선 궤적 추출 API
 SUBLIST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "subList"))
-SAVE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "vtx"))
+PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "vtx"))
 
 def fetch_vtx():
-    os.makedirs(SAVE_DIR, exist_ok=True)
+    os.makedirs(PATH, exist_ok=True)
 
     for filename in os.listdir(SUBLIST_DIR):
         if not filename.endswith(".json"): # Exception
@@ -32,7 +32,7 @@ def fetch_vtx():
                 res.raise_for_status()
                 result = res.json()
 
-                save_path = os.path.join(SAVE_DIR, f"{stdid}.json")
+                save_path = os.path.join(PATH, f"{stdid}.json")
                 with open(save_path, "w", encoding="utf-8") as out:
                     json.dump(result, out, ensure_ascii=False, indent=2)
 
