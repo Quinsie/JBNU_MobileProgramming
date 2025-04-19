@@ -1,0 +1,2419 @@
+{
+  "resultList": [
+    {
+      "LNG": 127.0351907,
+      "LINK_ID": 3050498300,
+      "LAT": 35.8579535,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0350198,
+      "LINK_ID": 3050498300,
+      "LAT": 35.8578221,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0347777,
+      "LINK_ID": 3050498300,
+      "LAT": 35.8575506,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0346804,
+      "LINK_ID": 3050498300,
+      "LAT": 35.8571445,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0347461,
+      "LINK_ID": 3050498300,
+      "LAT": 35.8563198,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0347025,
+      "LINK_ID": 3050498600,
+      "LAT": 35.856207,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0346498,
+      "LINK_ID": 3050498600,
+      "LAT": 35.8557469,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0347529,
+      "LINK_ID": 3050498600,
+      "LAT": 35.8551703,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0348775,
+      "LINK_ID": 3050498600,
+      "LAT": 35.8546839,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0349382,
+      "LINK_ID": 3050498600,
+      "LAT": 35.8537826,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0350308,
+      "LINK_ID": 3050498600,
+      "LAT": 35.8530887,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0345784,
+      "LINK_ID": 3050498600,
+      "LAT": 35.850914,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034614,
+      "LINK_ID": 3120450900,
+      "LAT": 35.850872,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034599,
+      "LINK_ID": 3120450900,
+      "LAT": 35.850845,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.03453,
+      "LINK_ID": 3120450900,
+      "LAT": 35.850742,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034469,
+      "LINK_ID": 3120450900,
+      "LAT": 35.85062,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034423,
+      "LINK_ID": 3120450900,
+      "LAT": 35.850521,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.0344,
+      "LINK_ID": 3120450900,
+      "LAT": 35.850441,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034408,
+      "LINK_ID": 3120450900,
+      "LAT": 35.850307,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034385,
+      "LINK_ID": 3120450900,
+      "LAT": 35.8498,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.03437,
+      "LINK_ID": 3120450900,
+      "LAT": 35.849628,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034324,
+      "LINK_ID": 3120450900,
+      "LAT": 35.849399,
+      "MATCHED_ID": 5058020000,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034256,
+      "LINK_ID": 3120450900,
+      "LAT": 35.848995,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034187,
+      "LINK_ID": 3120450900,
+      "LAT": 35.848732,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034149,
+      "LINK_ID": 3120450900,
+      "LAT": 35.848609,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.034065,
+      "LINK_ID": 3120450900,
+      "LAT": 35.848438,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.033767,
+      "LINK_ID": 3120450900,
+      "LAT": 35.847885,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.033523,
+      "LINK_ID": 3120450900,
+      "LAT": 35.847419,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.033332,
+      "LINK_ID": 3120450900,
+      "LAT": 35.847091,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.033248,
+      "LINK_ID": 3120450900,
+      "LAT": 35.846931,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.033042,
+      "LINK_ID": 3120450900,
+      "LAT": 35.846626,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.032661,
+      "LINK_ID": 3120450900,
+      "LAT": 35.846172,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.032173,
+      "LINK_ID": 3120450900,
+      "LAT": 35.845611,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.032066,
+      "LINK_ID": 3120450900,
+      "LAT": 35.845462,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.031974,
+      "LINK_ID": 3120450900,
+      "LAT": 35.845329,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.03186,
+      "LINK_ID": 3120450900,
+      "LAT": 35.845123,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.031723,
+      "LINK_ID": 3120450900,
+      "LAT": 35.844875,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.031662,
+      "LINK_ID": 3120450900,
+      "LAT": 35.844726,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.031578,
+      "LINK_ID": 3120450900,
+      "LAT": 35.844581,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.031509,
+      "LINK_ID": 3120450900,
+      "LAT": 35.844482,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.031219,
+      "LINK_ID": 3120450900,
+      "LAT": 35.844154,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.03083,
+      "LINK_ID": 3120450900,
+      "LAT": 35.843765,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.030807,
+      "LINK_ID": 3120450900,
+      "LAT": 35.843742,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.030807,
+      "LINK_ID": 3120450900,
+      "LAT": 35.843742,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.030791,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8437502,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 2
+    },
+    {
+      "LNG": 127.029307,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8422545,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.029036,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8420811,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.027187,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8416083,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.026756,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8414868,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.026083,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8411489,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.025815,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8409169,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.025355,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8402546,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023445,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8377653,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023229,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8372899,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023215,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8369857,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023328,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8363255,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023497,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8358118,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023749,
+      "LINK_ID": 3160475200,
+      "LAT": 35.8352462,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0237963,
+      "LINK_ID": 3160475190,
+      "LAT": 35.8351712,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0239028,
+      "LINK_ID": 3160475190,
+      "LAT": 35.8349417,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023887,
+      "LINK_ID": 3160475193,
+      "LAT": 35.834933,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023748,
+      "LINK_ID": 3160475193,
+      "LAT": 35.8348744,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.021643,
+      "LINK_ID": 3160475193,
+      "LAT": 35.8365196,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.021065,
+      "LINK_ID": 3160475193,
+      "LAT": 35.8370695,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.021102,
+      "LINK_ID": 3120450600,
+      "LAT": 35.837066,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020988,
+      "LINK_ID": 3120450600,
+      "LAT": 35.837173,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020813,
+      "LINK_ID": 3120450600,
+      "LAT": 35.83736,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020568,
+      "LINK_ID": 3120450600,
+      "LAT": 35.837619,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020492,
+      "LINK_ID": 3120450600,
+      "LAT": 35.837692,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020416,
+      "LINK_ID": 3120450600,
+      "LAT": 35.837749,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020309,
+      "LINK_ID": 3120450600,
+      "LAT": 35.837837,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020126,
+      "LINK_ID": 3120450600,
+      "LAT": 35.837974,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019775,
+      "LINK_ID": 3120450600,
+      "LAT": 35.838195,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019699,
+      "LINK_ID": 3120450600,
+      "LAT": 35.838264,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019561,
+      "LINK_ID": 3120450600,
+      "LAT": 35.838375,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01934,
+      "LINK_ID": 3120450600,
+      "LAT": 35.838535,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019165,
+      "LINK_ID": 3120450600,
+      "LAT": 35.838672,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019119,
+      "LINK_ID": 3120450600,
+      "LAT": 35.838726,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019058,
+      "LINK_ID": 3120450600,
+      "LAT": 35.83881,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019035,
+      "LINK_ID": 3120450600,
+      "LAT": 35.838867,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018913,
+      "LINK_ID": 3120450600,
+      "LAT": 35.839263,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018821,
+      "LINK_ID": 3120450600,
+      "LAT": 35.839618,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018791,
+      "LINK_ID": 3120450600,
+      "LAT": 35.839897,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018775,
+      "LINK_ID": 3120450600,
+      "LAT": 35.839984,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01876,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840065,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018722,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840171,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018699,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84024,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018653,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840343,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018615,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840416,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018539,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840519,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01844,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840625,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018196,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840824,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018127,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840854,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017974,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840919,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017837,
+      "LINK_ID": 3120450600,
+      "LAT": 35.840988,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017601,
+      "LINK_ID": 3120450600,
+      "LAT": 35.841178,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017486,
+      "LINK_ID": 3120450600,
+      "LAT": 35.841297,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017433,
+      "LINK_ID": 3120450600,
+      "LAT": 35.841369,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017372,
+      "LINK_ID": 3120450600,
+      "LAT": 35.841484,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017265,
+      "LINK_ID": 3120450600,
+      "LAT": 35.841732,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017219,
+      "LINK_ID": 3120450600,
+      "LAT": 35.841865,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017211,
+      "LINK_ID": 3120450600,
+      "LAT": 35.841907,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017173,
+      "LINK_ID": 3120450600,
+      "LAT": 35.842338,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017158,
+      "LINK_ID": 3120450600,
+      "LAT": 35.842388,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017089,
+      "LINK_ID": 3120450600,
+      "LAT": 35.842617,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01699,
+      "LINK_ID": 3120450600,
+      "LAT": 35.842891,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016952,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843097,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016937,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843227,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016937,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843284,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016952,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843517,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016944,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843593,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016899,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843708,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016838,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843822,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016777,
+      "LINK_ID": 3120450600,
+      "LAT": 35.843898,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016662,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84402,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016456,
+      "LINK_ID": 3120450600,
+      "LAT": 35.844211,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016319,
+      "LINK_ID": 3120450600,
+      "LAT": 35.844348,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016136,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84457,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016059,
+      "LINK_ID": 3120450600,
+      "LAT": 35.844703,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015983,
+      "LINK_ID": 3120450600,
+      "LAT": 35.844833,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015922,
+      "LINK_ID": 3120450600,
+      "LAT": 35.844978,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015892,
+      "LINK_ID": 3120450600,
+      "LAT": 35.845043,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015876,
+      "LINK_ID": 3120450600,
+      "LAT": 35.845104,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015869,
+      "LINK_ID": 3120450600,
+      "LAT": 35.845165,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015869,
+      "LINK_ID": 3120450600,
+      "LAT": 35.845291,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015884,
+      "LINK_ID": 3120450600,
+      "LAT": 35.845439,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015922,
+      "LINK_ID": 3120450600,
+      "LAT": 35.845657,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016037,
+      "LINK_ID": 3120450600,
+      "LAT": 35.846019,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016143,
+      "LINK_ID": 3120450600,
+      "LAT": 35.846221,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016235,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84645,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016258,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84655,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016273,
+      "LINK_ID": 3120450600,
+      "LAT": 35.846668,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016288,
+      "LINK_ID": 3120450600,
+      "LAT": 35.846813,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016273,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84695,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016265,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847026,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016212,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847175,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016166,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847297,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016059,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847484,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015998,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847618,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015869,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847793,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015808,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847877,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015716,
+      "LINK_ID": 3120450600,
+      "LAT": 35.847969,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015518,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84814,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015457,
+      "LINK_ID": 3120450600,
+      "LAT": 35.848197,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015342,
+      "LINK_ID": 3120450600,
+      "LAT": 35.848335,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015304,
+      "LINK_ID": 3120450600,
+      "LAT": 35.8484,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015243,
+      "LINK_ID": 3120450600,
+      "LAT": 35.848575,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01519,
+      "LINK_ID": 3120450600,
+      "LAT": 35.848815,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015182,
+      "LINK_ID": 3120450600,
+      "LAT": 35.848899,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015159,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84917,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015144,
+      "LINK_ID": 3120450600,
+      "LAT": 35.849227,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015068,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84938,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015037,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84943,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0149,
+      "LINK_ID": 3120450600,
+      "LAT": 35.849582,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014862,
+      "LINK_ID": 3120450600,
+      "LAT": 35.849647,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01477,
+      "LINK_ID": 3120450600,
+      "LAT": 35.84983,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014732,
+      "LINK_ID": 3120450600,
+      "LAT": 35.849891,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014701,
+      "LINK_ID": 3120450600,
+      "LAT": 35.849926,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014297,
+      "LINK_ID": 3120450600,
+      "LAT": 35.850246,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014198,
+      "LINK_ID": 3120450600,
+      "LAT": 35.850338,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014099,
+      "LINK_ID": 3120450600,
+      "LAT": 35.850452,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014053,
+      "LINK_ID": 3120450600,
+      "LAT": 35.850505,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013938,
+      "LINK_ID": 3120450600,
+      "LAT": 35.850666,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013748,
+      "LINK_ID": 3120450600,
+      "LAT": 35.850906,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013626,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851039,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01358,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851074,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013427,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851184,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013298,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851276,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013137,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851368,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013023,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851421,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01287,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851474,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.012756,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851532,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.012458,
+      "LINK_ID": 3120450600,
+      "LAT": 35.851604,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01242,
+      "LINK_ID": 3120450700,
+      "LAT": 35.851501,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.012702,
+      "LINK_ID": 3120450700,
+      "LAT": 35.851432,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.012809,
+      "LINK_ID": 3120450700,
+      "LAT": 35.851379,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.012962,
+      "LINK_ID": 3120450700,
+      "LAT": 35.851326,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013069,
+      "LINK_ID": 3120450700,
+      "LAT": 35.851276,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013214,
+      "LINK_ID": 3120450700,
+      "LAT": 35.851192,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013343,
+      "LINK_ID": 3120450700,
+      "LAT": 35.851104,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013488,
+      "LINK_ID": 3120450700,
+      "LAT": 35.850997,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013519,
+      "LINK_ID": 3120450700,
+      "LAT": 35.850967,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013641,
+      "LINK_ID": 3120450700,
+      "LAT": 35.850845,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013824,
+      "LINK_ID": 3120450700,
+      "LAT": 35.850608,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013938,
+      "LINK_ID": 3120450700,
+      "LAT": 35.850448,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.013984,
+      "LINK_ID": 3120450700,
+      "LAT": 35.850391,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014099,
+      "LINK_ID": 3120450700,
+      "LAT": 35.850269,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014198,
+      "LINK_ID": 3120450700,
+      "LAT": 35.85017,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014595,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849857,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014617,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849838,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014648,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849784,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01474,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849601,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014793,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849525,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014923,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849369,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.014946,
+      "LINK_ID": 3120450700,
+      "LAT": 35.84933,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015014,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849197,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015029,
+      "LINK_ID": 3120450700,
+      "LAT": 35.849155,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015052,
+      "LINK_ID": 3120450700,
+      "LAT": 35.848892,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01506,
+      "LINK_ID": 3120450700,
+      "LAT": 35.8488,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015113,
+      "LINK_ID": 3120450700,
+      "LAT": 35.848552,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015182,
+      "LINK_ID": 3120450700,
+      "LAT": 35.848365,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01522,
+      "LINK_ID": 3120450700,
+      "LAT": 35.848285,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01535,
+      "LINK_ID": 3120450700,
+      "LAT": 35.848133,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015419,
+      "LINK_ID": 3120450700,
+      "LAT": 35.848068,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015617,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847896,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015701,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847812,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015762,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847736,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015876,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847568,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015937,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847442,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016044,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847259,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01609,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847145,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016136,
+      "LINK_ID": 3120450700,
+      "LAT": 35.847003,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016143,
+      "LINK_ID": 3120450700,
+      "LAT": 35.846939,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016151,
+      "LINK_ID": 3120450700,
+      "LAT": 35.846813,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016143,
+      "LINK_ID": 3120450700,
+      "LAT": 35.846675,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016128,
+      "LINK_ID": 3120450700,
+      "LAT": 35.846569,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016105,
+      "LINK_ID": 3120450700,
+      "LAT": 35.846477,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016021,
+      "LINK_ID": 3120450700,
+      "LAT": 35.846256,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015914,
+      "LINK_ID": 3120450700,
+      "LAT": 35.846054,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015792,
+      "LINK_ID": 3120450700,
+      "LAT": 35.84568,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015754,
+      "LINK_ID": 3120450700,
+      "LAT": 35.845451,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015739,
+      "LINK_ID": 3120450700,
+      "LAT": 35.845298,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015739,
+      "LINK_ID": 3120450700,
+      "LAT": 35.845161,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015747,
+      "LINK_ID": 3120450700,
+      "LAT": 35.845089,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015762,
+      "LINK_ID": 3120450700,
+      "LAT": 35.845016,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015792,
+      "LINK_ID": 3120450700,
+      "LAT": 35.844944,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015861,
+      "LINK_ID": 3120450700,
+      "LAT": 35.844795,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.015937,
+      "LINK_ID": 3120450700,
+      "LAT": 35.844657,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016021,
+      "LINK_ID": 3120450700,
+      "LAT": 35.844516,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016212,
+      "LINK_ID": 3120450700,
+      "LAT": 35.844287,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016349,
+      "LINK_ID": 3120450700,
+      "LAT": 35.844142,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016563,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843952,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01667,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843837,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016716,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843772,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016777,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843669,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016815,
+      "LINK_ID": 3120450700,
+      "LAT": 35.84357,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016822,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843517,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016799,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843288,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016799,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843219,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016822,
+      "LINK_ID": 3120450700,
+      "LAT": 35.843082,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016861,
+      "LINK_ID": 3120450700,
+      "LAT": 35.842868,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.016967,
+      "LINK_ID": 3120450700,
+      "LAT": 35.842586,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017028,
+      "LINK_ID": 3120450700,
+      "LAT": 35.842365,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017036,
+      "LINK_ID": 3120450700,
+      "LAT": 35.842323,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017082,
+      "LINK_ID": 3120450700,
+      "LAT": 35.841896,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017089,
+      "LINK_ID": 3120450700,
+      "LAT": 35.841846,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017135,
+      "LINK_ID": 3120450700,
+      "LAT": 35.841701,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01725,
+      "LINK_ID": 3120450700,
+      "LAT": 35.841442,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017318,
+      "LINK_ID": 3120450700,
+      "LAT": 35.84132,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017379,
+      "LINK_ID": 3120450700,
+      "LAT": 35.841236,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017501,
+      "LINK_ID": 3120450700,
+      "LAT": 35.841106,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017761,
+      "LINK_ID": 3120450700,
+      "LAT": 35.8409,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.017913,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840824,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018066,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840759,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018112,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840736,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018341,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840553,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018432,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840461,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018493,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840366,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018531,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840305,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018569,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840206,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018592,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840141,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018631,
+      "LINK_ID": 3120450700,
+      "LAT": 35.840042,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018646,
+      "LINK_ID": 3120450700,
+      "LAT": 35.839965,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018661,
+      "LINK_ID": 3120450700,
+      "LAT": 35.839885,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018692,
+      "LINK_ID": 3120450700,
+      "LAT": 35.839603,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018783,
+      "LINK_ID": 3120450700,
+      "LAT": 35.839241,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018905,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838832,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.018943,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838764,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019004,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838668,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019065,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838604,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019249,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838455,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.01947,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838295,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019607,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838188,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019683,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838115,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.019805,
+      "LINK_ID": 3120450700,
+      "LAT": 35.838039,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020034,
+      "LINK_ID": 3120450700,
+      "LAT": 35.83789,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020217,
+      "LINK_ID": 3120450700,
+      "LAT": 35.837757,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020324,
+      "LINK_ID": 3120450700,
+      "LAT": 35.837673,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020393,
+      "LINK_ID": 3120450700,
+      "LAT": 35.837616,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020469,
+      "LINK_ID": 3120450700,
+      "LAT": 35.837551,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020706,
+      "LINK_ID": 3120450700,
+      "LAT": 35.837291,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020889,
+      "LINK_ID": 3120450700,
+      "LAT": 35.837104,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.020988,
+      "LINK_ID": 3120450700,
+      "LAT": 35.837009,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.021011,
+      "LINK_ID": 3120450700,
+      "LAT": 35.836986,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.021004,
+      "LINK_ID": 3160475194,
+      "LAT": 35.8370312,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.021616,
+      "LINK_ID": 3160475194,
+      "LAT": 35.8364723,
+      "MATCHED_ID": 5058026500,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023718,
+      "LINK_ID": 3160475194,
+      "LAT": 35.8348316,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023917,
+      "LINK_ID": 3160475194,
+      "LAT": 35.8348856,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023923,
+      "LINK_ID": 3160475188,
+      "LAT": 35.8349014,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.024376,
+      "LINK_ID": 3160475188,
+      "LAT": 35.8342299,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.024396,
+      "LINK_ID": 3160475166,
+      "LAT": 35.8341893,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0246535,
+      "LINK_ID": 3160475166,
+      "LAT": 35.8338348,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0247914,
+      "LINK_ID": 3160475166,
+      "LAT": 35.8333548,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0247884,
+      "LINK_ID": 3160475166,
+      "LAT": 35.8329355,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0246794,
+      "LINK_ID": 3160475166,
+      "LAT": 35.8322724,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.024605,
+      "LINK_ID": 3160475184,
+      "LAT": 35.8322696,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.024132,
+      "LINK_ID": 3160475184,
+      "LAT": 35.8322427,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.023559,
+      "LINK_ID": 3160475184,
+      "LAT": 35.8320017,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.022674,
+      "LINK_ID": 3160475184,
+      "LAT": 35.8320109,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.022112,
+      "LINK_ID": 3160475184,
+      "LAT": 35.831869,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.022024,
+      "LINK_ID": 3160475182,
+      "LAT": 35.831842,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.021241,
+      "LINK_ID": 3160475182,
+      "LAT": 35.8318196,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0195441,
+      "LINK_ID": 3160475182,
+      "LAT": 35.8319364,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0179176,
+      "LINK_ID": 3160475182,
+      "LAT": 35.832131,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0178327,
+      "LINK_ID": 3160475171,
+      "LAT": 35.8320765,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0178063,
+      "LINK_ID": 3160475171,
+      "LAT": 35.8318646,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0179126,
+      "LINK_ID": 3160475171,
+      "LAT": 35.8311275,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0183651,
+      "LINK_ID": 3160475171,
+      "LAT": 35.8300744,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0183675,
+      "LINK_ID": 3160475173,
+      "LAT": 35.8300501,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0183905,
+      "LINK_ID": 3160475173,
+      "LAT": 35.8299032,
+      "MATCHED_ID": 5058026600,
+      "MATCHED_SUB": 3
+    },
+    {
+      "LNG": 127.0178692,
+      "LINK_ID": 3160475173,
+      "LAT": 35.8287831,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0178507,
+      "LINK_ID": 3160475173,
+      "LAT": 35.8285513,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0180293,
+      "LINK_ID": 3160475173,
+      "LAT": 35.8283014,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0183042,
+      "LINK_ID": 3160475173,
+      "LAT": 35.8282556,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0201881,
+      "LINK_ID": 3160475173,
+      "LAT": 35.8283262,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.020332,
+      "LINK_ID": 3160475177,
+      "LAT": 35.8283313,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0210851,
+      "LINK_ID": 3160475177,
+      "LAT": 35.8282911,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0220446,
+      "LINK_ID": 3160475177,
+      "LAT": 35.827973,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0245023,
+      "LINK_ID": 3160475177,
+      "LAT": 35.8280053,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0245111,
+      "LINK_ID": 3160475160,
+      "LAT": 35.8280071,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.024557,
+      "LINK_ID": 3160475160,
+      "LAT": 35.8253232,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0245975,
+      "LINK_ID": 3120513900,
+      "LAT": 35.8252098,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0263368,
+      "LINK_ID": 3120513900,
+      "LAT": 35.8231519,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 0
+    },
+    {
+      "LNG": 127.0275389,
+      "LINK_ID": 3120513900,
+      "LAT": 35.8211281,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 0
+    },
+    {
+      "LNG": 127.027626,
+      "LINK_ID": 3120450500,
+      "LAT": 35.821216,
+      "MATCHED_ID": 5058019500,
+      "MATCHED_SUB": 0
+    },
+    {
+      "LNG": 127.027053,
+      "LINK_ID": 3120450500,
+      "LAT": 35.82106,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 0
+    },
+    {
+      "LNG": 127.026847,
+      "LINK_ID": 3120450500,
+      "LAT": 35.821003,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 0
+    },
+    {
+      "LNG": 127.025383,
+      "LINK_ID": 3120450500,
+      "LAT": 35.820751,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 0
+    },
+    {
+      "LNG": 127.024154,
+      "LINK_ID": 3120450500,
+      "LAT": 35.820499,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.023178,
+      "LINK_ID": 3120450500,
+      "LAT": 35.820335,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.022743,
+      "LINK_ID": 3120450500,
+      "LAT": 35.820285,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.022148,
+      "LINK_ID": 3120450500,
+      "LAT": 35.820175,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.02214,
+      "LINK_ID": 3120449500,
+      "LAT": 35.820175,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.021675,
+      "LINK_ID": 3120449500,
+      "LAT": 35.820083,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.021438,
+      "LINK_ID": 3120449500,
+      "LAT": 35.820053,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.021247,
+      "LINK_ID": 3120449500,
+      "LAT": 35.82006,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.02082,
+      "LINK_ID": 3120449500,
+      "LAT": 35.820095,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.020759,
+      "LINK_ID": 3120449500,
+      "LAT": 35.820102,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.020759,
+      "LINK_ID": 3120449500,
+      "LAT": 35.820102,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0206658,
+      "LINK_ID": 3120514400,
+      "LAT": 35.8199567,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0205276,
+      "LINK_ID": 3120514400,
+      "LAT": 35.8189914,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0201245,
+      "LINK_ID": 3120514400,
+      "LAT": 35.8179169,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0202905,
+      "LINK_ID": 3120514500,
+      "LAT": 35.8179356,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0205943,
+      "LINK_ID": 3120514500,
+      "LAT": 35.8189466,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    },
+    {
+      "LNG": 127.0207874,
+      "LINK_ID": 3120514500,
+      "LAT": 35.8199752,
+      "MATCHED_ID": 5058019600,
+      "MATCHED_SUB": 1
+    }
+  ]
+}
