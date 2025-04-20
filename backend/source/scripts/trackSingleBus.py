@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "utils"))
 from haversine import haversine_distance
+from utils.logger import log  # log 함수 추가
 
 STOP_DIR = Path("backend/data/raw/staticInfo/stops")
 VTX_MAP_DIR = Path("backend/data/processed/vtx_mapped")
@@ -47,7 +48,7 @@ def get_matched_vertex(lat, lng, vtx_list):
     return closest if min_dist <= 0.1 else None
 
 def track_bus(stdid, start_time_str):
-    print(f"{stdid} 버스 {start_time_str} 출발분 추적 시작", flush=True)
+    log("trackSingleBus", f"{stdid} 버스 {start_time_str} 출발분 추적 시작")
 
     stop_list = load_stop_list(stdid)
     vtx_list = load_vtx_map(stdid)
@@ -83,7 +84,7 @@ def track_bus(stdid, start_time_str):
                 data = res.json()
                 bus_list = data.get("busPosList", [])
             except Exception as e:
-                print(f"[에러] API 실패: {e}", flush=True)
+                log("trackSingleBus", f"[에러] API 실패: {e}")
                 time.sleep(5)
                 continue
 
@@ -97,7 +98,7 @@ def track_bus(stdid, start_time_str):
                     if bus["CURRENT_NODE_ORD"] in [1, 2]:
                         tracked_plate = bus["PLATE_NO"].strip()
                         target_bus = bus
-                        print(f"➡️ 추적 시작: {tracked_plate} (ORD {bus['CURRENT_NODE_ORD']})", flush=True)
+                        log("trackSingleBus", f"추적 시작: {tracked_plate} (ORD {bus['CURRENT_NODE_ORD']})")
                         if bus["CURRENT_NODE_ORD"] == 2:
                             reached_ords.add(1)
                             stop_reached_logs.append({
@@ -105,16 +106,16 @@ def track_bus(stdid, start_time_str):
                                 "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 "note": "ORD 2에서 시작했기 때문에 ORD 1 강제 삽입"
                             })
-                            print(f"🟡 ORD 1 강제 삽입", flush=True)
+                            log("trackSingleBus", "ORD 1 강제 삽입")
                         break
 
             if not target_bus:
-                print("[대기] 대상 버스 없음", flush=True)
+                log("trackSingleBus", "[대기] 대상 버스 없음")
                 if reached_end_minus1 and end_check_start and time.time() - end_check_start > 60:
-                    print(f"종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 사라짐)", flush=True)
+                    log("trackSingleBus", f"종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 사라짐)")
                     break
                 if time.time() - last_movement > 15 * 60:
-                    print(f"타임아웃: 15분 이상 정체", flush=True)
+                    log("trackSingleBus", "타임아웃: 15분 이상 정체")
                     break
                 time.sleep(5)
                 continue
@@ -132,7 +133,7 @@ def track_bus(stdid, start_time_str):
                     "time": now_time
                 })
                 last_movement = time.time()
-                print(f"ORD {ord} 도착: {now_time}", flush=True)
+                log("trackSingleBus", f"ORD {ord} 도착: {now_time}")
 
                 if ord == end_ord_minus1:
                     reached_end_minus1 = True
@@ -146,15 +147,14 @@ def track_bus(stdid, start_time_str):
             })
 
             if ord == end_ord:
-                print(f"종점 도달", flush=True)
+                log("trackSingleBus", "종점 도달")
                 break
 
             time.sleep(10)
 
     except KeyboardInterrupt:
-        print("수동 중단됨. 로그 저장 중...", flush=True)
+        log("trackSingleBus", "수동 중단됨. 로그 저장 중...")
 
-    # 종료 또는 중단 시 저장
     with open(bus_file_path, "w", encoding="utf-8") as f:
         json.dump({
             "plate_no": tracked_plate,
@@ -162,7 +162,7 @@ def track_bus(stdid, start_time_str):
             "location_logs": location_logs,
             "stop_reached_logs": stop_reached_logs
         }, f, ensure_ascii=False, indent=2)
-    print(f"저장 완료: {bus_file_path}", flush=True)
+    log("trackSingleBus", f"저장 완료: {bus_file_path}")
 
 if __name__ == "__main__":
     stdid = 305001892

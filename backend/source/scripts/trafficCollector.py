@@ -1,11 +1,15 @@
 # backend/source/scripts/trafficCollector.py
-# 매 n초마다 API 요청으로 모든 도로 VERTEX에 대한 교통혼잡도를 가져오는 스크립트트
+# 매 n초마다 API 요청으로 모든 도로 VERTEX에 대한 교통혼잡도를 가져오는 스크립트
 
 import os
+import sys
 import json
 import time
 import requests
 from datetime import datetime
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from utils.logger import log  # log 함수 추가
 
 # 요청 설정
 URL = "http://www.jeonjuits.go.kr/atms/selectTrafVrtxList.do"
@@ -26,10 +30,10 @@ HEADERS = {
 
 def fetch_traffic_data():
     response = requests.post(URL, data=PAYLOAD, headers=HEADERS)
-    print(response.status_code, flush=True)
+    log("trafficCollector", f"응답 코드: {response.status_code}")  # 로그 추가
 
     if response.status_code != 200:
-        print("요청 실패", flush=True)
+        log("trafficCollector", "요청 실패")
         return []
 
     data = response.json().get("resultList", [])
@@ -49,7 +53,7 @@ def process_and_save(data):
 
         grouped[road_id].append({
             "id": road_id,
-            "lat": lat,   # 정렬용으로만 넣음
+            "lat": lat,
             "lng": lng,
             "grade": grade
         })
@@ -57,7 +61,7 @@ def process_and_save(data):
     # SUB 필드 추가
     result = []
     for road_id, points in grouped.items():
-        points.sort(key=lambda x: (x["lat"], x["lng"]))  # 좌표 정렬
+        points.sort(key=lambda x: (x["lat"], x["lng"]))
         for sub_idx, point in enumerate(points):
             result.append({
                 "id": point["id"],
@@ -74,12 +78,14 @@ def process_and_save(data):
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
-    print(f"저장 완료: {save_path}", flush=True)
+    log("trafficCollector", f"저장 완료: {save_path}")  # 로그 추가
 
 def main():
     data = fetch_traffic_data()
     if data:
         process_and_save(data)
+    else:
+        log("trafficCollector", "수신된 데이터 없음")
 
 if __name__ == "__main__":
     main()

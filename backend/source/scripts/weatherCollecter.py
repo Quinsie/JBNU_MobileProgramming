@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "utils"))
 from convertToGrid import convert_to_grid  # 혹시 몰라서 유지
 from haversine import haversine_distance  # 거리 계산용
+from utils.logger import log  # log 함수 추가
 
 # API 설정
 API_KEY = "ttHSb/Plt1ygMgUuYxHbMnRcDtDSvxIgpmoitKnjJG9ODIQ8/WjzBhsptYfc4/WF961ymr82GX4L/U0L28HuEA=="
@@ -59,18 +60,18 @@ def collect_weather(nx, ny, retry=2):
                     else:
                         result[cat] = None
 
-                print(f"✅ 대체 시각 사용: {base_time} (nx={nx}, ny={ny})", flush=True)
+                log("weatherCollector", f"대체 시각 사용: {base_time} (nx={nx}, ny={ny})")
                 return result
 
             except json.JSONDecodeError as e:
-                print(f"JSON 파싱 실패 (nx={nx}, ny={ny}) [시도 {try_count}]: {e}", flush=True)
+                log("weatherCollector", f"JSON 파싱 실패 (nx={nx}, ny={ny}) [시도 {try_count}]: {e}")
         else:
-            print(f"❌ 응답 없음 or 오류 (nx={nx}, ny={ny}) [시도 {try_count}]: {base_time}", flush=True)
+            log("weatherCollector", f"응답 없음 or 오류 (nx={nx}, ny={ny}) [시도 {try_count}]: {base_time}")
 
         base_dt -= timedelta(minutes=30)
         time.sleep(0.5)
 
-    print(f"최종 수집 실패: (nx={nx}, ny={ny})", flush=True)
+    log("weatherCollector", f"최종 수집 실패: (nx={nx}, ny={ny})")
     return None
 
 def get_nearest_available(nx_ny, current_data, coords):
@@ -94,7 +95,7 @@ def get_nearest_available(nx_ny, current_data, coords):
             nearest_value = val
 
     if nearest_value:
-        print(f"📍 거리 기반 대체 사용: {nx_ny} ← {min_dist:.2f}km 거리", flush=True)
+        log("weatherCollector", f"거리 기반 대체 사용: {nx_ny} ← {min_dist:.2f}km 거리")
     return nearest_value
 
 def main():
@@ -111,7 +112,7 @@ def main():
 
     for nx_ny in coords:
         nx, ny = map(int, nx_ny.split("_"))
-        print(f"수집 중: {nx_ny} ({coords[nx_ny]['lat']}, {coords[nx_ny]['lng']})", flush=True)
+        log("weatherCollector", f"수집 중: {nx_ny} ({coords[nx_ny]['lat']}, {coords[nx_ny]['lng']})")
 
         weather = collect_weather(nx, ny)
         if weather:
@@ -121,14 +122,14 @@ def main():
             if fallback:
                 collected[nx_ny] = fallback
             else:
-                print(f"❌ 최종 대체 실패: {nx_ny}", flush=True)
+                log("weatherCollector", f"최종 대체 실패: {nx_ny}")
 
-        time.sleep(1.0)  # 과도한 요청 방지
+        time.sleep(1.0)
 
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(collected, f, ensure_ascii=False, indent=2)
 
-    print(f"저장 완료: {save_path}", flush=True)
+    log("weatherCollector", f"저장 완료: {save_path}")
 
 if __name__ == "__main__":
     main()
