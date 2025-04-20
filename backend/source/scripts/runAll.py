@@ -51,6 +51,8 @@ async def run_scheduler():
         await asyncio.sleep(60)
 
 async def main():
+    now = datetime.now()
+    print("[SYSTEM]", now, "실행 시작됨")
     await asyncio.gather(
         run_weather(),
         run_traffic(),
