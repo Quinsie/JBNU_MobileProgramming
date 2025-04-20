@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import subprocess
 from datetime import datetime
 from importlib import import_module
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -36,10 +37,14 @@ def run_tracking_job():
     stdids = get_current_departures()
     now = datetime.now().strftime("%H:%M")
 
-    for stdid in stdids:
-        log("scheduler", f"{now} → {stdid} 추적 시작")  # log 사용
-        track_module = import_module("scripts.trackSingleBus")
-        track_module.track_bus(stdid, now)
+    for stdid in stdids: # 병렬프로세싱으로 동시에 추적
+        log("scheduler", f"{now} → {stdid} 추적 시작 (병렬 실행)")
+        subprocess.Popen([
+            "python3",
+            "backend/source/scripts/trackSingleBus.py",
+            str(stdid),
+            now  # ex: "05:30"
+        ])
 
 if __name__ == "__main__":
     scheduler = BlockingScheduler()

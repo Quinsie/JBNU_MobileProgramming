@@ -124,3 +124,4 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
 ### 2025-04-21
 #### 진행 상황
  - 드디어... 자동화 시작. runAll.py 제작 완료. 서버로 이식 예정.
+ - 이식은 성공, 스케쥴러도 이상 없이 동작. 실제로 데이터 수집에 이상이 없는지는 내일 아침 돼봐야 알 듯.
