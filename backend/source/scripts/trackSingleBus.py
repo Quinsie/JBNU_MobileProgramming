@@ -163,8 +163,3 @@ def track_bus(stdid, start_time_str):
             "stop_reached_logs": stop_reached_logs
         }, f, ensure_ascii=False, indent=2)
     log("trackSingleBus", f"저장 완료: {bus_file_path}")
-
-if __name__ == "__main__":
-    stdid = 305001892
-    start_time = "22:55"
-    track_bus(stdid, start_time)
