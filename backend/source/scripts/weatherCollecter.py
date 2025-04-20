@@ -5,11 +5,12 @@ import sys
 import json
 import time
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # 상대 경로 import 설정
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "utils"))
 from convertToGrid import convert_to_grid  # 혹시 몰라서 유지
+from haversine import haversine_distance  # 거리 계산용
 
 # API 설정
 API_KEY = "ttHSb/Plt1ygMgUuYxHbMnRcDtDSvxIgpmoitKnjJG9ODIQ8/WjzBhsptYfc4/WF961ymr82GX4L/U0L28HuEA=="
@@ -22,44 +23,79 @@ SAVE_DIR = os.path.join("backend", "data", "raw", "dynamicInfo", "weather")
 # 필요한 카테고리
 CATEGORIES = ["PTY", "RN1", "T1H"]
 
-def collect_weather(nx, ny):
+def collect_weather(nx, ny, retry=2):
     now = datetime.now()
-    base_date = now.strftime("%Y%m%d")
-    base_time = now.strftime("%H%M")
+    base_dt = now.replace(minute=0, second=0, microsecond=0)
+    try_count = 0
 
-    params = {
-        "serviceKey": API_KEY,
-        "pageNo": 1,
-        "numOfRows": 1000,
-        "dataType": "JSON",
-        "base_date": base_date,
-        "base_time": base_time,
-        "nx": nx,
-        "ny": ny
-    }
+    while try_count <= retry:
+        base_date = base_dt.strftime("%Y%m%d")
+        base_time = base_dt.strftime("%H%M")
 
-    response = requests.get(ENDPOINT, params=params)
-    if response.status_code == 200 and response.text.strip():
-        try:
-            data = response.json()
-            items = data.get("response", {}).get("body", {}).get("items", {}).get("item", [])
+        params = {
+            "serviceKey": API_KEY,
+            "pageNo": 1,
+            "numOfRows": 1000,
+            "dataType": "JSON",
+            "base_date": base_date,
+            "base_time": base_time,
+            "nx": nx,
+            "ny": ny
+        }
 
-            result = {}
-            for cat in CATEGORIES:
-                val = next((i["obsrValue"] for i in items if i["category"] == cat), None)
-                if val is not None:
-                    result[cat] = float(val) if "." in str(val) else int(val)
-                else:
-                    result[cat] = None
+        response = requests.get(ENDPOINT, params=params)
+        try_count += 1
 
-            return result
+        if response.status_code == 200 and response.text.strip():
+            try:
+                data = response.json()
+                items = data.get("response", {}).get("body", {}).get("items", {}).get("item", [])
 
-        except Exception as e:
-            print(f"JSON 파싱 실패 (nx={nx}, ny={ny}): {e}")
-            return None
-    else:
-        print(f"응답 오류 (nx={nx}, ny={ny}): {response.status_code}")
+                result = {}
+                for cat in CATEGORIES:
+                    val = next((i["obsrValue"] for i in items if i["category"] == cat), None)
+                    if val is not None:
+                        result[cat] = float(val) if "." in str(val) else int(val)
+                    else:
+                        result[cat] = None
+
+                print(f"✅ 대체 시각 사용: {base_time} (nx={nx}, ny={ny})")
+                return result
+
+            except json.JSONDecodeError as e:
+                print(f"JSON 파싱 실패 (nx={nx}, ny={ny}) [시도 {try_count}]: {e}")
+        else:
+            print(f"❌ 응답 없음 or 오류 (nx={nx}, ny={ny}) [시도 {try_count}]: {base_time}")
+
+        base_dt -= timedelta(minutes=30)
+        time.sleep(0.5)
+
+    print(f"최종 수집 실패: (nx={nx}, ny={ny})")
+    return None
+
+def get_nearest_available(nx_ny, current_data, coords):
+    if not current_data:
         return None
+
+    target_coord = coords[nx_ny]
+    target_pos = (target_coord["lat"], target_coord["lng"])
+
+    min_dist = float("inf")
+    nearest_value = None
+
+    for other_key, val in current_data.items():
+        if val is None or other_key == nx_ny:
+            continue
+        other_coord = coords[other_key]
+        other_pos = (other_coord["lat"], other_coord["lng"])
+        dist = haversine_distance(target_pos, other_pos)
+        if dist < min_dist:
+            min_dist = dist
+            nearest_value = val
+
+    if nearest_value:
+        print(f"📍 거리 기반 대체 사용: {nx_ny} ← {min_dist:.2f}km 거리")
+    return nearest_value
 
 def main():
     # 좌표 불러오기
@@ -81,7 +117,11 @@ def main():
         if weather:
             collected[nx_ny] = weather
         else:
-            print(f"수집 실패: {nx_ny}")
+            fallback = get_nearest_available(nx_ny, collected, coords)
+            if fallback:
+                collected[nx_ny] = fallback
+            else:
+                print(f"❌ 최종 대체 실패: {nx_ny}")
 
         time.sleep(1.0)  # 과도한 요청 방지
 

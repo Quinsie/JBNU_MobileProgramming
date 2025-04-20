@@ -1,0 +1,17 @@
+# gitignore
+
+# Python 관련 캐시 파일
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDE 설정 (VSCode, PyCharm 등)
+.vscode/
+.idea/
+*.swp
+
+
+# 기타 임시 파일
+*.tmp
+*.bak
+.DS_Store
