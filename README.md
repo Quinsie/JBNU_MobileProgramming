@@ -7,17 +7,52 @@
 ---
 ### 1. 📁 프로젝트 디렉터리 구조
 ```text
-BIS_APP                        # 루트 디렉터리
-├── android/                   # 안드로이드 앱 프론트엔드 (Android Studio 프로젝트)
-├── backend/                   # 백엔드 소스 코드 및 스크립트 모음
-│   ├── source/                # 백엔드 소스 코드 루트
-│   │   └── scripts/           # API 호출 및 데이터 수집용 스크립트
-│   └── data/                  # 데이터 저장소
-│       └── raw/               # 원본(raw) API 응답 데이터 저장
-│           ├── staticInfo/    # 정적 데이터 (노선, 정류장, 시간표 등)
-│           └── dynamicInfo/   # 실시간/가변 데이터 (위치 정보, 도착 예측 등)
-├── PROJECT_PLAN.md            # 프로젝트 계획서 (로드맵, 일정, 목표 등)
-└── README.md                  # 프로젝트 설명 문서 (요약, 구조 등)
+BIS_APP
+├── android/
+├── backend/
+│   ├── source/
+│   │   ├── scripts/
+│   │   │   ├── buildStopIndex.py
+│   │   │   ├── departureCacheGenerator.py
+│   │   │   ├── fetchDepartureTimetables.py
+│   │   │   ├── fetchRouteId.py
+│   │   │   ├── fetchStops.py
+│   │   │   ├── fetchSubList.py
+│   │   │   ├── fetchTrafficVtxList.py
+│   │   │   ├── fetchVTX.py
+│   │   │   ├── mapVtxToRoadId.py
+│   │   │   ├── runAll.py
+│   │   │   ├── scheduler.py
+│   │   │   ├── trackSingleBus.py
+│   │   │   ├── trafficCollector.py
+│   │   │   └── weatherCollecter.py
+│   │   └── utils/
+│   │       ├── convertToGrid.py
+│   │       ├── getDayType.py
+│   │       ├── haversine.py
+│   │       └── logger.py
+│   └── data/
+│       ├── raw/
+│       │   ├── staticInfo/
+│       │   │   ├── departure_timetables/
+│       │   │   ├── stops/
+│       │   │   ├── subList/
+│       │   │   ├── vtx/
+│       │   │   ├── routes.json
+│       │   │   └── traf_vtxlist.json
+│       │   └── dynamicInfo/
+│       │       ├── realtime_bus/
+│       │       ├── traffic/
+│       │       └── weather/
+│       └── processed/
+│           ├── departure_cache/
+│           ├── departure_timetables/
+│           ├── stop_to_routes/
+│           ├── vtx_mapped/
+│           ├── grouped_weather.json
+│           └── nx_ny_coords.json
+├── PROJECT_PLAN.md
+└── README.md
 ```
 ---
 ### 2. 항목별 설명
