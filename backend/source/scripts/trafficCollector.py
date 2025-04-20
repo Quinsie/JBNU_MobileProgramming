@@ -26,10 +26,10 @@ HEADERS = {
 
 def fetch_traffic_data():
     response = requests.post(URL, data=PAYLOAD, headers=HEADERS)
-    print(response.status_code)
+    print(response.status_code, flush=True)
 
     if response.status_code != 200:
-        print("요청 실패")
+        print("요청 실패", flush=True)
         return []
 
     data = response.json().get("resultList", [])
@@ -74,7 +74,7 @@ def process_and_save(data):
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
-    print(f"저장 완료: {save_path}")
+    print(f"저장 완료: {save_path}", flush=True)
 
 def main():
     data = fetch_traffic_data()

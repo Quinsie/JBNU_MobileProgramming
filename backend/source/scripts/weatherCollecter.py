@@ -59,18 +59,18 @@ def collect_weather(nx, ny, retry=2):
                     else:
                         result[cat] = None
 
-                print(f"✅ 대체 시각 사용: {base_time} (nx={nx}, ny={ny})")
+                print(f"✅ 대체 시각 사용: {base_time} (nx={nx}, ny={ny})", flush=True)
                 return result
 
             except json.JSONDecodeError as e:
-                print(f"JSON 파싱 실패 (nx={nx}, ny={ny}) [시도 {try_count}]: {e}")
+                print(f"JSON 파싱 실패 (nx={nx}, ny={ny}) [시도 {try_count}]: {e}", flush=True)
         else:
-            print(f"❌ 응답 없음 or 오류 (nx={nx}, ny={ny}) [시도 {try_count}]: {base_time}")
+            print(f"❌ 응답 없음 or 오류 (nx={nx}, ny={ny}) [시도 {try_count}]: {base_time}", flush=True)
 
         base_dt -= timedelta(minutes=30)
         time.sleep(0.5)
 
-    print(f"최종 수집 실패: (nx={nx}, ny={ny})")
+    print(f"최종 수집 실패: (nx={nx}, ny={ny})", flush=True)
     return None
 
 def get_nearest_available(nx_ny, current_data, coords):
@@ -94,7 +94,7 @@ def get_nearest_available(nx_ny, current_data, coords):
             nearest_value = val
 
     if nearest_value:
-        print(f"📍 거리 기반 대체 사용: {nx_ny} ← {min_dist:.2f}km 거리")
+        print(f"📍 거리 기반 대체 사용: {nx_ny} ← {min_dist:.2f}km 거리", flush=True)
     return nearest_value
 
 def main():
@@ -111,7 +111,7 @@ def main():
 
     for nx_ny in coords:
         nx, ny = map(int, nx_ny.split("_"))
-        print(f"수집 중: {nx_ny} ({coords[nx_ny]['lat']}, {coords[nx_ny]['lng']})")
+        print(f"수집 중: {nx_ny} ({coords[nx_ny]['lat']}, {coords[nx_ny]['lng']})", flush=True)
 
         weather = collect_weather(nx, ny)
         if weather:
@@ -121,14 +121,14 @@ def main():
             if fallback:
                 collected[nx_ny] = fallback
             else:
-                print(f"❌ 최종 대체 실패: {nx_ny}")
+                print(f"❌ 최종 대체 실패: {nx_ny}", flush=True)
 
         time.sleep(1.0)  # 과도한 요청 방지
 
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(collected, f, ensure_ascii=False, indent=2)
 
-    print(f"저장 완료: {save_path}")
+    print(f"저장 완료: {save_path}", flush=True)
 
 if __name__ == "__main__":
     main()

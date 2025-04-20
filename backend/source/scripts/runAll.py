@@ -18,41 +18,41 @@ async def run_weather():
     while True:
         if is_within_active_hours():
             try:
-                print("🌤 날씨 수집 시작")
+                print("🌤 날씨 수집 시작", flush=True)
                 os.system("python weatherCollector.py")
             except Exception:
                 traceback.print_exc()
         else:
-            print("⏳ 날씨 수집 대기 중 (비활성 시간)")
+            print("⏳ 날씨 수집 대기 중 (비활성 시간)", flush=True)
         await asyncio.sleep(1800)  # 30분 간격
 
 async def run_traffic():
     while True:
         if is_within_active_hours():
             try:
-                print("🚦 교통 수집 시작")
+                print("🚦 교통 수집 시작", flush=True)
                 os.system("python trafficCollector.py")
             except Exception:
                 traceback.print_exc()
         else:
-            print("⏳ 교통 수집 대기 중 (비활성 시간)")
+            print("⏳ 교통 수집 대기 중 (비활성 시간)", flush=True)
         await asyncio.sleep(10)
 
 async def run_scheduler():
     while True:
         if is_within_active_hours():
             try:
-                print("🚌 스케줄러 실행")
+                print("🚌 스케줄러 실행", flush=True)
                 os.system("python scheduler.py")
             except Exception:
                 traceback.print_exc()
         else:
-            print("⏳ 스케줄러 대기 중 (비활성 시간)")
+            print("⏳ 스케줄러 대기 중 (비활성 시간)", flush=True)
         await asyncio.sleep(60)
 
 async def main():
     now = datetime.now()
-    print("[SYSTEM]", now, "실행 시작됨")
+    print("[SYSTEM]", now, "실행 시작됨", flush=True)
     await asyncio.gather(
         run_weather(),
         run_traffic(),
