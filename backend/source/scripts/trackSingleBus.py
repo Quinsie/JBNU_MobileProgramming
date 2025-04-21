@@ -98,7 +98,7 @@ def track_bus(stdid, start_time_str):
                         target_bus = bus
                         break
                 else:
-                    if bus["CURRENT_NODE_ORD"] in [1, 2]:
+                    if bus["CURRENT_NODE_ORD"] in [1, 2, 3]:  # <-- [1, 2] → [1, 2, 3] 으로 변경
                         tracked_plate = bus["PLATE_NO"].strip()
                         target_bus = bus
                         log("trackSingleBus", f"{stdid} 추적 시작: {tracked_plate} (ORD {bus['CURRENT_NODE_ORD']})")
