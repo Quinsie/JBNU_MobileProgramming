@@ -5,7 +5,7 @@ import sys
 import json
 import psutil
 import subprocess
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from importlib import import_module
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -27,10 +27,11 @@ def load_departure_cache(schedule_type):
 
 def get_current_departures():
     now = datetime.now()
-    schedule_type = getDayType(now)
+    future_time = now + timedelta(minutes = 1)
+    schedule_type = getDayType(future_time)
     cache = load_departure_cache(schedule_type)
 
-    hhmm = now.strftime("%H:%M")
+    hhmm = future_time.strftime("%H:%M") # 1분 전부터 탐색 대기
     if hhmm in cache["cachetime"]:
         stdids = []
         for block in cache["data"]:
@@ -51,12 +52,13 @@ def run_tracking_job():
         return
 
     for stdid in stdids: # 병렬프로세싱으로 동시에 추적
-        log("scheduler", f"{now} → {stdid} 추적 시작 (병렬 실행)")
+        hhmm = (datetime.now() + timedelta(minutes=1)).strftime("%H:%M")
+        log("scheduler", f"{now} → {stdid} 추적 시작 (출발 예정: {hhmm})")
         subprocess.Popen([
             "python3",
             "source/scripts/trackSingleBus.py",
             str(stdid),
-            now  # ex: "05:30"
+            hhmm  # ex: "05:30"
         ], cwd = BASE_DIR)
 
 if __name__ == "__main__":

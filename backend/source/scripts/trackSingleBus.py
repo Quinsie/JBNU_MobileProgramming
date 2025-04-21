@@ -102,14 +102,16 @@ def track_bus(stdid, start_time_str):
                         tracked_plate = bus["PLATE_NO"].strip()
                         target_bus = bus
                         log("trackSingleBus", f"{stdid} 추적 시작: {tracked_plate} (ORD {bus['CURRENT_NODE_ORD']})")
-                        if bus["CURRENT_NODE_ORD"] == 2:
+
+                        # ORD 1 무조건 출발시간으로 삽입
+                        if 1 not in reached_ords:
                             reached_ords.add(1)
                             stop_reached_logs.append({
                                 "ord": 1,
-                                "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                                "note": "ORD 2에서 시작했기 때문에 ORD 1 강제 삽입"
+                                "time": f"{datetime.now().strftime('%Y-%m-%d')} {start_time_str}:00",
+                                "note": "ORD 1 출발시간 고정 삽입"
                             })
-                            log("trackSingleBus", f"{stdid} ORD 1 강제 삽입")
+                            log("trackSingleBus", f"{stdid}_{tracked_plate} ORD 1 출발시간({start_time_str})으로 삽입")
                         break
 
             if not target_bus:
@@ -142,11 +144,11 @@ def track_bus(stdid, start_time_str):
                     "time": now_time
                 })
                 last_movement = time.time()
-                log("trackSingleBus", f"{stdid} ORD {ord} 도착: {now_time}")
+                tracked_plate = bus["PLATE_NO"].strip()
+                log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord} 도착: {now_time}")
 
                 if ord == end_ord_minus1:
                     reached_end_minus1 = True
-                    end_check_start = time.time()
 
             location_logs.append({
                 "time": now_time,
