@@ -8,17 +8,17 @@ import requests
 from datetime import datetime, timedelta
 
 # 상대 경로 import 설정
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")); sys.path.append(BASE_DIR)
-from utils.haversine import haversine_distance  # 거리 계산용
-from utils.logger import log  # log 함수 추가
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
+from source.utils.haversine import haversine_distance  # 거리 계산용
+from source.utils.logger import log  # log 함수 추가
 
 # API 설정
 API_KEY = "ttHSb/Plt1ygMgUuYxHbMnRcDtDSvxIgpmoitKnjJG9ODIQ8/WjzBhsptYfc4/WF961ymr82GX4L/U0L28HuEA=="
 ENDPOINT = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"
 
 # 경로
-COORDS_PATH = os.path.join("backend", "data", "processed", "nx_ny_coords.json")
-SAVE_DIR = os.path.join("backend", "data", "raw", "dynamicInfo", "weather")
+COORDS_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_coords.json")
+SAVE_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
 
 # 필요한 카테고리
 CATEGORIES = ["PTY", "RN1", "T1H"]

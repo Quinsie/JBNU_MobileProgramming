@@ -8,8 +8,8 @@ import time
 import requests
 from datetime import datetime
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")); sys.path.append(BASE_DIR)
-from utils.logger import log  # log 함수 추가
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
+from source.utils.logger import log  # log 함수 추가
 
 # 요청 설정
 URL = "http://www.jeonjuits.go.kr/atms/selectTrafVrtxList.do"
@@ -71,7 +71,7 @@ def process_and_save(data):
 
     # 저장
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_dir = os.path.join("backend", "data", "raw", "dynamicInfo", "traffic")
+    save_dir = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic")
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, f"{timestamp}.json")
 
