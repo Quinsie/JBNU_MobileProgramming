@@ -8,7 +8,7 @@ import subprocess
 from datetime import datetime, time
 
 # 상대 경로 설정
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")); sys.path.append(BASE_DIR)
 from utils.logger import log  # logger 모듈에서 log 함수 가져옴
 
 def is_within_active_hours():
@@ -20,7 +20,7 @@ async def run_weather():
         if is_within_active_hours():
             try:
                 log("runAll", "날씨 수집 시작")
-                subprocess.Popen(["python3", "backend/source/scripts/weatherCollecter.py"])
+                subprocess.call(["python3", "backend/source/scripts/weatherCollecter.py"])
             except Exception:
                 traceback.print_exc()
         else:
@@ -32,7 +32,7 @@ async def run_traffic():
         if is_within_active_hours():
             try:
                 log("runAll", "교통 수집 시작")
-                subprocess.Popen(["python3", "backend/source/scripts/trafficCollector.py"])
+                subprocess.call(["python3", "backend/source/scripts/trafficCollector.py"])
             except Exception:
                 traceback.print_exc()
         else:

@@ -8,9 +8,9 @@ import requests
 from datetime import datetime
 from pathlib import Path
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "utils"))
-from haversine import haversine_distance
-from logger import log  # log 함수 추가
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")); sys.path.append(BASE_DIR)
+from utils.haversine import haversine_distance
+from utils.logger import log  # log 함수 추가
 
 STOP_DIR = Path("backend/data/raw/staticInfo/stops")
 VTX_MAP_DIR = Path("backend/data/processed/vtx_mapped")
