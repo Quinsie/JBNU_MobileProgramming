@@ -5,8 +5,7 @@ import sys
 import json
 import psutil
 import subprocess
-from datetime import time
-from datetime import datetime
+from datetime import datetime, time
 from importlib import import_module
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -44,9 +43,10 @@ def run_tracking_job():
     stdids = get_current_departures()
     log("scheduler", f"현재 감지된 STDIDs: {stdids}")
     now = datetime.now().strftime("%H:%M")
-    t = datetime.now()
-    if t.time() >= time(23, 30):
-        log("scheduler", "[SYSTEM] 현재시간 23:30 :: 스케줄러 종료")
+    now_time = datetime.now().time()
+
+    if time(0, 30) < now_time < time(5, 30):
+        log("scheduler", "[SYSTEM] 00시 30분 ~ 05시 30분 사이 → 스케줄러 종료")
         scheduler.shutdown()
         return
 
@@ -62,5 +62,5 @@ def run_tracking_job():
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
     scheduler.add_job(run_tracking_job, "cron", minute="*", second=0)
-    log("scheduler", "⏱실시간 버스 감시 스케줄러 시작")  # log 사용
+    log("scheduler", "실시간 버스 감시 스케줄러 시작")  # log 사용
     scheduler.start()
