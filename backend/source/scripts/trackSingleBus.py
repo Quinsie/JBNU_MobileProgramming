@@ -49,7 +49,7 @@ def get_closest_vertex(lat, lng):
                 "matched_sub": vtx["sub"],
                 "distance": dist
             }
-    return closest if min_dist <= 0.1 else None
+    return closest if min_dist <= 0.5 else None
 
 def track_bus(stdid, start_time_str):
     log("trackSingleBus", f"{stdid} 버스 {start_time_str} 출발분 추적 시작")
