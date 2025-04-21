@@ -32,7 +32,7 @@ async def run_traffic():
         if is_within_active_hours():
             try:
                 log("runAll", "교통 수집 시작")
-                subprocess.Popen("python3", "backend/source/scripts/trafficCollector.py")
+                subprocess.Popen(["python3", "backend/source/scripts/trafficCollector.py"])
             except Exception:
                 traceback.print_exc()
         else:

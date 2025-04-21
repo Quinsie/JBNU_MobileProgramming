@@ -38,7 +38,7 @@ def run_tracking_job():
     stdids = get_current_departures()
     now = datetime.now().strftime("%H:%M")
     t = datetime.now()
-    if now.time() >= time(23, 30):
+    if t.time() >= time(23, 30):
         log("scheduler", "[SYSTEM] 현재시간 23:30 :: 스케줄러 종료")
         scheduler.shutdown()
         return
