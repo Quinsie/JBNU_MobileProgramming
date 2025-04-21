@@ -8,7 +8,7 @@ import requests
 from datetime import datetime, timedelta
 
 # 상대 경로 import 설정
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")); sys.path.append(BASE_DIR)
 from utils.haversine import haversine_distance  # 거리 계산용
 from utils.logger import log  # log 함수 추가
 
