@@ -54,10 +54,10 @@ def run_tracking_job():
         log("scheduler", f"{now} → {stdid} 추적 시작 (병렬 실행)")
         subprocess.Popen([
             "python3",
-            "backend/source/scripts/trackSingleBus.py",
+            "source/scripts/trackSingleBus.py",
             str(stdid),
             now  # ex: "05:30"
-        ])
+        ], cwd = BASE_DIR)
 
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
