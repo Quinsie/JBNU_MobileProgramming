@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import psutil
 import subprocess
 from datetime import time
 from datetime import datetime
@@ -14,6 +15,11 @@ from source.utils.getDayType import getDayType
 from source.utils.logger import log  # log 함수 임포트
 
 CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
+
+for p in psutil.process_iter(attrs=["pid", "cmdline"]): # 중복실행감지
+    if p.info["pid"] != os.getpid() and "scheduler.py" in " ".join(p.info["cmdline"]):
+        log("scheduler", "이미 실행 중인 scheduler.py 감지, 종료.")
+        sys.exit()
 
 def load_departure_cache(schedule_type):
     path = os.path.join(CACHE_DIR, f"{schedule_type}.json")
