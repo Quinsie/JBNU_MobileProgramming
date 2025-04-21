@@ -48,7 +48,7 @@ def run_tracking_job():
 
     if time(0, 30) < now_time < time(5, 30):
         log("scheduler", "[SYSTEM] 00시 30분 ~ 05시 30분 사이 → 스케줄러 종료")
-        scheduler.shutdown()
+        scheduler.shutdown(wait=False)
         return
 
     for stdid in stdids: # 병렬프로세싱으로 동시에 추적
