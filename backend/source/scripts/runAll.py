@@ -19,7 +19,7 @@ async def run_weather():
         if is_within_active_hours():
             try:
                 log("runAll", "날씨 수집 시작")
-                os.system("python backend/source/scripts/weatherCollector.py")
+                os.system("python3 backend/source/scripts/weatherCollector.py")
             except Exception:
                 traceback.print_exc()
         else:
@@ -31,7 +31,7 @@ async def run_traffic():
         if is_within_active_hours():
             try:
                 log("runAll", "🚦 교통 수집 시작")
-                os.system("python backend/source/scripts/trafficCollector.py")
+                os.system("python3 backend/source/scripts/trafficCollector.py")
             except Exception:
                 traceback.print_exc()
         else:
@@ -43,7 +43,7 @@ async def run_scheduler():
         if is_within_active_hours():
             try:
                 log("runAll", "스케줄러 실행")
-                os.system("python backend/source/scripts/scheduler.py")
+                os.system("python3 backend/source/scripts/scheduler.py")
             except Exception:
                 traceback.print_exc()
         else:
