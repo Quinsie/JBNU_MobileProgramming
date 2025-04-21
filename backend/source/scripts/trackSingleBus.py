@@ -12,9 +12,9 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."));
 from source.utils.haversine import haversine_distance
 from source.utils.logger import log  # log 함수 추가
 
-STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
-VTX_MAP_DIR = os.path.join(BASE_DIR, "data", "processed", "vtx_mapped")
-SAVE_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
+STOP_DIR = Path(BASE_DIR) / "data" / "raw" / "staticInfo" / "stops"
+VTX_MAP_DIR = Path(BASE_DIR) / "data" / "processed" / "vtx_mapped"
+SAVE_DIR = Path(BASE_DIR) / "data" / "raw" / "dynamicInfo" / "realtime_bus"
 
 URL = "http://www.jeonjuits.go.kr/bis/selectBisRouteLocationList.do"
 HEADERS = {
