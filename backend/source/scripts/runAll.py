@@ -34,6 +34,7 @@ async def run_weather():
         await asyncio.sleep(1800)  # 30분 간격
 
 async def run_traffic():
+    log("runAll", "[DEBUG] run_traffic 함수 진입")
     while True:
         if is_within_active_hours():
             try:
