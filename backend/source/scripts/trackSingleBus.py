@@ -106,16 +106,16 @@ def track_bus(stdid, start_time_str):
                                 "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 "note": "ORD 2에서 시작했기 때문에 ORD 1 강제 삽입"
                             })
-                            log("trackSingleBus", "{stdid} ORD 1 강제 삽입")
+                            log("trackSingleBus", f"{stdid} ORD 1 강제 삽입")
                         break
 
             if not target_bus:
-                log("trackSingleBus", "{stdid} [대기] 대상 버스 없음")
+                log("trackSingleBus", f"{stdid} [대기] 대상 버스 없음")
                 if reached_end_minus1 and end_check_start and time.time() - end_check_start > 60:
                     log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 사라짐)")
                     break
                 if time.time() - last_movement > 15 * 60:
-                    log("trackSingleBus", "{stdid} 타임아웃: 15분 이상 정체")
+                    log("trackSingleBus", f"{stdid} 타임아웃: 15분 이상 정체")
                     break
                 time.sleep(5)
                 continue

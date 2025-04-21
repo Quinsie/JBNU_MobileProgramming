@@ -9,11 +9,11 @@ from datetime import datetime
 from importlib import import_module
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")); sys.path.append(BASE_DIR)
-from utils.getDayType import getDayType
-from utils.logger import log  # log 함수 임포트
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
+from source.utils.getDayType import getDayType
+from source.utils.logger import log  # log 함수 임포트
 
-CACHE_DIR = os.path.join("backend", "data", "processed", "departure_cache")
+CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
 
 def load_departure_cache(schedule_type):
     path = os.path.join(CACHE_DIR, f"{schedule_type}.json")
@@ -36,6 +36,7 @@ def get_current_departures():
 
 def run_tracking_job():
     stdids = get_current_departures()
+    log("scheduler", f"현재 감지된 STDIDs: {stdids}")
     now = datetime.now().strftime("%H:%M")
     t = datetime.now()
     if t.time() >= time(23, 30):

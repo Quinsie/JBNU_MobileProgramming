@@ -20,7 +20,7 @@ async def run_weather():
         if is_within_active_hours():
             try:
                 log("runAll", "날씨 수집 시작")
-                subprocess.call(["python3", "weatherCollecter.py"], cwd = "backend/source/scripts")
+                subprocess.Popen(["python3", "weatherCollecter.py"], cwd = "backend/source/scripts")
             except Exception:
                 traceback.print_exc()
         else:
@@ -32,7 +32,7 @@ async def run_traffic():
         if is_within_active_hours():
             try:
                 log("runAll", "교통 수집 시작")
-                subprocess.call(["python3", "trafficCollector.py"], cwd = "backend/source/scripts")
+                subprocess.Popen(["python3", "trafficCollector.py"], cwd = "backend/source/scripts")
             except Exception:
                 traceback.print_exc()
         else:
