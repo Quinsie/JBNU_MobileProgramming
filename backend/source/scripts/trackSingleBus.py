@@ -49,7 +49,7 @@ def get_closest_vertex(lat, lng):
                 "matched_sub": vtx["sub"],
                 "distance": dist
             }
-    return closest if min_dist <= 0.5 else None
+    return closest if min_dist <= 0.2 else None # 반경 200m
 
 def track_bus(stdid, start_time_str):
     log("trackSingleBus", f"{stdid} 버스 {start_time_str} 출발분 추적 시작")
@@ -112,6 +112,19 @@ def track_bus(stdid, start_time_str):
                                 "note": "ORD 1 출발시간 고정 삽입"
                             })
                             log("trackSingleBus", f"{stdid}_{tracked_plate} ORD 1 출발시간({start_time_str})으로 삽입")
+
+                        if bus["CURRENT_NODE_ORD"] == 3 and 2 not in reached_ords:
+                            now = datetime.now()
+                            start_dt = datetime.strptime(f"{now.strftime('%Y-%m-%d')} {start_time_str}:00", "%Y-%m-%d %H:%M:%S")
+                            mid_dt = start_dt + (now - start_dt) / 2
+                            reached_ords.add(2)
+                            stop_reached_logs.append({
+                                "ord": 2,
+                                "time": mid_dt.strftime("%Y-%m-%d %H:%M:%S"),
+                                "note": "ORD 2 중간값 보간 삽입"
+                            })
+                            log("trackSingleBus", f"{stdid}_{tracked_plate} ORD 2 중간값 보간 삽입")
+
                         break
 
             if not target_bus:

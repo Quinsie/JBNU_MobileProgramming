@@ -10,12 +10,12 @@ SAVE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", 
 
 # 전주시 전체 영역 범위
 payload = {
-    "minlat": 35.76658320160097,
-    "maxlat": 35.881663807032936,
-    "minlng": 127.0341816493253,
-    "maxlng": 127.26192077595161,
-    "link_lv": 3,
-    "levl": 2
+    "minlat": 35.62887212891432,
+    "maxlat": 36.010764597679966,
+    "minlng": 126.81920706935077,
+    "maxlng": 127.39975969071274,
+    "link_lv": 2,
+    "levl": 5
 }
 
 def fetch_traffic_vtx():
