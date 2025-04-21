@@ -8,9 +8,8 @@ import requests
 from datetime import datetime, timedelta
 
 # 상대 경로 import 설정
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "utils"))
-from convertToGrid import convert_to_grid  # 혹시 몰라서 유지
-from haversine import haversine_distance  # 거리 계산용
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from utils.haversine import haversine_distance  # 거리 계산용
 from utils.logger import log  # log 함수 추가
 
 # API 설정
@@ -132,4 +131,5 @@ def main():
     log("weatherCollector", f"저장 완료: {save_path}")
 
 if __name__ == "__main__":
+    
     main()
