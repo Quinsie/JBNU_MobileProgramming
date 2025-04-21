@@ -98,7 +98,7 @@ def track_bus(stdid, start_time_str):
                     if bus["CURRENT_NODE_ORD"] in [1, 2]:
                         tracked_plate = bus["PLATE_NO"].strip()
                         target_bus = bus
-                        log("trackSingleBus", f"추적 시작: {tracked_plate} (ORD {bus['CURRENT_NODE_ORD']})")
+                        log("trackSingleBus", f"{stdid} 추적 시작: {tracked_plate} (ORD {bus['CURRENT_NODE_ORD']})")
                         if bus["CURRENT_NODE_ORD"] == 2:
                             reached_ords.add(1)
                             stop_reached_logs.append({
@@ -106,16 +106,16 @@ def track_bus(stdid, start_time_str):
                                 "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 "note": "ORD 2에서 시작했기 때문에 ORD 1 강제 삽입"
                             })
-                            log("trackSingleBus", "ORD 1 강제 삽입")
+                            log("trackSingleBus", "{stdid} ORD 1 강제 삽입")
                         break
 
             if not target_bus:
-                log("trackSingleBus", "[대기] 대상 버스 없음")
+                log("trackSingleBus", "{stdid} [대기] 대상 버스 없음")
                 if reached_end_minus1 and end_check_start and time.time() - end_check_start > 60:
-                    log("trackSingleBus", f"종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 사라짐)")
+                    log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 사라짐)")
                     break
                 if time.time() - last_movement > 15 * 60:
-                    log("trackSingleBus", "타임아웃: 15분 이상 정체")
+                    log("trackSingleBus", "{stdid} 타임아웃: 15분 이상 정체")
                     break
                 time.sleep(5)
                 continue
@@ -133,7 +133,7 @@ def track_bus(stdid, start_time_str):
                     "time": now_time
                 })
                 last_movement = time.time()
-                log("trackSingleBus", f"ORD {ord} 도착: {now_time}")
+                log("trackSingleBus", f"{stdid} ORD {ord} 도착: {now_time}")
 
                 if ord == end_ord_minus1:
                     reached_end_minus1 = True
@@ -147,13 +147,13 @@ def track_bus(stdid, start_time_str):
             })
 
             if ord == end_ord:
-                log("trackSingleBus", "종점 도달")
+                log("trackSingleBus", f" {stdid} 종점 도달")
                 break
 
             time.sleep(10)
 
     except KeyboardInterrupt:
-        log("trackSingleBus", "수동 중단됨. 로그 저장 중...")
+        log("trackSingleBus", f"{stdid} 수동 중단됨. 로그 저장 중...")
 
     with open(bus_file_path, "w", encoding="utf-8") as f:
         json.dump({
@@ -162,7 +162,7 @@ def track_bus(stdid, start_time_str):
             "location_logs": location_logs,
             "stop_reached_logs": stop_reached_logs
         }, f, ensure_ascii=False, indent=2)
-    log("trackSingleBus", f"저장 완료: {bus_file_path}")
+    log("trackSingleBus", f"{stdid} 저장 완료: {bus_file_path}")
 
 if __name__ == "__main__":
     stdid = int(sys.argv[1])
