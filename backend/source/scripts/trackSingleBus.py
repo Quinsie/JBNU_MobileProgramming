@@ -12,6 +12,10 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."));
 from source.utils.haversine import haversine_distance
 from source.utils.logger import log  # log 함수 추가
 
+TRAF_VTX_PATH = Path(BASE_DIR) / "data" / "raw" / "staticInfo" / "traf_vtxlist.json"
+with open(TRAF_VTX_PATH, encoding="utf-8") as f:
+    TRAF_VTX_LIST = json.load(f)
+
 STOP_DIR = Path(BASE_DIR) / "data" / "raw" / "staticInfo" / "stops"
 VTX_MAP_DIR = Path(BASE_DIR) / "data" / "processed" / "vtx_mapped"
 SAVE_DIR = Path(BASE_DIR) / "data" / "raw" / "dynamicInfo" / "realtime_bus"
@@ -33,16 +37,16 @@ def load_vtx_map(stdid):
     with open(path, encoding="utf-8") as f:
         return json.load(f)["resultList"]
 
-def get_matched_vertex(lat, lng, vtx_list):
+def get_closest_vertex(lat, lng):
     closest = None
     min_dist = float("inf")
-    for vtx in vtx_list:
-        dist = haversine_distance(lat, lng, vtx["LAT"], vtx["LNG"])
+    for vtx in TRAF_VTX_LIST:
+        dist = haversine_distance(lat, lng, vtx["lat"], vtx["lng"])
         if dist < min_dist:
             min_dist = dist
             closest = {
-                "matched_id": vtx["MATCHED_ID"],
-                "matched_sub": vtx["MATCHED_SUB"],
+                "matched_id": vtx["id"],
+                "matched_sub": vtx["sub"],
                 "distance": dist
             }
     return closest if min_dist <= 0.1 else None
@@ -68,7 +72,6 @@ def track_bus(stdid, start_time_str):
 
     last_movement = time.time()
     reached_end_minus1 = False
-    end_check_start = None
 
     try:
         while True:
@@ -111,8 +114,14 @@ def track_bus(stdid, start_time_str):
 
             if not target_bus:
                 log("trackSingleBus", f"{stdid} [대기] 대상 버스 없음")
-                if reached_end_minus1 and end_check_start and time.time() - end_check_start > 60:
-                    log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 사라짐)")
+                if reached_end_minus1 and time.time() - last_movement > 30:
+                    now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    stop_reached_logs.append({
+                        "ord": end_ord,
+                        "time": now_time,
+                        "note": "종점-1 도달 이후 버스 추적 끊김 → 종점 도달로 간주"
+                    })
+                    log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 추적 끊김)")
                     break
                 if time.time() - last_movement > 15 * 60:
                     log("trackSingleBus", f"{stdid} 타임아웃: 15분 이상 정체")
@@ -124,7 +133,7 @@ def track_bus(stdid, start_time_str):
             ord = target_bus["CURRENT_NODE_ORD"]
             lat = target_bus["LAT"]
             lng = target_bus["LNG"]
-            matched = get_matched_vertex(lat, lng, vtx_list)
+            matched = get_closest_vertex(lat, lng)
 
             if ord not in reached_ords:
                 reached_ords.add(ord)
