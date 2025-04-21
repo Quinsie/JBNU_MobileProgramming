@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import subprocess
+from datetime import time
 from datetime import datetime
 from importlib import import_module
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -36,6 +37,11 @@ def get_current_departures():
 def run_tracking_job():
     stdids = get_current_departures()
     now = datetime.now().strftime("%H:%M")
+    t = datetime.now()
+    if now.time() >= time(23, 30):
+        log("scheduler", "[SYSTEM] 현재시간 23:30 :: 스케줄러 종료")
+        scheduler.shutdown()
+        return
 
     for stdid in stdids: # 병렬프로세싱으로 동시에 추적
         log("scheduler", f"{now} → {stdid} 추적 시작 (병렬 실행)")

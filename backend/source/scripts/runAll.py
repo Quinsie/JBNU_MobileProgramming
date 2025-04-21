@@ -4,6 +4,7 @@ import os
 import sys
 import asyncio
 import traceback
+import subprocess
 from datetime import datetime, time
 
 # 상대 경로 설정
@@ -19,7 +20,7 @@ async def run_weather():
         if is_within_active_hours():
             try:
                 log("runAll", "날씨 수집 시작")
-                os.system("python3 backend/source/scripts/weatherCollector.py")
+                subprocess.Popen(["python3", "backend/source/scripts/weatherCollecter.py"])
             except Exception:
                 traceback.print_exc()
         else:
@@ -30,8 +31,8 @@ async def run_traffic():
     while True:
         if is_within_active_hours():
             try:
-                log("runAll", "🚦 교통 수집 시작")
-                os.system("python3 backend/source/scripts/trafficCollector.py")
+                log("runAll", "교통 수집 시작")
+                subprocess.Popen("python3", "backend/source/scripts/trafficCollector.py")
             except Exception:
                 traceback.print_exc()
         else:
@@ -39,15 +40,16 @@ async def run_traffic():
         await asyncio.sleep(10)
 
 async def run_scheduler():
+    has_started = False
     while True:
         if is_within_active_hours():
-            try:
+            if not has_started:
                 log("runAll", "스케줄러 실행")
-                os.system("python3 backend/source/scripts/scheduler.py")
-            except Exception:
-                traceback.print_exc()
+                subprocess.Popen(["python3", "backend/source/scripts/scheduler.py"])
+                has_started = True
         else:
             log("runAll", "스케줄러 대기 중 (비활성 시간)")
+            has_started = False
         await asyncio.sleep(60)
 
 async def main():
