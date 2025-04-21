@@ -51,12 +51,26 @@ async def run_scheduler():
     while True:
         if is_within_active_hours():
             if not has_started:
-                log("runAll", "스케줄러 실행")
-                subprocess.Popen(["python3", "scheduler.py"], cwd = "backend/source/scripts")
-                has_started = True
+                # 중복 실행 방지용 체크 추가
+                is_running = False
+                for p in psutil.process_iter(attrs=["pid", "cmdline"]):
+                    try:
+                        if p.info["pid"] != os.getpid() and "scheduler.py" in " ".join(p.info["cmdline"]):
+                            is_running = True
+                            break
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        continue
+
+                if is_running:
+                    log("runAll", "이미 scheduler.py 실행 중, 생략")
+                else:
+                    log("runAll", "스케줄러 실행")
+                    subprocess.Popen(["python3", "scheduler.py"], cwd = "backend/source/scripts")
+                    has_started = True
         else:
             log("runAll", "스케줄러 대기 중 (비활성 시간)")
             has_started = False
+
         await asyncio.sleep(60)
 
 async def main():
