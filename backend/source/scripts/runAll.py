@@ -55,7 +55,8 @@ async def run_scheduler():
                 is_running = False
                 for p in psutil.process_iter(attrs=["pid", "cmdline"]):
                     try:
-                        if p.info["pid"] != os.getpid() and "scheduler.py" in " ".join(p.info["cmdline"]):
+                        cmdline = p.info.get("cmdline") or []
+                        if p.info["pid"] != os.getpid() and "scheduler.py" in " ".join(cmdline):
                             is_running = True
                             break
                     except (psutil.NoSuchProcess, psutil.AccessDenied):
