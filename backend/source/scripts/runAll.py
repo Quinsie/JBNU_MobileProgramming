@@ -19,7 +19,7 @@ for p in psutil.process_iter(attrs=["pid", "cmdline"]):
 
 def is_within_active_hours():
     now = datetime.now().time()
-    return now >= time(5, 30) or now <= time(0, 30)
+    return now >= time(12, 10) or now <= time(0, 30)
 
 async def run_weather():
     while True:
