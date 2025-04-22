@@ -50,7 +50,7 @@ def run_tracking_job():
     now = datetime.now().strftime("%H:%M")
     now_time = datetime.now().time()
 
-    if time(0, 30) < now_time < time(12, 10):
+    if time(0, 30) < now_time < time(5, 30):
         log("scheduler", "[SYSTEM] 00시 30분 ~ 05시 30분 사이 → 스케줄러 종료")
         scheduler.shutdown(wait=False)
         return

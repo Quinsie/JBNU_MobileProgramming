@@ -11,11 +11,11 @@ _current_log_file = None
 
 def is_active_hours():
     now = datetime.now().time()
-    return now >= time(12, 10) or now <= time(0, 30)
+    return now >= time(5, 30) or now <= time(0, 30)
 
 def get_log_path():
     now = datetime.now()
-    if now.time() < time(12, 10):
+    if now.time() < time(5, 30):
         log_date = now - timedelta(days=1)
     else:
         log_date = now

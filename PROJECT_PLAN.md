@@ -169,3 +169,4 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
 ### 2025-04-22
 #### 진행 상황
  - 일자별로 log를 분리해서 관찰할 수 있도록 logger.py 패치
+ - 05시 30분에 자동 시작에서 오류가 남. 중복실행방지에서 cmdline이 공백일 가능성을 염두에 두지 않음.
