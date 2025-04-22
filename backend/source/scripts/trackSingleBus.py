@@ -193,7 +193,7 @@ def track_bus(stdid, start_time_str):
                 end_stop = next((s for s in stop_list if s["STOP_ORD"] == end_ord), None)
                 if end_stop:
                     dist_to_end = haversine_distance(lat, lng, end_stop["STOP_LAT"], end_stop["STOP_LNG"])
-                    if dist_to_end <= 0.1:  # 100m
+                    if dist_to_end <= 100:  # 100m
                         now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         stop_reached_logs.append({
                             "ord": end_ord,
