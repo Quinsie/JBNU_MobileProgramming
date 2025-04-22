@@ -73,6 +73,9 @@ def track_bus(stdid, start_time_str):
     last_movement = time.time()
     reached_end_minus1 = False
 
+    current_ord = None
+    ord_stay_start = None
+
     try:
         while True:
             now = datetime.now().time()
@@ -90,7 +93,7 @@ def track_bus(stdid, start_time_str):
                 log("trackSingleBus", f"[에러] API 실패: {e}")
                 time.sleep(5)
                 continue
-
+            
             target_bus = None
             for bus in bus_list:
                 if tracked_plate:
@@ -138,8 +141,8 @@ def track_bus(stdid, start_time_str):
                     })
                     log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 추적 끊김)")
                     break
-                if time.time() - last_movement > 15 * 60:
-                    log("trackSingleBus", f"{stdid} 타임아웃: 15분 이상 정체")
+                if time.time() - last_movement > 10 * 60:
+                    log("trackSingleBus", f"{stdid} 타임아웃: 10분 이상 인식 못함함")
                     break
                 time.sleep(5)
                 continue
@@ -149,6 +152,10 @@ def track_bus(stdid, start_time_str):
             lat = target_bus["LAT"]
             lng = target_bus["LNG"]
             matched = get_closest_vertex(lat, lng)
+
+            if ord != current_ord: # 같은 정류장 10분 유지 시 타임아웃 트리거거
+                current_ord = ord
+                ord_stay_start = time.time()
 
             if ord not in reached_ords:
                 reached_ords.add(ord)
@@ -169,6 +176,11 @@ def track_bus(stdid, start_time_str):
                 "lng": lng,
                 "matched_vertex": matched
             })
+
+            # 동일 ORD에서 10분 이상 머무르면 종료
+            if ord_stay_start and time.time() - ord_stay_start > 10 * 60:
+                log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord}에서 10분 이상 머무름 → 타임아웃 종료")
+                break
 
             if ord == end_ord:
                 log("trackSingleBus", f" {stdid} 종점 도달")
