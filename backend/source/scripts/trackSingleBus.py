@@ -200,7 +200,7 @@ def track_bus(stdid, start_time_str):
                             "time": now_time,
                             "note": "종점 근접 거리 기반 도달 판정"
                         })
-                        log("trackSingleBus", f"{stdid}_{tracked_plate} 종점 근접 거리 도달 ({dist_to_end*1000:.1f}m) → 종점 도달로 간주")
+                        log("trackSingleBus", f"{stdid}_{tracked_plate} 종점 근접 거리 도달 ({dist_to_end:.3f}m), ORD {end_ord} 도착")
                         break
 
             time.sleep(10)
