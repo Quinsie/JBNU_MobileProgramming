@@ -142,7 +142,7 @@ def track_bus(stdid, start_time_str):
                     log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 추적 끊김)")
                     break
                 if time.time() - last_movement > 10 * 60:
-                    log("trackSingleBus", f"{stdid} 타임아웃: 10분 이상 인식 못함함")
+                    log("trackSingleBus", f"{stdid} 타임아웃: 10분 이상 인식 못함")
                     break
                 time.sleep(5)
                 continue
@@ -182,9 +182,26 @@ def track_bus(stdid, start_time_str):
                 log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord}에서 10분 이상 머무름 → 타임아웃 종료")
                 break
 
+            # 종점 판별 로직 업데이트
+            # 1순위: 정상적으로 종점 도달
             if ord == end_ord:
-                log("trackSingleBus", f" {stdid} 종점 도달")
+                log("trackSingleBus", f"{stdid} 종점 도달")
                 break
+
+            # 2순위: 종점-1 도달 이후, 종점에 실제로 근접한 경우
+            if reached_end_minus1 and end_ord not in reached_ords:
+                end_stop = next((s for s in stop_list if s["STOP_ORD"] == end_ord), None)
+                if end_stop:
+                    dist_to_end = haversine_distance(lat, lng, end_stop["STOP_LAT"], end_stop["STOP_LNG"])
+                    if dist_to_end <= 0.1:  # 100m
+                        now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        stop_reached_logs.append({
+                            "ord": end_ord,
+                            "time": now_time,
+                            "note": "종점 근접 거리 기반 도달 판정"
+                        })
+                        log("trackSingleBus", f"{stdid}_{tracked_plate} 종점 근접 거리 도달 ({dist_to_end*1000:.1f}m) → 종점 도달로 간주")
+                        break
 
             time.sleep(10)
 
