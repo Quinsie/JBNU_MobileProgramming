@@ -192,7 +192,7 @@ def track_bus(stdid, start_time_str):
             if reached_end_minus1 and end_ord not in reached_ords:
                 end_stop = next((s for s in stop_list if s["STOP_ORD"] == end_ord), None)
                 if end_stop:
-                    dist_to_end = haversine_distance(lat, lng, end_stop["STOP_Y"], end_stop["STOP_X"]) # response 변수명 디버그
+                    dist_to_end = haversine_distance(lat, lng, end_stop["LAT"], end_stop["LNG"]) # response 변수명 디버그
                     if dist_to_end <= 100:  # 100m
                         now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         stop_reached_logs.append({
