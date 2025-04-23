@@ -4,7 +4,7 @@ import os
 from datetime import datetime, time, timedelta
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-LOG_DIR = os.path.join(BASE_DIR, "backend", "logs")
+LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
 
 _current_log_file = None
