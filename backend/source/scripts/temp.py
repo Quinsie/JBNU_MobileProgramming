@@ -74,8 +74,6 @@ def get_nearest_available(nx_ny, current_data, coords):
         return None
 
     target_coord = coords[nx_ny]
-    target_pos = (target_coord["lat"], target_coord["lng"])
-
     min_dist = float("inf")
     nearest_value = None
 
@@ -83,8 +81,10 @@ def get_nearest_available(nx_ny, current_data, coords):
         if val is None or other_key == nx_ny:
             continue
         other_coord = coords[other_key]
-        other_pos = (other_coord["lat"], other_coord["lng"])
-        dist = haversine_distance(target_pos, other_pos)
+        dist = haversine_distance(
+            target_coord["lat"], target_coord["lng"],
+            other_coord["lat"], other_coord["lng"]
+        )
         if dist < min_dist:
             min_dist = dist
             nearest_value = val
@@ -93,8 +93,8 @@ def get_nearest_available(nx_ny, current_data, coords):
         log("weatherCollector", f"거리 기반 대체 사용: {nx_ny} ← {min_dist:.2f}km 거리")
     return nearest_value
 
-
 def backfill_weather(start_str="20250421_0530", end_str="20250423_2330"):
+
     with open(COORDS_PATH, "r", encoding="utf-8") as f:
         coords = json.load(f)
 
@@ -103,6 +103,9 @@ def backfill_weather(start_str="20250421_0530", end_str="20250423_2330"):
     current = start_dt
 
     while current <= end_dt:
+        if 1 <= current.hour <= 5 and current.minute == 0:
+            current += timedelta(minutes=30)
+            continue
         timestamp = current.strftime("%Y%m%d_%H%M")
         save_path = os.path.join(SAVE_DIR, f"{timestamp}.json")
         collected = {}
@@ -120,7 +123,7 @@ def backfill_weather(start_str="20250421_0530", end_str="20250423_2330"):
                     collected[nx_ny] = fallback
                 else:
                     log("weatherCollector", f"[백필] 최종 대체 실패: {nx_ny}")
-            time.sleep(1.0)
+            time.sleep(0.5)
 
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(collected, f, ensure_ascii=False, indent=2)
