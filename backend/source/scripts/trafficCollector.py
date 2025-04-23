@@ -70,7 +70,7 @@ def process_and_save(data):
             })
 
     # 저장
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     save_dir = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic")
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, f"{timestamp}.json")
