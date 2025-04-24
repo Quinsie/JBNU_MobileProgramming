@@ -18,7 +18,8 @@ with open(TRAF_VTX_PATH, encoding="utf-8") as f:
 
 STOP_DIR = Path(BASE_DIR) / "data" / "raw" / "staticInfo" / "stops"
 VTX_MAP_DIR = Path(BASE_DIR) / "data" / "processed" / "vtx_mapped"
-SAVE_DIR = Path(BASE_DIR) / "data" / "raw" / "dynamicInfo" / "realtime_bus"
+BUS_SAVE_DIR = Path(BASE_DIR) / "data" / "raw" / "dynamicInfo" / "realtime_bus"
+POS_SAVE_DIR = Path(BASE_DIR) / "data" / "raw" / "dynamicInfo" / "realtime_pos"
 
 URL = "http://www.jeonjuits.go.kr/bis/selectBisRouteLocationList.do"
 HEADERS = {
@@ -61,9 +62,13 @@ def track_bus(stdid, start_time_str):
 
     start_time = datetime.strptime(start_time_str, "%H:%M").time()
     date_str = datetime.now().strftime("%Y%m%d")
-    bus_file_dir = SAVE_DIR / str(stdid)
+    bus_file_dir = BUS_SAVE_DIR / str(stdid)
+    pos_file_dir = POS_SAVE_DIR / str(stdid)
     bus_file_dir.mkdir(parents=True, exist_ok=True)
-    bus_file_path = bus_file_dir / f"{date_str}_{start_time_str.replace(':', '')}.json"
+    pos_file_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"{date_str}_{start_time_str.replace(':', '')}.json"
+    bus_file_path = bus_file_dir / filename
+    pos_file_path = pos_file_dir / filename
 
     tracked_plate = None
     reached_ords = set()
@@ -93,7 +98,7 @@ def track_bus(stdid, start_time_str):
                 log("trackSingleBus", f"[에러] API 실패: {e}")
                 time.sleep(5)
                 continue
-            
+
             target_bus = None
             for bus in bus_list:
                 if tracked_plate:
@@ -101,12 +106,11 @@ def track_bus(stdid, start_time_str):
                         target_bus = bus
                         break
                 else:
-                    if bus["CURRENT_NODE_ORD"] in [1, 2, 3]:  # <-- [1, 2] → [1, 2, 3] 으로 변경
+                    if bus["CURRENT_NODE_ORD"] in [1, 2, 3]:
                         tracked_plate = bus["PLATE_NO"].strip()
                         target_bus = bus
                         log("trackSingleBus", f"{stdid} 추적 시작: {tracked_plate} (ORD {bus['CURRENT_NODE_ORD']})")
 
-                        # ORD 1 무조건 출발시간으로 삽입
                         if 1 not in reached_ords:
                             reached_ords.add(1)
                             stop_reached_logs.append({
@@ -127,7 +131,6 @@ def track_bus(stdid, start_time_str):
                                 "note": "ORD 2 중간값 보간 삽입"
                             })
                             log("trackSingleBus", f"{stdid}_{tracked_plate} ORD 2 중간값 보간 삽입")
-
                         break
 
             if not target_bus:
@@ -153,7 +156,7 @@ def track_bus(stdid, start_time_str):
             lng = target_bus["LNG"]
             matched = get_closest_vertex(lat, lng)
 
-            if ord != current_ord: # 같은 정류장 10분 유지 시 타임아웃 트리거거
+            if ord != current_ord:
                 current_ord = ord
                 ord_stay_start = time.time()
 
@@ -164,7 +167,6 @@ def track_bus(stdid, start_time_str):
                     "time": now_time
                 })
                 last_movement = time.time()
-                tracked_plate = bus["PLATE_NO"].strip()
                 log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord} 도착: {now_time}")
 
                 if ord == end_ord_minus1:
@@ -177,23 +179,19 @@ def track_bus(stdid, start_time_str):
                 "matched_vertex": matched
             })
 
-            # 동일 ORD에서 10분 이상 머무르면 종료
             if ord_stay_start and time.time() - ord_stay_start > 10 * 60:
                 log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord}에서 10분 이상 머무름 → 타임아웃 종료")
                 break
 
-            # 종점 판별 로직 업데이트
-            # 1순위: 정상적으로 종점 도달
             if ord == end_ord:
                 log("trackSingleBus", f"{stdid} 종점 도달")
                 break
 
-            # 2순위: 종점-1 도달 이후, 종점에 실제로 근접한 경우
             if reached_end_minus1 and end_ord not in reached_ords:
                 end_stop = next((s for s in stop_list if s["STOP_ORD"] == end_ord), None)
                 if end_stop:
-                    dist_to_end = haversine_distance(lat, lng, end_stop["LAT"], end_stop["LNG"]) # response 변수명 디버그
-                    if dist_to_end <= 100:  # 100m
+                    dist_to_end = haversine_distance(lat, lng, end_stop["LAT"], end_stop["LNG"])
+                    if dist_to_end <= 100:
                         now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         stop_reached_logs.append({
                             "ord": end_ord,
@@ -210,12 +208,13 @@ def track_bus(stdid, start_time_str):
 
     with open(bus_file_path, "w", encoding="utf-8") as f:
         json.dump({
-            "plate_no": tracked_plate,
-            "start_time": start_time_str,
-            "location_logs": location_logs,
             "stop_reached_logs": stop_reached_logs
         }, f, ensure_ascii=False, indent=2)
-    log("trackSingleBus", f"{stdid} 저장 완료: {bus_file_path}")
+
+    with open(pos_file_path, "w", encoding="utf-8") as f:
+        json.dump(location_logs, f, ensure_ascii=False, indent=2)
+
+    log("trackSingleBus", f"{stdid} 저장 완료: stop={bus_file_path}, pos={pos_file_path}")
 
 if __name__ == "__main__":
     stdid = int(sys.argv[1])
