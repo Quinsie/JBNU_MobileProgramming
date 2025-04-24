@@ -1,112 +1,96 @@
 # backend/source/ai/generateParquet.py
-# raw dynamic information을 parquet으로 정제하는 파이프라인.
+# 1차 ETA 학습용 parquet 자동 생성 스크립트
 
-import os, sys, json, time, shutil
+import os
+import sys
+import json
 import pandas as pd
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
-from source.utils.getDayType import getDayType
 from source.utils.convertToGrid import convert_to_grid
-from source.utils.logger import log  # 로그 기록용
+from source.utils.getDayType import getDayType
+from source.utils.logger import log
 
-RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo")
-PREPROCESSED_DIR = os.path.join(BASE_DIR, "data", "preprocessed")
-USED_DIR = os.path.join(BASE_DIR, "data", "raw", "used")
-bus_dir = os.path.join(RAW_DIR, "realtime_bus")
-weather_dir = os.path.join(RAW_DIR, "weather")
-traffic_dir = os.path.join(RAW_DIR, "traffic")
+# 경로 설정
+RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
+ETA_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
+NXNY_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
+WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
+SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed")
+os.makedirs(SAVE_DIR, exist_ok=True)
 
-parse_time = lambda s: datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
-parse_name = lambda s: datetime.strptime(s, "%Y%m%d_%H%M")
+# 날짜 계산 (오늘 기준: 25일 새벽 실행 → 24일 raw, 23일 ETA 사용)
+today = datetime.now().date()
+yesterday = today - timedelta(days=1)
+two_days_ago = today - timedelta(days=2)
 start_time = time.time()
-cutoff = datetime(2025, 4, 23, 5, 30, 0)
 
-traffic_ts_map = {
-    datetime.strptime(f.replace(".json", ""), "%Y%m%d_%H%M"): f
-    for f in os.listdir(traffic_dir) if f.endswith(".json")
-}
+YMD = yesterday.strftime("%Y%m%d")
+ETA_YMD = two_days_ago.strftime("%Y%m%d")
+
+# ETA 테이블 불러오기
+eta_path = os.path.join(ETA_DIR, f"{ETA_YMD}.json")
+with open(eta_path, encoding="utf-8") as f:
+    eta_table = json.load(f)
+
+# nx_ny 매핑 불러오기
+with open(NXNY_PATH, encoding="utf-8") as f:
+    nxny_map = json.load(f)
+
+# 날씨 타임스탬프 매핑
 weather_ts_map = {
     datetime.strptime(f.replace(".json", ""), "%Y%m%d_%H%M"): f
-    for f in os.listdir(weather_dir) if f.endswith(".json")
+    for f in os.listdir(WEATHER_DIR) if f.endswith(".json")
 }
-
-weather_cache, traffic_cache = {}, {}
-used_weather_files, used_traffic_files, used_bus_files = set(), set(), set()
-
-for ts, f in weather_ts_map.items():
+weather_cache = {}
+for ts, fname in weather_ts_map.items():
     try:
-        with open(os.path.join(weather_dir, f)) as wf:
+        with open(os.path.join(WEATHER_DIR, fname), encoding="utf-8") as wf:
             weather_cache[ts] = json.load(wf)
     except:
         continue
 
-for ts, f in traffic_ts_map.items():
-    try:
-        with open(os.path.join(traffic_dir, f)) as tf:
-            traffic_cache[ts] = json.load(tf)
-    except:
-        continue
-
-def process_bus_file(args):
+def process_file(args):
     stdid, file = args
     rows = []
-    route_path = os.path.join(bus_dir, stdid)
-    date = parse_name(file.replace(".json", ""))
-    if date < cutoff:
+    departure = file[9:13]  # HHMM
+    key = f"{stdid}_{departure}"
+    eta_dict = eta_table.get(key)
+    if not eta_dict:
         return rows
 
-    used_bus_files.add(os.path.join("realtime_bus", stdid, file))
+    path = os.path.join(RAW_DIR, stdid, file)
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
 
-    t0 = time.time()  # ⏱ 시작 시간 측정
-
-    day_type = getDayType(date)
-    with open(os.path.join(route_path, file), encoding="utf-8") as f:
-        bus_data = json.load(f)
-
-    start_time = datetime.strptime(f"{date.date()} {bus_data['start_time']}", "%Y-%m-%d %H:%M")
-    stop_logs = bus_data.get("stop_reached_logs", [])
+    stop_logs = data.get("stop_reached_logs", [])
+    day_type = getDayType(datetime.strptime(YMD, "%Y%m%d"))
+    start_hour, start_minute = int(departure[:2]), int(departure[2:])
+    departure_minute = start_hour * 60 + start_minute
 
     for stop in stop_logs:
-        ord_num = stop.get("ord")
-        arrival = parse_time(stop.get("time"))
-        elapsed = int((arrival - start_time).total_seconds())
-        g1 = g2 = g3 = 0
+        ord = str(stop.get("ord"))
+        actual_time = stop.get("time")
+        if ord not in eta_dict:
+            continue
+
+        try:
+            eta_dt = datetime.strptime(f"{YMD} {eta_dict[ord]}", "%Y%m%d %H:%M:%S")
+            actual_dt = datetime.strptime(actual_time, "%Y-%m-%d %H:%M:%S")
+            elapsed = int((actual_dt - eta_dt).total_seconds())
+        except:
+            continue
+
+        nx_ny = nxny_map.get(f"{stdid}_{ord}")
         PTY = RN1 = T1H = None
-
-        for loc in bus_data.get("location_logs", []):
-            t = parse_time(loc["time"])
-            if t > arrival:
-                break
-            mv = loc.get("matched_vertex")
-            lat, lng = loc["lat"], loc["lng"]
-
-            traffic_key = max([ts for ts in traffic_cache if ts <= t], default=None)
-            if mv and traffic_key:
-                node_id = mv["matched_id"]
-                sub = mv["matched_sub"]
-                nx_ny = f"{node_id}_{sub}"
-                used_traffic_files.add(traffic_ts_map[traffic_key])
-                traffic_data = traffic_cache.get(traffic_key, [])
-                for record in traffic_data:
-                    if record["id"] == node_id and record["sub"] == sub:
-                        grade = int(record["grade"])
-                        if grade == 1:
-                            g1 += 1
-                        elif grade == 2:
-                            g2 += 1
-                        elif grade == 3:
-                            g3 += 1
-            else:
-                x, y = convert_to_grid(lat, lng)
-                nx_ny = f"{x}_{y}"
-
-            weather_key = max([ts for ts in weather_cache if ts <= t], default=None)
+        if nx_ny:
+            weather_key = max([ts for ts in weather_cache if ts <= actual_dt], default=None)
             if weather_key:
-                used_weather_files.add(weather_ts_map[weather_key])
                 weather = weather_cache.get(weather_key, {}).get(nx_ny)
                 if weather:
                     PTY = int(weather["PTY"])
@@ -114,58 +98,41 @@ def process_bus_file(args):
                     T1H = float(weather["T1H"])
 
         rows.append({
-            "route_id": stdid,
-            "departure_time": start_time.hour * 60 + start_time.minute,
+            "route_id": int(stdid),
+            "departure_time": departure_minute,
             "day_type": {"weekday": 0, "saturday": 1, "holiday": 2}[day_type],
-            "stop_order": ord_num,
-            "grade_1_count": g1,
-            "grade_2_count": g2,
-            "grade_3_count": g3,
+            "stop_order": int(ord),
             "PTY": PTY,
             "RN1": RN1,
             "T1H": T1H,
             "target_elapsed_time": elapsed
         })
 
-    log("generateParquet", f"🚏 {stdid}/{file} 처리 완료 ({len(rows)} rows, ⏱ {time.time() - t0:.2f}s)")
     return rows
 
-def move_to_used(file_path, src_base, dst_base):
-    src = os.path.join(src_base, file_path)
-    dst = os.path.join(dst_base, file_path)
-    log("generateParquet", f"📦 이동 시도: {src} → {dst}")
-    try:
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
-        shutil.move(src, dst)
-        log("generateParquet", f"✅ 이동 완료: {file_path}")
-    except Exception as e:
-        log("generateParquet", f"❌ 이동 실패: {file_path} → {e}")
-
 def generate_parquet():
+    log("generateParquet", f"{YMD} 전처리 시작")
     all_args = []
-    for stdid in os.listdir(bus_dir):
-        for file in os.listdir(os.path.join(bus_dir, stdid)):
+    for stdid in os.listdir(RAW_DIR):
+        route_path = os.path.join(RAW_DIR, stdid)
+        for file in os.listdir(route_path):
+            if not file.startswith(YMD):
+                continue
             all_args.append((stdid, file))
 
     with Pool(cpu_count()) as pool:
-        results = pool.map(process_bus_file, all_args)
+        results = pool.map(process_file, all_args)
 
     flat_rows = [row for group in results for row in group]
-    os.makedirs(PREPROCESSED_DIR, exist_ok=True)
+    if not flat_rows:
+        log("generateParquet", f"데이터 없음: {YMD}")
+        return
+
     df = pd.DataFrame(flat_rows)
-    df.to_parquet(os.path.join(PREPROCESSED_DIR, "eta_train.parquet"), index=False)
-
-    log("generateParquet", f"✅ {len(df)} rows saved to eta_train.parquet")
-    log("generateParquet", f"⏱ {time.time() - start_time:.2f} sec 소요")
-
-    log("generateParquet", "📦 사용된 raw 파일 이동 중...")
-    for f in used_bus_files:
-        move_to_used(f, bus_dir, os.path.join(USED_DIR, "realtime_bus"))
-    for f in used_weather_files:
-        move_to_used(f, weather_dir, os.path.join(USED_DIR, "weather"))
-    for f in used_traffic_files:
-        move_to_used(f, traffic_dir, os.path.join(USED_DIR, "traffic"))
-    log("generateParquet", "✅ 전체 파일 이동 완료.")
+    save_path = os.path.join(SAVE_DIR, f"eta_train_{YMD}.parquet")
+    df.to_parquet(save_path, index=False)
+    log("generateParquet", f"{len(df)} rows 저장 완료 → {save_path}")
+    log("generateParquet", f"전체 소요시간: {time.time() - start_time:.2f}s")
 
 if __name__ == "__main__":
     generate_parquet()
