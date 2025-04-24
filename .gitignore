@@ -10,8 +10,11 @@ __pycache__/
 .idea/
 *.swp
 
-
 # 기타 임시 파일
 *.tmp
 *.bak
 .DS_Store
+
+# 작업 컴퓨터용
+/backend/data/preprocessed/
+/backend/data/raw/dynamicInfo/
