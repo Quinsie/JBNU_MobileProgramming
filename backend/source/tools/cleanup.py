@@ -26,10 +26,10 @@ for folder in folders:
                 dt = extract_datetime(file)
                 if dt and dt < CUTOFF:
                     os.remove(os.path.join(stdid_path, file))
-                    print(f"🧹 Deleted {folder}/{stdid}/{file}")
+                    print(f"Deleted {folder}/{stdid}/{file}")
     else:
         for file in os.listdir(folder_path):
             dt = extract_datetime(file)
             if dt and dt < CUTOFF:
                 os.remove(os.path.join(folder_path, file))
-                print(f"🧹 Deleted {folder}/{file}")
+                print(f"Deleted {folder}/{file}")
