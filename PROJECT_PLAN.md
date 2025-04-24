@@ -283,4 +283,5 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
   + ETA 테이블에는 있지만 당일에 도착정보가 안 들어오면, 당일 새로운 학습은 힘들지만 다른 row들의 학습으로 인해 전날보단 좀 더 나은 추론이 가능함.
   + ETA 테이블에도 있고, 추가정보도 들어오면 완전한 학습 및 추론이 가능하다.
  - 데이터 정리하다가 실수로 교통량 raw데이터를 24일치 전부를 날려버렸다. 2차 모델은 25일치부터 가능할듯. 짜증. traffic은 24일까지 저장량 없음.
+ - 23일 기준 baseline eta table 만들고, 24일 데이터 전처리할 parquet preprocess 생성 완료. 서버에 이식.
  
