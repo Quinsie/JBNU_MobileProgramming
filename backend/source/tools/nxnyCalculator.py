@@ -1,4 +1,4 @@
-# backend/source/scripts/nxnyCalculator.py
+# backend/source/tools/nxnyCalculator.py
 # 도로교통정보 노드를 기상청 기준 nx_ny로 묶어서 저장하는 스크립트
 
 import os

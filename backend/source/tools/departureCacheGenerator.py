@@ -1,4 +1,4 @@
-# backend/source/scripts/departureCacheGenerator.py
+# backend/source/tools/departureCacheGenerator.py
 
 import os
 import json

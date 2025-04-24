@@ -1,4 +1,4 @@
-# backend/source/scripts/nxnyMapper.py
+# backend/source/tools/nxnyMapper.py
 # grouped_nxny.json에서 각 nx_ny의 대표 좌표를 추출하여 nx_ny_coords.json으로 저장
 
 import os
