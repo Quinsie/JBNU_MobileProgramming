@@ -21,11 +21,13 @@ RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 ETA_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
 NXNY_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
-SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed")
+SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "first_train")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-# 날짜 계산 (오늘 기준: 25일 새벽 실행 → 24일 raw, 23일 ETA 사용)
+# 날짜 계산 (오늘 기준 새벽 실행 → 어제 raw (버스 막차는 23시니까), 엊그제 ETA 사용)
+# 이거 계산 잘해야된다. 학습은, 엊그제 ETA에 엊그제 RAW Filling을 한 이후에 필링된 ETA와 어제 RAW로 학습해야함.
 today = datetime.now().date()
+#today = datetime(2025, 4, 25).date()
 yesterday = today - timedelta(days=1)
 two_days_ago = today - timedelta(days=2)
 start_time = time.time()
@@ -129,7 +131,7 @@ def generate_parquet():
         return
 
     df = pd.DataFrame(flat_rows)
-    save_path = os.path.join(SAVE_DIR, f"eta_train_{YMD}.parquet")
+    save_path = os.path.join(SAVE_DIR, f"{YMD}.parquet")
     df.to_parquet(save_path, index=False)
     log("generateParquet", f"{len(df)} rows 저장 완료 → {save_path}")
     log("generateParquet", f"전체 소요시간: {time.time() - start_time:.2f}s")
