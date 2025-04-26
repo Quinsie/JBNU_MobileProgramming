@@ -109,7 +109,7 @@ def generate_eta_table():
         "T1H"
     ]
 
-    X = torch.tensor(df[feature_cols].values, dtype=torch.float32).to(device)
+    X = torch.from_numpy(df[feature_cols].to_numpy(dtype=np.float32)).to(device)
 
     with torch.no_grad():
         pred_delays = model(X).squeeze(1).tolist()
