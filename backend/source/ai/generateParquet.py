@@ -1,167 +1,151 @@
 # backend/source/ai/generateParquet.py
-# 1차 ETA 학습용 parquet 자동 생성 스크립트 (NODE_ID 추가 버전)
 
 import os
-import sys
 import json
 import pandas as pd
-import time
-import math
+import numpy as np
 from datetime import datetime, timedelta
-from multiprocessing import Pool, cpu_count
+from sklearn.preprocessing import LabelEncoder
+from backend.source.utils.getDayType import getDayType
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.append(BASE_DIR)
+def main():
+    # 경로 설정
+    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    ETA_TABLE_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'eta_table')
+    REALTIME_BUS_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'realtime_bus')
+    WEATHER_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo')
+    STDID_TO_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_to_stops.json')
+    STDID_NUMBER_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_number.json')
+    NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
 
-from source.utils.convertToGrid import convert_to_grid
-from source.utils.getDayType import getDayType
-from source.utils.logger import log
+    # 날짜 설정 (엊그제 baseline, 어제 raw)
+    # today = datetime.now()
+    today = datetime(2025, 4, 25)  # 임시로 4월 25일로 고정
+    yesterday = today - timedelta(days=1)
+    day_before = today - timedelta(days=2)
+    yesterday_str = yesterday.strftime('%Y%m%d')
+    day_before_str = day_before.strftime('%Y%m%d')
 
-# 경로 설정
-RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
-ETA_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
-NXNY_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
-WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
-SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "first_train")
-STDID_TO_STOPS_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_to_stops.json")
-os.makedirs(SAVE_DIR, exist_ok=True)
+    # 파일 경로
+    baseline_path = os.path.join(ETA_TABLE_DIR, f'{day_before_str}.json')
+    parquet_save_path = os.path.join(ETA_TABLE_DIR, f'{yesterday_str}.parquet')
 
-# 날짜 계산 (오늘 기준 새벽 실행 → 어제 raw, 엊그제 ETA 사용)
-# today = datetime.now().date()
-today = datetime(2025, 4, 25).date()
-yesterday = today - timedelta(days=1)
-two_days_ago = today - timedelta(days=2)
-start_time = time.time()
+    # 데이터 로드
+    with open(baseline_path, 'r') as f:
+        baseline_data = json.load(f)
 
-YMD = yesterday.strftime("%Y%m%d")
-ETA_YMD = two_days_ago.strftime("%Y%m%d")
+    with open(STDID_TO_STOPS_PATH, 'r') as f:
+        stdid_to_stops = json.load(f)
 
-# ETA 테이블 불러오기
-eta_path = os.path.join(ETA_DIR, f"{ETA_YMD}.json")
-with open(eta_path, encoding="utf-8") as f:
-    eta_table = json.load(f)
+    with open(STDID_NUMBER_PATH, 'r') as f:
+        stdid_number = json.load(f)
 
-# nx_ny 매핑 불러오기
-with open(NXNY_PATH, encoding="utf-8") as f:
-    nxny_map = json.load(f)
+    with open(NX_NY_STOPS_PATH, 'r') as f:
+        nx_ny_stops = json.load(f)
 
-# STDID 매핑 불러오기
-STDID_MAP_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
-with open(STDID_MAP_PATH, encoding="utf-8") as f:
-    stdid_number_map = json.load(f)
+    # 학습 데이터 리스트
+    data_list = []
 
-# STDID to NODE_ID 매핑 불러오기
-with open(STDID_TO_STOPS_PATH, encoding="utf-8") as f:
-    stdid_to_stops_map = json.load(f)
+    # 라벨 인코더 준비
+    route_encoder = LabelEncoder()
+    node_encoder = LabelEncoder()
 
-# 날씨 타임스탬프 매핑
-weather_ts_map = {
-    datetime.strptime(f.replace(".json", ""), "%Y%m%d_%H%M"): f
-    for f in os.listdir(WEATHER_DIR) if f.endswith(".json")
-}
-weather_cache = {}
-for ts, fname in weather_ts_map.items():
-    try:
-        with open(os.path.join(WEATHER_DIR, fname), encoding="utf-8") as wf:
-            weather_cache[ts] = json.load(wf)
-    except:
-        continue
+    route_encoder.fit(list(stdid_number.values()))
+    node_encoder.fit(list(set(stdid_to_stops.values())))
 
-def process_file(args):
-    stdid, file = args
-    rows = []
-    departure = file[9:13]  # HHMM
-    key = f"{stdid}_{departure}"
-    eta_dict = eta_table.get(key)
-    if not eta_dict:
-        return rows
-
-    path = os.path.join(RAW_DIR, stdid, file)
-    with open(path, encoding="utf-8") as f:
-        data = json.load(f)
-
-    stop_logs = data.get("stop_reached_logs", [])
-    day_type = getDayType(datetime.strptime(YMD, "%Y%m%d"))
-    start_hour, start_minute = int(departure[:2]), int(departure[2:])
-    departure_minute = start_hour * 60 + start_minute
-
-    # departure_time → sin, cos 변환
-    departure_time_norm = (departure_minute % 1440) / 1440
-    departure_time_sin = math.sin(2 * math.pi * departure_time_norm)
-    departure_time_cos = math.cos(2 * math.pi * departure_time_norm)
-
-    # stdid 매핑
-    route_id = stdid_number_map.get(str(stdid))
-    if route_id is None:
-        log("generateParquet", f"STDID 매핑 실패: {stdid} → 프로그램 종료")
-        sys.exit(1)
-
-    for stop in stop_logs:
-        ord = str(stop.get("ord"))
-        actual_time = stop.get("time")
-        if ord not in eta_dict:
+    # 전체 STDID 탐색
+    for stdid_folder in os.listdir(os.path.join(REALTIME_BUS_DIR)):
+        stdid_path = os.path.join(REALTIME_BUS_DIR, stdid_folder)
+        if not os.path.isdir(stdid_path):
             continue
 
-        try:
-            eta_dt = datetime.strptime(f"{YMD} {eta_dict[ord]}", "%Y%m%d %H:%M:%S")
-            actual_dt = datetime.strptime(actual_time, "%Y-%m-%d %H:%M:%S")
-            elapsed = int((actual_dt - eta_dt).total_seconds())
-        except:
-            continue
-
-        nx_ny = nxny_map.get(f"{stdid}_{ord}")
-        PTY = RN1 = T1H = None
-        if nx_ny:
-            weather_key = max([ts for ts in weather_cache if ts <= actual_dt], default=None)
-            if weather_key:
-                weather = weather_cache.get(weather_key, {}).get(nx_ny)
-                if weather:
-                    PTY = int(weather["PTY"])
-                    RN1 = float(weather["RN1"])
-                    T1H = float(weather["T1H"])
-
-        # NODE_ID 추가
-        node_id = stdid_to_stops_map.get(f"{stdid}_{ord}", None)
-
-        rows.append({
-            "route_id": route_id,
-            "departure_time": departure_minute,
-            "departure_time_sin": departure_time_sin,
-            "departure_time_cos": departure_time_cos,
-            "day_type": {"weekday": 0, "saturday": 1, "holiday": 2}[day_type],
-            "stop_order": int(ord),
-            "node_id": node_id,  # 추가
-            "PTY": PTY,
-            "RN1": RN1,
-            "T1H": T1H,
-            "target_elapsed_time": elapsed
-        })
-
-    return rows
-
-def generate_parquet():
-    log("generateParquet", f"{YMD} 전처리 시작")
-    all_args = []
-    for stdid in os.listdir(RAW_DIR):
-        route_path = os.path.join(RAW_DIR, stdid)
-        for file in os.listdir(route_path):
-            if not file.startswith(YMD):
+        for file in os.listdir(stdid_path):
+            if not file.startswith(yesterday_str):
                 continue
-            all_args.append((stdid, file))
 
-    with Pool(cpu_count()) as pool:
-        results = pool.map(process_file, all_args)
+            hhmm = file.split('_')[-1].split('.')[0]
+            stdid_hhmm = f'{stdid_folder}_{hhmm}'
 
-    flat_rows = [row for group in results for row in group]
-    if not flat_rows:
-        log("generateParquet", f"데이터 없음: {YMD}")
-        return
+            realtime_file_path = os.path.join(stdid_path, file)
+            with open(realtime_file_path, 'r') as f:
+                realtime_data = json.load(f)
 
-    df = pd.DataFrame(flat_rows)
-    save_path = os.path.join(SAVE_DIR, f"{YMD}.parquet")
-    df.to_parquet(save_path, index=False)
-    log("generateParquet", f"{len(df)} rows 저장 완료 → {save_path}")
-    log("generateParquet", f"전체 소요시간: {time.time() - start_time:.2f}s")
+            stop_reached_logs = realtime_data.get('stop_reached_logs', [])
+
+            for log in stop_reached_logs:
+                ord_num = str(log['ord'])
+                arrival_time_str = log['time']
+                if stdid_hhmm not in baseline_data or ord_num not in baseline_data[stdid_hhmm]:
+                    continue
+
+                baseline_time_str = baseline_data[stdid_hhmm][ord_num]
+
+                # 시간 변환
+                try:
+                    baseline_time = datetime.strptime(baseline_time_str, '%H:%M:%S')
+                    arrival_time = datetime.strptime(arrival_time_str, '%Y-%m-%d %H:%M:%S')
+                except Exception as e:
+                    continue
+
+                baseline_elapsed = (baseline_time.hour * 3600 + baseline_time.minute * 60 + baseline_time.second)
+                actual_elapsed = (arrival_time.hour * 3600 + arrival_time.minute * 60 + arrival_time.second)
+                delta_elapsed = actual_elapsed - baseline_elapsed
+
+                # weather 매핑
+                key_for_weather = f"{stdid_folder}_{ord_num}"
+                nx_ny_key = nx_ny_stops.get(key_for_weather)
+                if not nx_ny_key:
+                    continue
+
+                weather_file_path = os.path.join(WEATHER_DIR, f'{yesterday_str}_0000.json')
+                with open(weather_file_path, 'r') as f:
+                    weather_data = json.load(f)
+
+                weather = weather_data.get(nx_ny_key, {'PTY': 0, 'RN1': 0, 'T1H': 20})
+
+                # 요일 처리
+                day_type = getDayType(yesterday)
+                if day_type == 'weekday':
+                    weekday_label = 0
+                elif day_type == 'saturday':
+                    weekday_label = 1
+                else:
+                    weekday_label = 2
+
+                # 출발시간 처리 (sin/cos 변환)
+                departure_time = datetime.strptime(hhmm, '%H%M')
+                departure_seconds = departure_time.hour * 3600 + departure_time.minute * 60
+                departure_time_sin = np.sin(2 * np.pi * departure_seconds / 86400)
+                departure_time_cos = np.cos(2 * np.pi * departure_seconds / 86400)
+
+                route_name = stdid_number.get(stdid_folder)
+                node_id = stdid_to_stops.get(f'{stdid_folder}_{ord_num}')
+                if route_name is None or node_id is None:
+                    continue
+
+                data_list.append({
+                    'route_id_encoded': route_encoder.transform([route_name])[0],
+                    'node_id_encoded': node_encoder.transform([node_id])[0],
+                    'stop_ord': int(ord_num),
+                    'departure_time_sin': departure_time_sin,
+                    'departure_time_cos': departure_time_cos,
+                    'weekday': weekday_label,
+                    'PTY': weather['PTY'],
+                    'RN1': weather['RN1'],
+                    'T1H': weather['T1H'],
+                    'baseline_elapsed': baseline_elapsed,
+                    'actual_elapsed': actual_elapsed,
+                    'delta_elapsed': delta_elapsed,
+                })
+
+    # parquet 저장
+    if data_list:
+        df = pd.DataFrame(data_list)
+        os.makedirs(os.path.dirname(parquet_save_path), exist_ok=True)
+        df.to_parquet(parquet_save_path, index=False)
+        print(f"Parquet 생성 완료: {parquet_save_path}")
+    else:
+        print("생성할 데이터가 없습니다.")
 
 if __name__ == "__main__":
-    generate_parquet()
+    main()
