@@ -73,7 +73,7 @@ def generate_eta_table():
         route_to_stdid.setdefault(route_id, []).append(stdid)
 
     # 모델 로드
-    checkpoint = torch.load(MODEL_PATH, map_location=device)
+    checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
     model = ETA_MLP(input_dim=7).to(device)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
