@@ -41,7 +41,7 @@ def generate_eta_table():
     TWO_DAYS_AGO = two_days_ago.strftime("%Y%m%d")
 
     PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY}.parquet")
-    MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "firstETA", f"{TWO_DAYS_AGO}.pth")
+    MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "firstETA", f"{YESTERDAY}.pth")
     STDID_MAP_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
     SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY}.json")
     os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
