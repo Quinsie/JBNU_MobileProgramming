@@ -43,9 +43,12 @@ def train_first_eta():
     df["RN1"] = df["RN1"].fillna(0)
     df["T1H"] = df["T1H"].fillna(0)
 
-    # 라벨 인코딩 (route_id)
-    le = LabelEncoder()
-    df["route_id_encoded"] = le.fit_transform(df["route_id"])
+    # 라벨 인코딩 (route_id, node_id 둘 다)
+    route_le = LabelEncoder()
+    node_le = LabelEncoder()
+
+    df["route_id_encoded"] = route_le.fit_transform(df["route_id"])
+    df["node_id_encoded"] = node_le.fit_transform(df["node_id"])
 
     # Feature, Target 분리
     feature_cols = [
@@ -54,6 +57,7 @@ def train_first_eta():
         "departure_time_cos",
         "day_type",
         "stop_order",
+        "node_id_encoded",  # 추가
         "PTY",
         "RN1",
         "T1H"
@@ -114,10 +118,11 @@ def train_first_eta():
         if epoch % 10 == 0:
             log("trainFirstETA", f"[Epoch {epoch}] Train Loss: {loss.item():.4f} / Val Loss: {val_loss.item():.4f}")
 
-    # 모델 저장
+    # 모델 저장 (route, node 둘 다 저장)
     torch.save({
         "model_state_dict": model.state_dict(),
-        "label_encoder": le,
+        "route_label_encoder": route_le,
+        "node_label_encoder": node_le,
     }, MODEL_SAVE_PATH)
 
     elapsed = time.time() - start_time
