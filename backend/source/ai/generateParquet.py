@@ -1,16 +1,19 @@
 # backend/source/ai/generateParquet.py
 
 import os
+import sys
 import json
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 from sklearn.preprocessing import LabelEncoder
-from backend.source.utils.getDayType import getDayType
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(BASE_DIR)
+from source.utils.getDayType import getDayType
 
 def main():
     # 경로 설정
-    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     ETA_TABLE_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'eta_table')
     REALTIME_BUS_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'realtime_bus')
     WEATHER_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo')
