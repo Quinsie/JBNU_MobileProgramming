@@ -94,8 +94,10 @@ def generate_eta_table():
     df["T1H"] = df["T1H"].fillna(0)
     df["route_id_encoded"] = le.transform(df["route_id"])
 
+    # ★ 새로운 ETA Table
     eta_table = {}
 
+    # 추론 시작
     start_time = time.time()
     log("generateETATable", f"{YESTERDAY} ETA Table 생성 시작")
 
@@ -127,17 +129,17 @@ def generate_eta_table():
         ], dtype=torch.float32).unsqueeze(0).to(device)
 
         with torch.no_grad():
-            pred_delay = model(feature).item()  # 단위: 초
+            pred_delay = model(feature).item()
 
-        # ETA baseline에서 base시간 가져오기
         departure_time_str = f"{departure_time_min:04d}"
         key = f"{stdid}_{departure_time_str}"
-        try:
-            base_arrival_time = eta_baseline[key][stop_order]  # 예: "15:24:00"
-        except KeyError:
-            continue  # baseline에 없는 경우는 skip
 
-        # 기존 base시간에 delay를 더해서 최종 ETA 계산
+        # baseline ETA 가져오기
+        try:
+            base_arrival_time = eta_baseline[key][stop_order]
+        except KeyError:
+            continue  # baseline에도 없으면 pass
+
         base_dt = datetime.strptime(base_arrival_time, "%H:%M:%S")
         base_seconds = base_dt.hour * 3600 + base_dt.minute * 60 + base_dt.second
         new_arrival_seconds = max(base_seconds + pred_delay, 0)
@@ -145,14 +147,30 @@ def generate_eta_table():
         arr_hour = int(new_arrival_seconds // 3600) % 24
         arr_minute = int((new_arrival_seconds % 3600) // 60)
         arr_second = int(new_arrival_seconds % 60)
+
         arr_time_str = f"{arr_hour:02d}:{arr_minute:02d}:{arr_second:02d}"
 
         if key not in eta_table:
             eta_table[key] = {}
         eta_table[key][stop_order] = arr_time_str
 
+    # ✅ baseline과 merge
+    merged_table = {}
+
+    # baseline 우선 채워넣기
+    for key, stops in eta_baseline.items():
+        merged_table[key] = stops.copy()
+
+    # 추론 결과로 덮어쓰기
+    for key, stops in eta_table.items():
+        if key not in merged_table:
+            merged_table[key] = {}
+        for ord, time in stops.items():
+            merged_table[key][ord] = time  # 추론 결과가 있으면 baseline을 덮어씀
+
+    # 최종 저장
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
-        json.dump(eta_table, f, indent=2, ensure_ascii=False)
+        json.dump(merged_table, f, indent=2, ensure_ascii=False)
 
     elapsed = time.time() - start_time
     log("generateETATable", f"ETA Table 저장 완료 → {SAVE_PATH}")
