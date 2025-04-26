@@ -31,8 +31,8 @@ class ETA_MLP(nn.Module):
 
 def generate_eta_table():
     # 날짜 설정
-    today = datetime.now().date()
-    # today = datetime(2025, 4, 25).date()
+    # today = datetime.now().date()
+    today = datetime(2025, 4, 25).date()
     yesterday = today - timedelta(days=1)
 
     YESTERDAY = yesterday.strftime("%Y%m%d")
