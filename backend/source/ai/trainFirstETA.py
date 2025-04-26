@@ -78,17 +78,15 @@ def train_first_eta():
     class ETA_MLP(nn.Module):
         def __init__(self, input_dim):
             super(ETA_MLP, self).__init__()
-            self.fc1 = nn.Linear(input_dim, 128)
-            self.fc2 = nn.Linear(128, 128)
-            self.fc3 = nn.Linear(128, 64)
-            self.fc4 = nn.Linear(64, 1)
+            self.fc1 = nn.Linear(input_dim, 64)
+            self.fc2 = nn.Linear(64, 64)
+            self.fc3 = nn.Linear(64, 1)
             self.relu = nn.ReLU()
 
         def forward(self, x):
             x = self.relu(self.fc1(x))
             x = self.relu(self.fc2(x))
-            x = self.relu(self.fc3(x))
-            x = self.fc4(x)
+            x = self.fc3(x)
             return x
 
     model = ETA_MLP(input_dim=X_train.shape[1]).to(device)
