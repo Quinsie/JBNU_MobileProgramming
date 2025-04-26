@@ -15,8 +15,8 @@ from source.utils.getDayType import getDayType
 def main():
     # 경로 설정
     ETA_TABLE_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'eta_table')
-    REALTIME_BUS_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'realtime_bus')
-    WEATHER_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo')
+    REALTIME_BUS_DIR = os.path.join(BASE_DIR, 'data', 'dynamicInfo', 'realtime_bus')
+    WEATHER_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo', 'weather')
     STDID_TO_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_to_stops.json')
     STDID_NUMBER_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_number.json')
     NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
