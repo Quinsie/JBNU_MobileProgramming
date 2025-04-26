@@ -17,8 +17,8 @@ from source.utils.logger import log  # logger 추가
 
 def train_first_eta():
     # 날짜 설정
-    today = datetime.now().date()
-    # today = datetime(2025, 4, 25).date()  # << 과거 날짜 지정할 때 여기 주석 해제
+    # today = datetime.now().date()
+    today = datetime(2025, 4, 25).date()  # << 과거 날짜 지정 가능
     yesterday = today - timedelta(days=1)
     two_days_ago = today - timedelta(days=2)
     YMD = yesterday.strftime("%Y%m%d")
@@ -48,7 +48,16 @@ def train_first_eta():
     df["route_id_encoded"] = le.fit_transform(df["route_id"])
 
     # Feature, Target 분리
-    feature_cols = ["route_id_encoded", "departure_time", "day_type", "stop_order", "PTY", "RN1", "T1H"]
+    feature_cols = [
+        "route_id_encoded",
+        "departure_time_sin",
+        "departure_time_cos",
+        "day_type",
+        "stop_order",
+        "PTY",
+        "RN1",
+        "T1H"
+    ]
     X = df[feature_cols].values
     y = df["target_elapsed_time"].values
 
@@ -69,7 +78,7 @@ def train_first_eta():
             self.fc2 = nn.Linear(64, 64)
             self.fc3 = nn.Linear(64, 1)
             self.relu = nn.ReLU()
-        
+
         def forward(self, x):
             x = self.relu(self.fc1(x))
             x = self.relu(self.fc2(x))
