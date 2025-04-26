@@ -91,14 +91,19 @@ def process_std_folder(stdid_folder, args):
             nx_ny_key = nx_ny_stops.get(key_for_weather)
 
             if not nx_ny_key:
-                continue
-
-            weather_info = weather_data.get(nx_ny_key, {'PTY': 0, 'RN1': 0, 'T1H': 20})
-            weather = {
-                'PTY': weather_info.get('PTY', 0),
-                'RN1': weather_info.get('RN1', 0),
-                'T1H': weather_info.get('T1H', 20)
-            }
+                log("generateParquet", f"nx_ny_stops에 매칭 실패: {key_for_weather}")
+                weather = {'PTY': 0, 'RN1': 0, 'T1H': 20}
+            else:
+                weather_info = weather_data.get(nx_ny_key)
+                if not weather_info:
+                    log("generateParquet", f"weather_data에 매칭 실패: {nx_ny_key}")
+                    weather = {'PTY': 0, 'RN1': 0, 'T1H': 20}
+                else:
+                    weather = {
+                        'PTY': weather_info.get('PTY', 0),
+                        'RN1': weather_info.get('RN1', 0),
+                        'T1H': weather_info.get('T1H', 20)
+                    }
 
             # 출발시간 처리
             departure_time = datetime.strptime(hhmm, '%H%M')
