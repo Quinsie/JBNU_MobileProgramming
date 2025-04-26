@@ -89,16 +89,15 @@ def generate_eta_table():
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
 
-    le = checkpoint["label_encoder"]
+    route_le = checkpoint["route_label_encoder"]
+    node_le = checkpoint["node_label_encoder"]
 
     # 라벨 인코딩
     df["PTY"] = df["PTY"].fillna(0)
     df["RN1"] = df["RN1"].fillna(0)
     df["T1H"] = df["T1H"].fillna(0)
-    df["route_id_encoded"] = le.transform(df["route_id"])
-
-    node_le = LabelEncoder()
-    df["node_id_encoded"] = node_le.fit_transform(df["node_id"])
+    df["route_id_encoded"] = route_le.transform(df["route_id"])
+    df["node_id_encoded"] = node_le.transform(df["node_id"])
 
     eta_table = {}
 
