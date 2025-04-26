@@ -6,6 +6,7 @@ import sys
 import json
 import pandas as pd
 import time
+import math
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
 
@@ -25,8 +26,8 @@ SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "first_train")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 # 날짜 계산 (오늘 기준 새벽 실행 → 어제 raw, 엊그제 ETA 사용)
-today = datetime.now().date()
-# today = datetime(2025, 4, 25).date()
+# today = datetime.now().date()
+today = datetime(2025, 4, 25).date()
 yesterday = today - timedelta(days=1)
 two_days_ago = today - timedelta(days=2)
 start_time = time.time()
@@ -79,6 +80,11 @@ def process_file(args):
     start_hour, start_minute = int(departure[:2]), int(departure[2:])
     departure_minute = start_hour * 60 + start_minute
 
+    # departure_time → sin, cos 변환
+    departure_time_norm = (departure_minute % 1440) / 1440  # 하루 1440분
+    departure_time_sin = math.sin(2 * math.pi * departure_time_norm)
+    departure_time_cos = math.cos(2 * math.pi * departure_time_norm)
+
     # stdid 매핑
     route_id = stdid_number_map.get(str(stdid))
     if route_id is None:
@@ -111,7 +117,9 @@ def process_file(args):
 
         rows.append({
             "route_id": route_id,  # 매핑된 route_id 사용
-            "departure_time": departure_minute,
+            "departure_time": departure_minute,  # 원래 있던 departure_time
+            "departure_time_sin": departure_time_sin,  # 추가
+            "departure_time_cos": departure_time_cos,  # 추가
             "day_type": {"weekday": 0, "saturday": 1, "holiday": 2}[day_type],
             "stop_order": int(ord),
             "PTY": PTY,
