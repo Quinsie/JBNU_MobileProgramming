@@ -15,7 +15,6 @@ sys.path.append(BASE_DIR)
 
 from source.utils.logger import log
 
-# ETA 예측용 MLP 모델 정의
 class ETA_MLP(nn.Module):
     def __init__(self, input_dim):
         super(ETA_MLP, self).__init__()
@@ -32,13 +31,11 @@ class ETA_MLP(nn.Module):
 
 def generate_eta_table():
     # 날짜 설정
-    # today = datetime.now().date()
-    today = datetime(2025, 4, 25).date()  # << 수동 지정 가능
+    today = datetime.now().date()
+    # today = datetime(2025, 4, 25).date()
     yesterday = today - timedelta(days=1)
-    two_days_ago = today - timedelta(days=2)
 
     YESTERDAY = yesterday.strftime("%Y%m%d")
-    TWO_DAYS_AGO = two_days_ago.strftime("%Y%m%d")
 
     PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY}.parquet")
     MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "firstETA", f"{YESTERDAY}.pth")
@@ -49,7 +46,6 @@ def generate_eta_table():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     log("generateETATable", f"Using device: {device}")
 
-    # 파일 로드
     try:
         df = pd.read_parquet(PARQUET_PATH)
     except Exception as e:
@@ -67,68 +63,54 @@ def generate_eta_table():
         log("generateETATable", f"STDID 매핑파일 불러오기 실패: {e}")
         return
 
-    # route_id -> stdid 리스트 매핑
     route_to_stdid = {}
     for stdid, route_id in stdid_to_route.items():
         route_to_stdid.setdefault(route_id, []).append(stdid)
 
-    # 모델 로드
     checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
     model = ETA_MLP(input_dim=7).to(device)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
     le = checkpoint["label_encoder"]
 
-    # 라벨 인코딩 준비
+    # 전처리
     df["PTY"] = df["PTY"].fillna(0)
     df["RN1"] = df["RN1"].fillna(0)
     df["T1H"] = df["T1H"].fillna(0)
     df["route_id_encoded"] = le.transform(df["route_id"])
 
-    # ETA Table 결과 저장할 dict
+    # ETA Table 저장용 dict
     eta_table = {}
 
-    # 추론 시작
+    # 🎯 최적화 추론 시작
     start_time = time.time()
     log("generateETATable", f"{YESTERDAY} ETA Table 생성 시작")
+
+    feature_cols = ["route_id_encoded", "departure_time", "day_type", "stop_order", "PTY", "RN1", "T1H"]
+    features = torch.tensor(df[feature_cols].values, dtype=torch.float32).to(device)
+
+    with torch.no_grad():
+        pred_elapsed_batch = model(features).squeeze(1).cpu().numpy()
 
     for idx, row in df.iterrows():
         route_id = row["route_id"]
         departure_time = int(row["departure_time"])
         stop_order = str(row["stop_order"])
+        pred_elapsed = pred_elapsed_batch[idx]
 
-        # STDID 찾기
         stdid_list = route_to_stdid.get(route_id)
         if not stdid_list:
             log("generateETATable", f"STDID 매칭 실패: {route_id}")
             sys.exit(1)
 
-        # departure_time 기준으로 파일 존재 확인 (여긴 간략화 - 1개로 고정)
-        # 실제 운영 때는 departure_time도 함께 매핑하는게 더 안전함.
         stdid = stdid_list[0]
 
-        # feature tensor 준비
-        feature = torch.tensor([
-            row["route_id_encoded"],
-            row["departure_time"],
-            row["day_type"],
-            row["stop_order"],
-            row["PTY"],
-            row["RN1"],
-            row["T1H"]
-        ], dtype=torch.float32).unsqueeze(0).to(device)
-
-        # 예측
-        with torch.no_grad():
-            pred_elapsed = model(feature).item()
-
-        # 출발시간 + 예측시간 계산
+        # 시간 계산
         dep_hour = departure_time // 60
         dep_minute = departure_time % 60
-        dep_sec = 0
+        base_seconds = dep_hour * 3600 + dep_minute * 60
 
-        base_seconds = dep_hour * 3600 + dep_minute * 60 + dep_sec
-        arrival_seconds = max(base_seconds + pred_elapsed, 0)
+        arrival_seconds = max(base_seconds + pred_elapsed, base_seconds)
 
         arr_hour = int(arrival_seconds // 3600) % 24
         arr_minute = int((arrival_seconds % 3600) // 60)
@@ -136,13 +118,11 @@ def generate_eta_table():
 
         arr_time_str = f"{arr_hour:02d}:{arr_minute:02d}:{arr_second:02d}"
 
-        # 저장
         key = f"{stdid}_{departure_time:04d}"
         if key not in eta_table:
             eta_table[key] = {}
         eta_table[key][stop_order] = arr_time_str
 
-    # 저장
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(eta_table, f, indent=2, ensure_ascii=False)
 
