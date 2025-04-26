@@ -1,5 +1,3 @@
-# backend/source/ai/generateFirstETATable.py
-
 import os
 import sys
 import json
@@ -9,7 +7,6 @@ import torch.nn as nn
 import math
 import time
 from datetime import datetime, timedelta
-from sklearn.preprocessing import LabelEncoder
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
@@ -99,15 +96,38 @@ def generate_eta_table():
     df["route_id_encoded"] = route_le.transform(df["route_id"])
     df["node_id_encoded"] = node_le.transform(df["node_id"])
 
-    eta_table = {}
+    # departure_time_sin, departure_time_cos 계산
+    df["departure_time_sin"] = df["departure_time"].apply(lambda x: math.sin(2 * math.pi * (x / 1440)))
+    df["departure_time_cos"] = df["departure_time"].apply(lambda x: math.cos(2 * math.pi * (x / 1440)))
 
+    # feature tensor 한번에 만들기
+    feature_cols = [
+        "route_id_encoded",
+        "departure_time_sin",
+        "departure_time_cos",
+        "day_type",
+        "stop_order",
+        "PTY",
+        "RN1",
+        "T1H",
+        "node_id_encoded"
+    ]
+    feature_tensor = torch.tensor(df[feature_cols].values, dtype=torch.float32).to(device)
+
+    # ETA 추론 시작
     start_time = time.time()
-    log("generateETATable", f"{YESTERDAY} ETA Table 생성 시작")
+    log("generateETATable", f"{YESTERDAY} ETA Table 생성 시작 (Batch Inference)")
 
+    with torch.no_grad():
+        pred_delays = model(feature_tensor).squeeze(1).cpu().numpy()  # 결과 전체 추론
+
+    # 결과 매핑
+    eta_table = {}
     for idx, row in df.iterrows():
         route_id = row["route_id"]
         departure_time_min = int(row["departure_time"])
         stop_order = str(row["stop_order"])
+        pred_delay = pred_delays[idx]
 
         stdid_list = route_to_stdid.get(route_id)
         if not stdid_list:
@@ -115,34 +135,13 @@ def generate_eta_table():
             sys.exit(1)
 
         stdid = stdid_list[0]
-
-        # departure_time (분) → sin/cos 변환
-        departure_time_sin = math.sin(2 * math.pi * (departure_time_min / 1440))
-        departure_time_cos = math.cos(2 * math.pi * (departure_time_min / 1440))
-
-        feature = torch.tensor([
-            row["route_id_encoded"],
-            departure_time_sin,
-            departure_time_cos,
-            row["day_type"],
-            row["stop_order"],
-            row["PTY"],
-            row["RN1"],
-            row["T1H"],
-            row["node_id_encoded"]
-        ], dtype=torch.float32).unsqueeze(0).to(device)
-
-        with torch.no_grad():
-            pred_delay = model(feature).item()
-
         departure_time_str = f"{departure_time_min:04d}"
         key = f"{stdid}_{departure_time_str}"
 
-        # baseline ETA 가져오기
         try:
             base_arrival_time = eta_baseline[key][stop_order]
         except KeyError:
-            continue  # baseline에도 없으면 pass
+            continue  # baseline에 없으면 pass
 
         base_dt = datetime.strptime(base_arrival_time, "%H:%M:%S")
         base_seconds = base_dt.hour * 3600 + base_dt.minute * 60 + base_dt.second
