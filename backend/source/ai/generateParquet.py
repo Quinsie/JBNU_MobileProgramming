@@ -1,5 +1,5 @@
 # backend/source/ai/generateParquet.py
-# 1차 ETA 학습용 parquet 자동 생성 스크립트
+# 1차 ETA 학습용 parquet 자동 생성 스크립트 (NODE_ID 추가 버전)
 
 import os
 import sys
@@ -23,6 +23,7 @@ ETA_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
 NXNY_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "first_train")
+STDID_TO_STOPS_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_to_stops.json")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 # 날짜 계산 (오늘 기준 새벽 실행 → 어제 raw, 엊그제 ETA 사용)
@@ -48,6 +49,10 @@ with open(NXNY_PATH, encoding="utf-8") as f:
 STDID_MAP_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
 with open(STDID_MAP_PATH, encoding="utf-8") as f:
     stdid_number_map = json.load(f)
+
+# STDID to NODE_ID 매핑 불러오기
+with open(STDID_TO_STOPS_PATH, encoding="utf-8") as f:
+    stdid_to_stops_map = json.load(f)
 
 # 날씨 타임스탬프 매핑
 weather_ts_map = {
@@ -81,7 +86,7 @@ def process_file(args):
     departure_minute = start_hour * 60 + start_minute
 
     # departure_time → sin, cos 변환
-    departure_time_norm = (departure_minute % 1440) / 1440  # 하루 1440분
+    departure_time_norm = (departure_minute % 1440) / 1440
     departure_time_sin = math.sin(2 * math.pi * departure_time_norm)
     departure_time_cos = math.cos(2 * math.pi * departure_time_norm)
 
@@ -115,13 +120,17 @@ def process_file(args):
                     RN1 = float(weather["RN1"])
                     T1H = float(weather["T1H"])
 
+        # NODE_ID 추가
+        node_id = stdid_to_stops_map.get(f"{stdid}_{ord}", None)
+
         rows.append({
-            "route_id": route_id,  # 매핑된 route_id 사용
-            "departure_time": departure_minute,  # 원래 있던 departure_time
-            "departure_time_sin": departure_time_sin,  # 추가
-            "departure_time_cos": departure_time_cos,  # 추가
+            "route_id": route_id,
+            "departure_time": departure_minute,
+            "departure_time_sin": departure_time_sin,
+            "departure_time_cos": departure_time_cos,
             "day_type": {"weekday": 0, "saturday": 1, "holiday": 2}[day_type],
             "stop_order": int(ord),
+            "node_id": node_id,  # 추가
             "PTY": PTY,
             "RN1": RN1,
             "T1H": T1H,
