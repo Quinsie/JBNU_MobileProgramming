@@ -167,8 +167,8 @@ def generate_eta_table():
     for key, stops in eta_table.items():
         if key not in merged_table:
             merged_table[key] = {}
-        for ord, time in stops.items():
-            merged_table[key][ord] = time
+        for ord, t in stops.items():
+            merged_table[key][ord] = t
 
     # 최종 저장
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
