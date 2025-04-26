@@ -155,21 +155,21 @@ def generate_eta_table():
             eta_table[key] = {}
         eta_table[key][stop_order] = arr_time_str
 
-    # baseline과 merge
-    merged_table = {}
+    # # baseline과 merge
+    # merged_table = {}
 
-    for key, stops in eta_baseline.items():
-        merged_table[key] = stops.copy()
+    # for key, stops in eta_baseline.items():
+    #     merged_table[key] = stops.copy()
 
-    for key, stops in eta_table.items():
-        if key not in merged_table:
-            merged_table[key] = {}
-        for ord, t in stops.items():
-            merged_table[key][ord] = t
+    # for key, stops in eta_table.items():
+    #     if key not in merged_table:
+    #         merged_table[key] = {}
+    #     for ord, t in stops.items():
+    #         merged_table[key][ord] = t
 
     # 최종 저장
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
-        json.dump(merged_table, f, indent=2, ensure_ascii=False)
+        json.dump(eta_table, f, indent=2, ensure_ascii=False)
 
     elapsed = time.time() - start_time
     log("generateETATable", f"ETA Table 저장 완료 → {SAVE_PATH}")
