@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import time
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -74,19 +75,30 @@ def process_std_folder(stdid_folder, args):
             # weather 매칭
             arrival_hhmm = arrival_time.hour * 100 + arrival_time.minute
             closest_weather_file = find_closest_weather_file(weather_files, arrival_hhmm)
+
             if closest_weather_file:
-                with open(closest_weather_file, 'r') as f:
-                    weather_data = json.load(f)
+                try:
+                    with open(closest_weather_file, 'r') as f:
+                        weather_data = json.load(f)
+                except Exception as e:
+                    log("generateParquet", f"날씨 파일 로드 실패: {closest_weather_file}, 에러: {e}")
+                    weather_data = {}
             else:
-                log("generateParquet", f"날씨 데이터 없음: STDID {stdid_folder}, 시간 {arrival_time_str}")
+                log("generateParquet", f"날씨 파일 없음: STDID {stdid_folder}, 시간 {arrival_time_str}")
                 weather_data = {}
 
             key_for_weather = f"{stdid_folder}_{ord_num}"
             nx_ny_key = nx_ny_stops.get(key_for_weather)
+
             if not nx_ny_key:
                 continue
 
-            weather = weather_data.get(nx_ny_key, {'PTY': 0, 'RN1': 0, 'T1H': 20})
+            weather_info = weather_data.get(nx_ny_key, {'PTY': 0, 'RN1': 0, 'T1H': 20})
+            weather = {
+                'PTY': weather_info.get('PTY', 0),
+                'RN1': weather_info.get('RN1', 0),
+                'T1H': weather_info.get('T1H', 20)
+            }
 
             # 출발시간 처리
             departure_time = datetime.strptime(hhmm, '%H%M')
@@ -124,6 +136,7 @@ def main():
     STDID_NUMBER_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_number.json')
     NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
 
+    start_time = time.time()
     today = datetime(2025, 4, 25)  # 임시로 4월 25일
     yesterday = today - timedelta(days=1)
     day_before = today - timedelta(days=2)
@@ -178,6 +191,7 @@ def main():
         log("generateParquet", f"Parquet 생성 완료: {parquet_save_path}")
     else:
         log("generateParquet", "생성할 데이터가 없습니다.")
+    print("소요 시간: ", start_time - time.time(), "sec")
 
 if __name__ == "__main__":
     main()
