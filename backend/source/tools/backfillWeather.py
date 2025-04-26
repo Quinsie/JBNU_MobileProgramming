@@ -1,3 +1,6 @@
+# backend/source/tools/backfillWeather.py
+# 특정 시점 기준으로 날씨를 백필해주는 코드 (이틀 안에 사용해야 함)
+
 import os
 import json
 import time

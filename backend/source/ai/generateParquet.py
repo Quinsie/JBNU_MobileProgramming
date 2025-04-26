@@ -24,10 +24,9 @@ WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "first_train")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-# 날짜 계산 (오늘 기준 새벽 실행 → 어제 raw (버스 막차는 23시니까), 엊그제 ETA 사용)
-# 이거 계산 잘해야된다. 학습은, 엊그제 ETA에 엊그제 RAW Filling을 한 이후에 필링된 ETA와 어제 RAW로 학습해야함.
+# 날짜 계산 (오늘 기준 새벽 실행 → 어제 raw, 엊그제 ETA 사용)
 today = datetime.now().date()
-#today = datetime(2025, 4, 25).date()
+# today = datetime(2025, 4, 25).date()
 yesterday = today - timedelta(days=1)
 two_days_ago = today - timedelta(days=2)
 start_time = time.time()
@@ -43,6 +42,11 @@ with open(eta_path, encoding="utf-8") as f:
 # nx_ny 매핑 불러오기
 with open(NXNY_PATH, encoding="utf-8") as f:
     nxny_map = json.load(f)
+
+# STDID 매핑 불러오기
+STDID_MAP_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
+with open(STDID_MAP_PATH, encoding="utf-8") as f:
+    stdid_number_map = json.load(f)
 
 # 날씨 타임스탬프 매핑
 weather_ts_map = {
@@ -75,6 +79,12 @@ def process_file(args):
     start_hour, start_minute = int(departure[:2]), int(departure[2:])
     departure_minute = start_hour * 60 + start_minute
 
+    # stdid 매핑
+    route_id = stdid_number_map.get(str(stdid))
+    if route_id is None:
+        log("generateParquet", f"STDID 매핑 실패: {stdid} → 프로그램 종료")
+        sys.exit(1)
+
     for stop in stop_logs:
         ord = str(stop.get("ord"))
         actual_time = stop.get("time")
@@ -100,7 +110,7 @@ def process_file(args):
                     T1H = float(weather["T1H"])
 
         rows.append({
-            "route_id": int(stdid),
+            "route_id": route_id,  # 매핑된 route_id 사용
             "departure_time": departure_minute,
             "day_type": {"weekday": 0, "saturday": 1, "holiday": 2}[day_type],
             "stop_order": int(ord),
