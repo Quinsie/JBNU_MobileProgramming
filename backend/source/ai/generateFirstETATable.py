@@ -7,7 +7,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from datetime import datetime, timedelta
-from sklearn.preprocessing import LabelEncoder
+import math
 import time
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -15,6 +15,7 @@ sys.path.append(BASE_DIR)
 
 from source.utils.logger import log
 
+# ETA 예측용 MLP 모델 정의
 class ETA_MLP(nn.Module):
     def __init__(self, input_dim):
         super(ETA_MLP, self).__init__()
@@ -68,35 +69,25 @@ def generate_eta_table():
         route_to_stdid.setdefault(route_id, []).append(stdid)
 
     checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
-    model = ETA_MLP(input_dim=7).to(device)
+    model = ETA_MLP(input_dim=8).to(device)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
     le = checkpoint["label_encoder"]
 
-    # 전처리
     df["PTY"] = df["PTY"].fillna(0)
     df["RN1"] = df["RN1"].fillna(0)
     df["T1H"] = df["T1H"].fillna(0)
     df["route_id_encoded"] = le.transform(df["route_id"])
 
-    # ETA Table 저장용 dict
     eta_table = {}
 
-    # 🎯 최적화 추론 시작
     start_time = time.time()
     log("generateETATable", f"{YESTERDAY} ETA Table 생성 시작")
-
-    feature_cols = ["route_id_encoded", "departure_time", "day_type", "stop_order", "PTY", "RN1", "T1H"]
-    features = torch.tensor(df[feature_cols].values, dtype=torch.float32).to(device)
-
-    with torch.no_grad():
-        pred_elapsed_batch = model(features).squeeze(1).cpu().numpy()
 
     for idx, row in df.iterrows():
         route_id = row["route_id"]
         departure_time = int(row["departure_time"])
         stop_order = str(row["stop_order"])
-        pred_elapsed = pred_elapsed_batch[idx]
 
         stdid_list = route_to_stdid.get(route_id)
         if not stdid_list:
@@ -105,12 +96,30 @@ def generate_eta_table():
 
         stdid = stdid_list[0]
 
-        # 시간 계산
+        # departure_time (분) → sin/cos 변환
+        departure_time_sin = math.sin(2 * math.pi * (departure_time / 1440))
+        departure_time_cos = math.cos(2 * math.pi * (departure_time / 1440))
+
+        feature = torch.tensor([
+            row["route_id_encoded"],
+            departure_time_sin,
+            departure_time_cos,
+            row["day_type"],
+            row["stop_order"],
+            row["PTY"],
+            row["RN1"],
+            row["T1H"]
+        ], dtype=torch.float32).unsqueeze(0).to(device)
+
+        with torch.no_grad():
+            pred_elapsed = model(feature).item()
+
         dep_hour = departure_time // 60
         dep_minute = departure_time % 60
-        base_seconds = dep_hour * 3600 + dep_minute * 60
+        dep_sec = 0
 
-        arrival_seconds = max(base_seconds + pred_elapsed, base_seconds)
+        base_seconds = dep_hour * 3600 + dep_minute * 60 + dep_sec
+        arrival_seconds = max(base_seconds + pred_elapsed, 0)
 
         arr_hour = int(arrival_seconds // 3600) % 24
         arr_minute = int((arrival_seconds % 3600) // 60)
