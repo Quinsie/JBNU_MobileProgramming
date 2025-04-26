@@ -9,6 +9,7 @@ import torch.nn as nn
 import math
 import time
 from datetime import datetime, timedelta
+from sklearn.preprocessing import LabelEncoder
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
@@ -84,20 +85,23 @@ def generate_eta_table():
     for stdid, route_id in stdid_to_route.items():
         route_to_stdid.setdefault(route_id, []).append(stdid)
 
-    model = ETA_MLP(input_dim=8).to(device)
+    model = ETA_MLP(input_dim=9).to(device)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.eval()
+
     le = checkpoint["label_encoder"]
 
+    # 라벨 인코딩
     df["PTY"] = df["PTY"].fillna(0)
     df["RN1"] = df["RN1"].fillna(0)
     df["T1H"] = df["T1H"].fillna(0)
     df["route_id_encoded"] = le.transform(df["route_id"])
 
-    # ★ 새로운 ETA Table
+    node_le = LabelEncoder()
+    df["node_id_encoded"] = node_le.fit_transform(df["node_id"])
+
     eta_table = {}
 
-    # 추론 시작
     start_time = time.time()
     log("generateETATable", f"{YESTERDAY} ETA Table 생성 시작")
 
@@ -125,7 +129,8 @@ def generate_eta_table():
             row["stop_order"],
             row["PTY"],
             row["RN1"],
-            row["T1H"]
+            row["T1H"],
+            row["node_id_encoded"]
         ], dtype=torch.float32).unsqueeze(0).to(device)
 
         with torch.no_grad():
@@ -154,19 +159,17 @@ def generate_eta_table():
             eta_table[key] = {}
         eta_table[key][stop_order] = arr_time_str
 
-    # ✅ baseline과 merge
+    # baseline과 merge
     merged_table = {}
 
-    # baseline 우선 채워넣기
     for key, stops in eta_baseline.items():
         merged_table[key] = stops.copy()
 
-    # 추론 결과로 덮어쓰기
     for key, stops in eta_table.items():
         if key not in merged_table:
             merged_table[key] = {}
         for ord, time in stops.items():
-            merged_table[key][ord] = time  # 추론 결과가 있으면 baseline을 덮어씀
+            merged_table[key][ord] = time
 
     # 최종 저장
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
