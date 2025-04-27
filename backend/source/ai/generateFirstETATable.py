@@ -66,7 +66,7 @@ def main():
     # 데이터 로드
     df = pd.read_parquet(PARQUET_PATH)
 
-    feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H']
+    feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']
     X_dense = df[feature_cols].values
     route_id_list = df['route_id'].values
     node_id_list = df['node_id'].values
