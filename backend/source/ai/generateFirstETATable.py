@@ -118,8 +118,11 @@ def main():
         # 정확한 ETA 계산
         dep_hour = departure_hhmm // 100
         dep_min = departure_hhmm % 100
-        dep_time = datetime(2025, 4, 24, dep_hour, dep_min, 0)
-        eta_time = dep_time + timedelta(seconds=final_elapsed)
+        dep_time = datetime(YESTERDAY_DATE, dep_hour, dep_min, 0)
+        # 출발 기준 시간 보정
+        baseline_dep_time = dep_time - timedelta(seconds=baseline_elapsed)
+        # ETA 계산
+        eta_time = baseline_dep_time + timedelta(seconds=final_elapsed)
         eta_time_str = eta_time.strftime("%H:%M:%S")
 
         if stdid_hhmm not in eta_table:
