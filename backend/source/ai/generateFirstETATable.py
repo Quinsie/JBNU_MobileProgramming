@@ -55,15 +55,9 @@ def main():
     baseline_elapsed_list = df['baseline_elapsed'].values
     route_id_list = df['route_id'].values
     stop_ord_list = df['stop_ord'].values
-    departure_time_sin_list = df['departure_time_sin'].values
-    departure_time_cos_list = df['departure_time_cos'].values
 
     # departure_hhmm 계산
-    dep_seconds = (np.arctan2(departure_time_sin_list, departure_time_cos_list) / (2 * np.pi)) * 86400
-    dep_seconds = dep_seconds % 86400  # 0~86400 사이로 조정
-    dep_hours = (dep_seconds // 3600).astype(int)
-    dep_minutes = ((dep_seconds % 3600) // 60).astype(int)
-    departure_hhmm_list = dep_hours * 100 + dep_minutes
+    departure_hhmm_list = df['departure_hhmm'].values
 
     X = torch.tensor(X, dtype=torch.float32).to(DEVICE)
 

@@ -121,6 +121,7 @@ def process_std_folder(stdid_folder, args):
                 'node_id_encoded': node_encoder.transform([node_id])[0],
                 'route_id': route_name,             # 추가
                 'node_id': node_id, 
+                'departure_hhmm': int(hhmm),    # ✅ 이거 추가
                 'stop_ord': int(ord_num),
                 'departure_time_sin': departure_time_sin,
                 'departure_time_cos': departure_time_cos,
