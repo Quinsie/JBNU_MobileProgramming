@@ -17,23 +17,27 @@ sys.path.append(BASE_DIR)
 from source.utils.getDayType import getDayType
 from source.utils.logger import log
 
-def load_weather_files(weather_dir, target_date):
-    weather_files = {}
-    for file in os.listdir(weather_dir):
-        if file.startswith(target_date):
-            time_part = int(file.split('_')[-1].split('.')[0])
-            weather_files[time_part] = os.path.join(weather_dir, file)
-    return dict(sorted(weather_files.items()))
+# arrival_time 기준 시간대 그룹핑
+def get_time_group(arrival_time):
+    minutes = arrival_time.hour * 60 + arrival_time.minute
+    if 330 <= minutes < 420:  # 05:30~07:00
+        return 0
+    elif 420 <= minutes < 600:  # 07:00~10:00
+        return 1
+    elif 600 <= minutes < 840:  # 10:00~14:00
+        return 2
+    elif 840 <= minutes < 1020:  # 14:00~17:00
+        return 3
+    elif 1020 <= minutes < 1200:  # 17:00~20:00
+        return 4
+    else:  # 20:00~00:00
+        return 5
 
-def find_closest_weather_file(weather_files, target_time):
-    available_times = [t for t in weather_files.keys() if t <= target_time]
-    if not available_times:
-        return None
-    return weather_files[max(available_times)]
-
+# multiprocessing용 함수
 def process_std_folder(stdid_folder, args):
     (REALTIME_BUS_DIR, baseline_data, stdid_to_stops, stdid_number, nx_ny_stops,
-     weather_files, WEATHER_DIR, yesterday_str, weekday_label, route_encoder, node_encoder) = args
+     weather_files, WEATHER_DIR, yesterday_str, weekday_label, weekday_encoder,
+     route_encoder, node_encoder) = args
 
     stdid_path = os.path.join(REALTIME_BUS_DIR, stdid_folder)
     if not os.path.isdir(stdid_path):
@@ -72,6 +76,9 @@ def process_std_folder(stdid_folder, args):
             actual_elapsed = arrival_time.hour * 3600 + arrival_time.minute * 60 + arrival_time.second
             delta_elapsed = actual_elapsed - baseline_elapsed
 
+            # 시간대 그룹 분류
+            departure_time_group = get_time_group(arrival_time)
+
             # weather 매칭
             arrival_hhmm = arrival_time.hour * 100 + arrival_time.minute
             closest_weather_file = find_closest_weather_file(weather_files, arrival_hhmm)
@@ -91,12 +98,12 @@ def process_std_folder(stdid_folder, args):
             nx_ny_key = nx_ny_stops.get(key_for_weather)
 
             if not nx_ny_key:
-                log("generateParquet", f"nx_ny_stops에 매칭 실패: {key_for_weather}")
+                log("generateParquet", f"nx_ny_stops 매칭 실패: {key_for_weather}")
                 weather = {'PTY': 0, 'RN1': 0, 'T1H': 20}
             else:
                 weather_info = weather_data.get(nx_ny_key)
                 if not weather_info:
-                    log("generateParquet", f"weather_data에 매칭 실패: {nx_ny_key}")
+                    log("generateParquet", f"weather_data 매칭 실패: {nx_ny_key}")
                     weather = {'PTY': 0, 'RN1': 0, 'T1H': 20}
                 else:
                     weather = {
@@ -119,22 +126,38 @@ def process_std_folder(stdid_folder, args):
             data_list.append({
                 'route_id_encoded': route_encoder.transform([route_name])[0],
                 'node_id_encoded': node_encoder.transform([node_id])[0],
-                'route_id': route_name,             # 추가
-                'node_id': node_id, 
-                'departure_hhmm': int(hhmm),    # ✅ 이거 추가
+                'weekday_encoded': weekday_encoder.transform([weekday_label])[0],
                 'stop_ord': int(ord_num),
                 'departure_time_sin': departure_time_sin,
                 'departure_time_cos': departure_time_cos,
-                'weekday': weekday_label,
+                'departure_time_group': departure_time_group,
                 'PTY': weather['PTY'],
                 'RN1': weather['RN1'],
                 'T1H': weather['T1H'],
                 'baseline_elapsed': baseline_elapsed,
                 'actual_elapsed': actual_elapsed,
                 'delta_elapsed': delta_elapsed,
+                'route_id': route_name,
+                'node_id': node_id,
+                'departure_hhmm': int(hhmm),
             })
 
     return data_list
+
+# weather 관련 함수들
+def load_weather_files(weather_dir, target_date):
+    weather_files = {}
+    for file in os.listdir(weather_dir):
+        if file.startswith(target_date):
+            time_part = int(file.split('_')[-1].split('.')[0])
+            weather_files[time_part] = os.path.join(weather_dir, file)
+    return dict(sorted(weather_files.items()))
+
+def find_closest_weather_file(weather_files, target_time):
+    available_times = [t for t in weather_files.keys() if t <= target_time]
+    if not available_times:
+        return None
+    return weather_files[max(available_times)]
 
 def main():
     ETA_TABLE_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'eta_table')
@@ -145,8 +168,7 @@ def main():
     NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
 
     start_time = time.time()
-    # today = datetime.now()
-    today = datetime(2025, 4, 25)  # 임시로 4월 25일
+    today = datetime(2025, 4, 25)
     yesterday = today - timedelta(days=1)
     day_before = today - timedelta(days=2)
     yesterday_str = yesterday.strftime('%Y%m%d')
@@ -171,21 +193,19 @@ def main():
 
     route_encoder = LabelEncoder()
     node_encoder = LabelEncoder()
+    weekday_encoder = LabelEncoder()
+    
     route_encoder.fit(list(stdid_number.values()))
     node_encoder.fit(list(set(stdid_to_stops.values())))
+    weekday_encoder.fit(['weekday', 'saturday', 'holiday'])
 
     day_type = getDayType(yesterday)
-    if day_type == 'weekday':
-        weekday_label = 0
-    elif day_type == 'saturday':
-        weekday_label = 1
-    else:
-        weekday_label = 2
 
     stdid_folders = os.listdir(REALTIME_BUS_DIR)
 
     args = (REALTIME_BUS_DIR, baseline_data, stdid_to_stops, stdid_number, nx_ny_stops,
-            weather_files, WEATHER_DIR, yesterday_str, weekday_label, route_encoder, node_encoder)
+            weather_files, WEATHER_DIR, yesterday_str, day_type, weekday_encoder,
+            route_encoder, node_encoder)
 
     with Pool(cpu_count()) as pool:
         results = pool.map(partial(process_std_folder, args=args), stdid_folders)
@@ -200,6 +220,7 @@ def main():
         log("generateParquet", f"Parquet 생성 완료: {parquet_save_path}")
     else:
         log("generateParquet", "생성할 데이터가 없습니다.")
+
     print("소요 시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
