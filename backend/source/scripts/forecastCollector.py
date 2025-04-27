@@ -21,7 +21,7 @@ COORDS_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_coords.json")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 
 # 필요한 카테고리
-CATEGORIES = ["PTY", "RN1", "T1H"]
+CATEGORIES = ["PTY", "PCP", "TMP"]
 
 # 수집 함수 (fallback 추가)
 def collect_forecast(nx, ny):
