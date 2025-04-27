@@ -17,7 +17,7 @@ YESTERDAY_DATE = datetime(2025, 4, 25) - timedelta(days=1)  # 2025-04-24
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.parquet")
-MODEL_PATH = os.path.join(BASE_DIR, "data", "mode", f"{YESTERDAY_STR}.pth")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
 BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
 SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
