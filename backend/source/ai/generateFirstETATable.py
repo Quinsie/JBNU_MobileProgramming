@@ -8,6 +8,8 @@ import time
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
+from multiprocessing import Pool, cpu_count
+from functools import partial
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
@@ -15,13 +17,14 @@ sys.path.append(BASE_DIR)
 # 설정
 # TODAY = datetime.now()
 TODAY = datetime(2025, 4, 25)
-YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
+YESTERDAY_DATE = TODAY - timedelta(days=1)
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.parquet")
 MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
 BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
 SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
+REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
 with open(STDID_NUMBER_PATH, 'r') as f:
@@ -59,6 +62,58 @@ class ETA_MLP(torch.nn.Module):
         x = self.fc3(x)
         return x.squeeze()
 
+def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday_str):
+    # 1. baseline 기반 누락 복구
+    for stdid_hhmm, stops in baseline_table.items():
+        if stdid_hhmm not in eta_table:
+            eta_table[stdid_hhmm] = {}
+        for ord_str, time_val in stops.items():
+            if ord_str not in eta_table[stdid_hhmm]:
+                eta_table[stdid_hhmm][ord_str] = time_val
+
+    # 2. raw 기반 누락 복구
+    def process_std_folder(stdid_folder):
+        recovered = {}
+        stdid_path = os.path.join(realtime_raw_dir, stdid_folder)
+        if not os.path.isdir(stdid_path):
+            return recovered
+
+        for file in os.listdir(stdid_path):
+            if not file.startswith(yesterday_str):
+                continue
+
+            hhmm = file.split('_')[-1].split('.')[0]
+            stdid_hhmm = f"{stdid_folder}_{hhmm}"
+
+            if stdid_hhmm not in eta_table:
+                eta_table[stdid_hhmm] = {}
+
+            file_path = os.path.join(stdid_path, file)
+            try:
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+                logs = data.get("stop_reached_logs", [])
+                for log in logs:
+                    ord_str = str(log['ord'])
+                    time_val = log['time'][-8:]
+                    if ord_str not in eta_table[stdid_hhmm]:
+                        recovered.setdefault(stdid_hhmm, {})[ord_str] = time_val
+            except Exception as e:
+                continue
+        return recovered
+
+    stdid_folders = os.listdir(realtime_raw_dir)
+    with Pool(cpu_count()) as pool:
+        results = pool.map(process_std_folder, stdid_folders)
+
+    for partial_table in results:
+        for stdid_hhmm, stops in partial_table.items():
+            if stdid_hhmm not in eta_table:
+                eta_table[stdid_hhmm] = {}
+            eta_table[stdid_hhmm].update(stops)
+
+    return eta_table
+
 def main():
     start_time = time.time()
     print(f"ETA Table 생성 시작...")
@@ -88,11 +143,9 @@ def main():
     with torch.no_grad():
         pred_delta = model(route_id_encoded, node_id_encoded, weekday_encoded, X_dense).cpu().numpy()
 
-    # baseline 로드
     with open(BASELINE_PATH, 'r') as f:
         baseline_table = json.load(f)
 
-    # ETA Table 생성
     eta_table = {}
 
     for idx in range(len(df)):
@@ -100,7 +153,6 @@ def main():
         departure_hhmm = departure_hhmm_list[idx]
         stop_ord = str(int(stop_ord_list[idx]))
 
-        # stdid 찾기
         stdid_candidates = [stdid for stdid, rname in stdid_number.items() if rname == route_id]
         if not stdid_candidates:
             continue
@@ -108,34 +160,30 @@ def main():
         stdid = stdid_candidates[0]
         stdid_hhmm = f"{stdid}_{departure_hhmm:04d}"
 
-        # dep_hour, dep_min 먼저 계산
         dep_hour = departure_hhmm // 100
         dep_min = departure_hhmm % 100
+        dep_time = datetime(YESTERDAY_DATE.year, YESTERDAY_DATE.month, YESTERDAY_DATE.day, dep_hour, dep_min, 0)
 
-        # dep_seconds를 여기서 계산
         dep_seconds = dep_hour * 3600 + dep_min * 60
 
-        # baseline_elapsed 보정
         baseline_elapsed = baseline_elapsed_list[idx] - dep_seconds
         if baseline_elapsed < 0:
             baseline_elapsed = 0
 
-        # 나머지 원래 하던거
         delta = pred_delta[idx]
         final_elapsed = baseline_elapsed + delta
         if final_elapsed < 0:
             final_elapsed = 0
 
-        # dep_time 설정
-        dep_time = datetime(YESTERDAY_DATE.year, YESTERDAY_DATE.month, YESTERDAY_DATE.day, dep_hour, dep_min, 0)
-
-        # ETA 계산
         eta_time = dep_time + timedelta(seconds=int(final_elapsed))
         eta_time_str = eta_time.strftime("%H:%M:%S")
 
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
         eta_table[stdid_hhmm][stop_ord] = eta_time_str
+
+    # 보정
+    eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR, YESTERDAY_STR)
 
     # 저장
     os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
