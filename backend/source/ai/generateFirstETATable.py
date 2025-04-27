@@ -27,7 +27,7 @@ STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.js
 with open(STDID_NUMBER_PATH, 'r') as f:
     stdid_number = json.load(f)
 
-INPUT_DIM = 6
+INPUT_DIM = 7
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
