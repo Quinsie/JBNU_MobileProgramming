@@ -112,6 +112,8 @@ def main():
             eta_table[stdid_hhmm] = {}
         eta_table[stdid_hhmm][stop_ord] = eta_time_str
 
+        print(departure_hhmm, baseline_elapsed) # debug
+
     # 저장
     os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
     with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
