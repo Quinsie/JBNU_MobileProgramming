@@ -1,4 +1,5 @@
 # backend/source/ai/generateFirstETATable.py
+# dimension 7버전 table을 만든다. Forecast true/false 유의할 것.
 
 import os
 import sys
@@ -22,10 +23,10 @@ TARGET_DATE = TODAY  # 추론 목표 날짜
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 TARGET_STR = TARGET_DATE.strftime("%Y%m%d")
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
-MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
-BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
-SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_3.parquet")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_3.pth")
+BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_3.json")
+SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}_3.json")
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 
@@ -41,7 +42,7 @@ EMBEDDING_DIMS = {
 }
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-USE_FORECAST = True  # True면 예보 사용, False면 기존 방식
+USE_FORECAST = False  # True면 예보 사용, False면 기존 방식, 4/28부터 True
 
 class ETA_MLP(torch.nn.Module):
     def __init__(self):

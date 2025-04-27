@@ -1,4 +1,5 @@
-# backend/source/ai/trainFirstETA.py
+# backend/source/ai/trainContinualFirstETA.py
+# dimension 7 버전
 
 import os
 import sys
@@ -23,8 +24,8 @@ TODAY = datetime(2025, 4, 25)
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_3.parquet")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_3.pth")
 
 INPUT_DIM = 7  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {
@@ -92,6 +93,17 @@ def train():
     dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
 
     model = ETA_MLP().to(DEVICE)
+
+    # 전날 모델 경로
+    DAY_BEFORE_MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_3.pth")
+
+    # 전날 모델이 존재하면 불러오기
+    if os.path.exists(DAY_BEFORE_MODEL_PATH):
+        print(f"전날 모델 불러오기: {DAY_BEFORE_MODEL_PATH}")
+        model.load_state_dict(torch.load(DAY_BEFORE_MODEL_PATH, map_location=DEVICE))
+    else:
+        print(f"전날 모델 없음. 새로운 모델로 학습 시작.")
+
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
     criterion = nn.MSELoss()

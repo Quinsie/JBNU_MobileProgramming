@@ -1,130 +1,138 @@
-# backend/source/ai/trainFirstETAContinual.py
+# backend/source/ai/trainContinualFirstETA.py
 
 import os
 import sys
 import json
+import time
+import random
+import numpy as np
 import pandas as pd
+from datetime import datetime, timedelta
+
 import torch
 import torch.nn as nn
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
-from datetime import datetime, timedelta
-import time
+import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
-from source.utils.logger import log
+# 설정
+# TODAY = datetime.now()
+TODAY = datetime(2025, 4, 25)
+YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
+YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
-def train_first_eta_continual():
-    # 날짜 설정
-    today = datetime.now().date()
-    # today = datetime(2025, 4, 25).date()  # << 수동 지정시 여기 활성화
-    yesterday = today - timedelta(days=1)
-    two_days_ago = today - timedelta(days=2)
-    YESTERDAY = yesterday.strftime("%Y%m%d")
-    TWO_DAYS_AGO = two_days_ago.strftime("%Y%m%d")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
 
-    PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY}.parquet")
-    PREV_MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "firstETA", f"{TWO_DAYS_AGO}.pth")
-    MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "models", "firstETA", f"{YESTERDAY}.pth")
-    os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
+INPUT_DIM = 7  # Dense로 들어갈 feature 개수
+EMBEDDING_DIMS = {
+    'route_id': (500, 8),  # 약 451개 노선 → 8차원 임베딩
+    'node_id': (3200, 16), # 약 3000개 정류장 → 16차원 임베딩
+    'weekday': (3, 2),     # weekday/saturday/holiday → 2차원 임베딩
+}
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+EPOCHS = 600
+BATCH_SIZE = 2048
+LEARNING_RATE = 0.0005
 
-    # GPU 설정
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    log("trainFirstETA", f"Using device: {device}")
+# Dataset
+class ETADataset(Dataset):
+    def __init__(self, df):
+        self.route_id = df['route_id_encoded'].values
+        self.node_id = df['node_id_encoded'].values
+        self.weekday = df['weekday_encoded'].values
+        self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group',
+                               'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']].values
+        self.targets = df['delta_elapsed'].values
 
-    # 데이터 불러오기
-    try:
-        df = pd.read_parquet(PARQUET_PATH)
-    except Exception as e:
-        log("trainFirstETA", f"Parquet 불러오기 실패: {e}")
-        return
+    def __len__(self):
+        return len(self.route_id)
 
-    # 결측치 처리
-    df["PTY"] = df["PTY"].fillna(0)
-    df["RN1"] = df["RN1"].fillna(0)
-    df["T1H"] = df["T1H"].fillna(0)
+    def __getitem__(self, idx):
+        return (
+            torch.tensor(self.route_id[idx], dtype=torch.long),
+            torch.tensor(self.node_id[idx], dtype=torch.long),
+            torch.tensor(self.weekday[idx], dtype=torch.long),
+            torch.tensor(self.dense_feats[idx], dtype=torch.float32),
+            torch.tensor(self.targets[idx], dtype=torch.float32)
+        )
 
-    # 라벨 인코딩 (route_id)
-    le = LabelEncoder()
-    df["route_id_encoded"] = le.fit_transform(df["route_id"])
+# Model
+class ETA_MLP(nn.Module):
+    def __init__(self):
+        super(ETA_MLP, self).__init__()
+        self.route_emb = nn.Embedding(*EMBEDDING_DIMS['route_id'])
+        self.node_emb = nn.Embedding(*EMBEDDING_DIMS['node_id'])
+        self.weekday_emb = nn.Embedding(*EMBEDDING_DIMS['weekday'])
 
-    # Feature, Target 분리
-    feature_cols = ["route_id_encoded", "departure_time", "day_type", "stop_order", "PTY", "RN1", "T1H"]
-    X = df[feature_cols].values
-    y = df["target_elapsed_time"].values
+        self.fc1 = nn.Linear(INPUT_DIM + 8 + 16 + 2, 128)  # Dense + Embedding들
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 1)
+        self.relu = nn.ReLU()
 
-    # train/test split
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1, random_state=42)
+    def forward(self, route_id, node_id, weekday, dense_feats):
+        route_emb = self.route_emb(route_id)
+        node_emb = self.node_emb(node_id)
+        weekday_emb = self.weekday_emb(weekday)
 
-    # Tensor 변환
-    X_train = torch.tensor(X_train, dtype=torch.float32).to(device)
-    y_train = torch.tensor(y_train, dtype=torch.float32).unsqueeze(1).to(device)
-    X_val = torch.tensor(X_val, dtype=torch.float32).to(device)
-    y_val = torch.tensor(y_val, dtype=torch.float32).unsqueeze(1).to(device)
+        x = torch.cat([dense_feats, route_emb, node_emb, weekday_emb], dim=1)
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x.squeeze()
 
-    # MLP 모델 정의
-    class ETA_MLP(nn.Module):
-        def __init__(self, input_dim):
-            super(ETA_MLP, self).__init__()
-            self.fc1 = nn.Linear(input_dim, 64)
-            self.fc2 = nn.Linear(64, 64)
-            self.fc3 = nn.Linear(64, 1)
-            self.relu = nn.ReLU()
-
-        def forward(self, x):
-            x = self.relu(self.fc1(x))
-            x = self.relu(self.fc2(x))
-            x = self.fc3(x)
-            return x
-
-    model = ETA_MLP(input_dim=X_train.shape[1]).to(device)
-
-    # 이전 모델 불러오기
-    if os.path.exists(PREV_MODEL_PATH):
-        checkpoint = torch.load(PREV_MODEL_PATH, map_location=device)
-        model.load_state_dict(checkpoint["model_state_dict"])
-        prev_label_encoder = checkpoint["label_encoder"]
-        log("trainFirstETA", f"이전 모델 로드 완료: {PREV_MODEL_PATH}")
-    else:
-        log("trainFirstETA", f"이전 모델 없음 → 새 모델로 시작")
-
-    # Loss, Optimizer
-    criterion = nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-    # 학습 시작
+# 학습 함수
+def train():
+    df = pd.read_parquet(PARQUET_PATH)
     start_time = time.time()
-    log("trainFirstETA", f"{YESTERDAY} ETA 추가 학습 시작")
 
-    epochs = 300
-    for epoch in range(epochs):
+    dataset = ETADataset(df)
+    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
+
+    model = ETA_MLP().to(DEVICE)
+
+    # 전날 모델 경로
+    DAY_BEFORE_MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.pth")
+
+    # 전날 모델이 존재하면 불러오기
+    if os.path.exists(DAY_BEFORE_MODEL_PATH):
+        print(f"전날 모델 불러오기: {DAY_BEFORE_MODEL_PATH}")
+        model.load_state_dict(torch.load(DAY_BEFORE_MODEL_PATH, map_location=DEVICE))
+    else:
+        print(f"전날 모델 없음. 새로운 모델로 학습 시작.")
+
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
+    criterion = nn.MSELoss()
+
+    for epoch in range(EPOCHS):
         model.train()
-        optimizer.zero_grad()
-        output = model(X_train)
-        loss = criterion(output, y_train)
-        loss.backward()
-        optimizer.step()
+        total_loss = 0
 
-        # validation
-        model.eval()
-        with torch.no_grad():
-            val_output = model(X_val)
-            val_loss = criterion(val_output, y_val)
+        for route_id, node_id, weekday, dense_feats, targets in dataloader:
+            route_id = route_id.to(DEVICE)
+            node_id = node_id.to(DEVICE)
+            weekday = weekday.to(DEVICE)
+            dense_feats = dense_feats.to(DEVICE)
+            targets = targets.to(DEVICE)
 
-        if epoch % 10 == 0:
-            log("trainFirstETA", f"[Epoch {epoch}] Train Loss: {loss.item():.4f} / Val Loss: {val_loss.item():.4f}")
+            optimizer.zero_grad()
+            outputs = model(route_id, node_id, weekday, dense_feats)
+            loss = criterion(outputs, targets)
+            loss.backward()
+            optimizer.step()
 
-    # 모델 저장
-    torch.save({
-        "model_state_dict": model.state_dict(),
-        "label_encoder": le,
-    }, MODEL_SAVE_PATH)
+            total_loss += loss.item() * route_id.size(0)
 
-    elapsed = time.time() - start_time
-    log("trainFirstETA", f"모델 저장 완료: {MODEL_SAVE_PATH}")
-    log("trainFirstETA", f"총 추가 학습 소요시간: {elapsed:.2f}초")
+        scheduler.step()
+        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}")
+
+    os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
+    torch.save(model.state_dict(), MODEL_SAVE_PATH)
+    print(f"모델 저장 완료: {MODEL_SAVE_PATH}")
+    print("총 소요시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
-    train_first_eta_continual()
+    train()

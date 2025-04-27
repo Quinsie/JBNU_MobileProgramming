@@ -1,4 +1,5 @@
 # backend/source/ai/generateFirstETATable.py
+# dimension 6&7버전 table을 만든다. Forecast true/false 유의할 것.
 
 import os
 import sys
@@ -22,10 +23,10 @@ TARGET_DATE = TODAY  # 추론 목표 날짜
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 TARGET_STR = TARGET_DATE.strftime("%Y%m%d")
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
-MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
-BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
-SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_2.parquet")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_2.pth")
+BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_2.json")
+SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}_2.json")
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 
@@ -33,7 +34,7 @@ STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.js
 with open(STDID_NUMBER_PATH, 'r') as f:
     stdid_number = json.load(f)
 
-INPUT_DIM = 7
+INPUT_DIM = 7 # 6//7 조절.
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
@@ -41,7 +42,7 @@ EMBEDDING_DIMS = {
 }
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-USE_FORECAST = True  # True면 예보 사용, False면 기존 방식
+USE_FORECAST = False  # True면 예보 사용, False면 기존 방식, 4/28부터 True
 
 class ETA_MLP(torch.nn.Module):
     def __init__(self):
@@ -132,6 +133,8 @@ def main():
 
     df = pd.read_parquet(PARQUET_PATH)
 
+    # 여기 맨뒤에꺼 지우고 넣고로 6/7 조절 가능.
+    # 'actual_elapsed_from_departure'
     feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']
     X_dense = df[feature_cols].values
     route_id_list = df['route_id'].values

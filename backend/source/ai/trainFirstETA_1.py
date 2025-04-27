@@ -1,4 +1,5 @@
 # backend/source/ai/trainFirstETA.py
+# dimension 6버전
 
 import os
 import sys
@@ -23,8 +24,8 @@ TODAY = datetime(2025, 4, 25)
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_1.parquet")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_1.pth")
 
 INPUT_DIM = 7  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {
@@ -44,7 +45,7 @@ class ETADataset(Dataset):
         self.node_id = df['node_id_encoded'].values
         self.weekday = df['weekday_encoded'].values
         self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group',
-                               'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']].values
+                               'PTY', 'RN1', 'T1H']].values
         self.targets = df['delta_elapsed'].values
 
     def __len__(self):

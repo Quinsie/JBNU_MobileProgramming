@@ -1,4 +1,5 @@
 # backend/source/ai/trainFirstETA.py
+# dimension 7버전
 
 import os
 import sys
@@ -23,8 +24,8 @@ TODAY = datetime(2025, 4, 25)
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_3.parquet")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_3.pth")
 
 INPUT_DIM = 7  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {

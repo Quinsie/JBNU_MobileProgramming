@@ -69,13 +69,34 @@ async def run_scheduler():
             has_started = False
             await asyncio.sleep(900)  # 15분 간격 로그
 
+async def run_forecast():
+    has_run_today = False
+    while True:
+        now = datetime.now()
+        current_time = now.time()
+
+        if time(0, 0) <= current_time <= time(0, 30):
+            if not has_run_today:
+                log("runAll", "단기예보 수집 시작")
+                subprocess.Popen(["python3", "forecastCollector.py"], cwd="backend/source/scripts")
+                has_run_today = True
+            else:
+                log("runAll", "단기예보 이미 수집 완료, 대기 중")
+        else:
+            if current_time >= time(1, 0):
+                has_run_today = False  # 새벽 1시 넘으면 다음날 준비
+            log("runAll", "단기예보 수집 대기 중 (비활성 시간)")
+
+        await asyncio.sleep(1800)  # 30분마다 체크
+
 async def main():
     now = datetime.now()
     log("runAll", f"[SYSTEM] {now} 실행 시작됨")
     await asyncio.gather(
         run_weather(),
         run_traffic(),
-        run_scheduler()
+        run_scheduler(),
+        run_forecast()
     )
 
 if __name__ == "__main__":

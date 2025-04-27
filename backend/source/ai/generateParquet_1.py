@@ -1,4 +1,5 @@
 # backend/source/ai/generateParquet.py
+# dimension 6버전
 
 import os
 import sys
@@ -134,7 +135,7 @@ def process_std_folder(stdid_folder, args):
                 'departure_time_sin': departure_time_sin,
                 'departure_time_cos': departure_time_cos,
                 'departure_time_group': departure_time_group,
-                'actual_elapsed_from_departure': actual_elapsed_from_departure,
+                # 이거 쓰면 7, 안쓰면 6
                 'PTY': weather['PTY'],
                 'RN1': weather['RN1'],
                 'T1H': weather['T1H'],
@@ -165,9 +166,9 @@ def find_closest_weather_file(weather_files, target_time):
 
 def main():
     ETA_TABLE_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'eta_table')
+    PARQUET_DIR = os.paht.join(BASE_DIR, 'data', 'preprocessed', 'first_train')
     REALTIME_BUS_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo', 'realtime_bus')
     WEATHER_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo', 'weather')
-    PARQUET_DIR = os.paht.join(BASE_DIR, 'data', 'preprocessed', 'first_train')
     STDID_TO_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_to_stops.json')
     STDID_NUMBER_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_number.json')
     NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
@@ -181,7 +182,7 @@ def main():
     day_before_str = day_before.strftime('%Y%m%d')
 
     baseline_path = os.path.join(ETA_TABLE_DIR, f'{day_before_str}.json')
-    parquet_save_path = os.path.join(PARQUET_DIR, f'{yesterday_str}.parquet')
+    parquet_save_path = os.path.join(PARQUET_DIR, f'{yesterday_str}_1.parquet')
 
     with open(baseline_path, 'r') as f:
         baseline_data = json.load(f)
