@@ -18,7 +18,9 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
 # 설정
-YESTERDAY_DATE = datetime(2025, 4, 25) - timedelta(days=1)  # 4/24 기준
+# TODAY = datetime.now()
+TODAY = datetime(2025, 4, 25)
+YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.parquet")

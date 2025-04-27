@@ -168,6 +168,7 @@ def main():
     NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
 
     start_time = time.time()
+    # today = datetime.now()
     today = datetime(2025, 4, 25)
     yesterday = today - timedelta(days=1)
     day_before = today - timedelta(days=2)
