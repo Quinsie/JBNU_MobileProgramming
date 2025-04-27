@@ -1,37 +1,36 @@
-# backend/source/ai/trainFirstETA.py
+# backend/source/ai/generateFirstETATable.py
 
 import os
 import sys
+import json
+import time
 import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import DataLoader, TensorDataset
 import pandas as pd
-import joblib
+from datetime import datetime, timedelta
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
 # 설정
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "20250424.parquet")
-ROUTE_ENCODER_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "route_encoder.pkl")
-NODE_ENCODER_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "node_encoder.pkl")
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", "20250424.pth")
+YESTERDAY_DATE = datetime(2025, 4, 25) - timedelta(days=1)  # 2025-04-24
+YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
+
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.parquet")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "mode", f"{YESTERDAY_STR}.pth")
+BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
+SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
 
 INPUT_DIM = 9
-BATCH_SIZE = 1024
-EPOCHS = 300
-LEARNING_RATE = 1e-3
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# MLP 모델 정의
-class ETA_MLP(nn.Module):
+# 모델 정의
+class ETA_MLP(torch.nn.Module):
     def __init__(self):
         super(ETA_MLP, self).__init__()
-        self.fc1 = nn.Linear(INPUT_DIM, 128)
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 1)
-        self.relu = nn.ReLU()
+        self.fc1 = torch.nn.Linear(INPUT_DIM, 128)
+        self.fc2 = torch.nn.Linear(128, 64)
+        self.fc3 = torch.nn.Linear(64, 1)
+        self.relu = torch.nn.ReLU()
 
     def forward(self, x):
         x = self.relu(self.fc1(x))
@@ -40,57 +39,78 @@ class ETA_MLP(nn.Module):
         return x
 
 def main():
-    # 데이터 불러오기
+    # 데이터 로드
     df = pd.read_parquet(PARQUET_PATH)
+    start_time = time.time()
 
     feature_cols = ['route_id_encoded', 'node_id_encoded', 'stop_ord',
                     'departure_time_sin', 'departure_time_cos',
                     'weekday', 'PTY', 'RN1', 'T1H']
-    target_col = 'delta_elapsed'
 
     X = df[feature_cols].values
-    y = df[target_col].values.reshape(-1, 1)
+    baseline_elapsed_list = df['baseline_elapsed'].values
+    route_id_list = df['route_id'].values
+    stop_ord_list = df['stop_ord'].values
+    departure_time_sin_list = df['departure_time_sin'].values
+    departure_time_cos_list = df['departure_time_cos'].values
 
-    X = torch.tensor(X, dtype=torch.float32)
-    y = torch.tensor(y, dtype=torch.float32)
+    # departure_hhmm 계산
+    dep_seconds = (np.arctan2(departure_time_sin_list, departure_time_cos_list) / (2 * np.pi)) * 86400
+    dep_seconds = dep_seconds % 86400  # 0~86400 사이로 조정
+    dep_hours = (dep_seconds // 3600).astype(int)
+    dep_minutes = ((dep_seconds % 3600) // 60).astype(int)
+    departure_hhmm_list = dep_hours * 100 + dep_minutes
 
-    dataset = TensorDataset(X, y)
-    loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+    X = torch.tensor(X, dtype=torch.float32).to(DEVICE)
 
-    # 모델, 손실함수, 옵티마이저 세팅
+    # 모델 로드
     model = ETA_MLP().to(DEVICE)
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
+    model.eval()
 
-    # 학습 시작
-    model.train()
-    for epoch in range(EPOCHS):
-        running_loss = 0.0
-        for batch_X, batch_y in loader:
-            batch_X, batch_y = batch_X.to(DEVICE), batch_y.to(DEVICE)
+    # 예측
+    with torch.no_grad():
+        pred_delta = model(X).squeeze().cpu().numpy()
 
-            optimizer.zero_grad()
-            outputs = model(batch_X)
-            loss = criterion(outputs, batch_y)
-            loss.backward()
-            optimizer.step()
+    # baseline 불러오기
+    with open(BASELINE_PATH, 'r') as f:
+        baseline_table = json.load(f)
 
-            running_loss += loss.item() * batch_X.size(0)
+    # ETA Table 생성
+    eta_table = {}
 
-        epoch_loss = running_loss / len(loader.dataset)
-        if (epoch+1) % 10 == 0 or epoch == 0:
-            print(f"[Epoch {epoch+1}/{EPOCHS}] Loss: {epoch_loss:.4f}")
+    for idx in range(len(df)):
+        route_id = route_id_list[idx]
+        departure_hhmm = departure_hhmm_list[idx]
+        stop_ord = str(int(stop_ord_list[idx]))
 
-    # 모델 저장
-    os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
-    torch.save(model.state_dict(), MODEL_SAVE_PATH)
-    print(f"✅ 모델 저장 완료: {MODEL_SAVE_PATH}")
+        stdid_hhmm = f"{route_id}_{departure_hhmm:04d}"
 
-    # (선택) LabelEncoder 저장 - 이건 나중 추론 때 쓰려고
-    if os.path.exists(ROUTE_ENCODER_PATH) and os.path.exists(NODE_ENCODER_PATH):
-        print("✅ 이미 인코더 저장되어 있음.")
-    else:
-        print("⚠️ 인코더 저장은 별도로 진행 필요.")
+        baseline_elapsed = baseline_elapsed_list[idx]
+        delta = pred_delta[idx]
+        final_elapsed = baseline_elapsed + delta
+
+        if final_elapsed < 0:
+            final_elapsed = 0
+
+        # 출발 시간 기반 ETA 계산
+        dep_hour = departure_hhmm // 100
+        dep_min = departure_hhmm % 100
+        dep_time = datetime(2025, 4, 24, dep_hour, dep_min, 0)
+        eta_time = dep_time + timedelta(seconds=final_elapsed)
+        eta_time_str = eta_time.strftime("%H:%M:%S")
+
+        if stdid_hhmm not in eta_table:
+            eta_table[stdid_hhmm] = {}
+        eta_table[stdid_hhmm][stop_ord] = eta_time_str
+
+    # 저장
+    os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
+    with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
+        json.dump(eta_table, f, indent=2, ensure_ascii=False)
+
+    print(f"ETA Table 생성 완료: {SAVE_JSON_PATH}")
+    print("총 소요시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
     main()
