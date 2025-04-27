@@ -117,6 +117,9 @@ def process_std_folder(stdid_folder, args):
             departure_seconds = departure_time.hour * 3600 + departure_time.minute * 60
             departure_time_sin = np.sin(2 * np.pi * departure_seconds / 86400)
             departure_time_cos = np.cos(2 * np.pi * departure_seconds / 86400)
+            actual_elapsed_from_departure = actual_elapsed - departure_seconds
+            if actual_elapsed_from_departure < 0:
+                actual_elapsed_from_departure = 0  # 혹시 음수 나오면 0으로
 
             route_name = stdid_number.get(stdid_folder)
             node_id = stdid_to_stops.get(f'{stdid_folder}_{ord_num}')
@@ -131,6 +134,7 @@ def process_std_folder(stdid_folder, args):
                 'departure_time_sin': departure_time_sin,
                 'departure_time_cos': departure_time_cos,
                 'departure_time_group': departure_time_group,
+                'actual_elapsed_from_departure': actual_elapsed_from_departure,
                 'PTY': weather['PTY'],
                 'RN1': weather['RN1'],
                 'T1H': weather['T1H'],

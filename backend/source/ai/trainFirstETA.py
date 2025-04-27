@@ -26,16 +26,16 @@ YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.parquet")
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
 
-INPUT_DIM = 6  # Dense로 들어갈 feature 개수
+INPUT_DIM = 7  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {
     'route_id': (500, 8),  # 약 451개 노선 → 8차원 임베딩
     'node_id': (3200, 16), # 약 3000개 정류장 → 16차원 임베딩
     'weekday': (3, 2),     # weekday/saturday/holiday → 2차원 임베딩
 }
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-EPOCHS = 300
-BATCH_SIZE = 4096
-LEARNING_RATE = 1e-3
+EPOCHS = 600
+BATCH_SIZE = 2048
+LEARNING_RATE = 0.0005
 
 # Dataset
 class ETADataset(Dataset):
@@ -43,7 +43,8 @@ class ETADataset(Dataset):
         self.route_id = df['route_id_encoded'].values
         self.node_id = df['node_id_encoded'].values
         self.weekday = df['weekday_encoded'].values
-        self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H']].values
+        self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group',
+                               'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']].values
         self.targets = df['delta_elapsed'].values
 
     def __len__(self):
