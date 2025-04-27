@@ -108,17 +108,27 @@ def main():
         stdid = stdid_candidates[0]
         stdid_hhmm = f"{stdid}_{departure_hhmm:04d}"
 
-        baseline_elapsed = baseline_elapsed_list[idx]
+        # dep_hour, dep_min 먼저 계산
+        dep_hour = departure_hhmm // 100
+        dep_min = departure_hhmm % 100
+
+        # dep_seconds를 여기서 계산
+        dep_seconds = dep_hour * 3600 + dep_min * 60
+
+        # baseline_elapsed 보정
+        baseline_elapsed = baseline_elapsed_list[idx] - dep_seconds
+        if baseline_elapsed < 0:
+            baseline_elapsed = 0
+
+        # 나머지 원래 하던거
         delta = pred_delta[idx]
         final_elapsed = baseline_elapsed + delta
-
         if final_elapsed < 0:
             final_elapsed = 0
 
-        # 정확한 ETA 계산
-        dep_hour = departure_hhmm // 100
-        dep_min = departure_hhmm % 100
+        # dep_time 설정
         dep_time = datetime(YESTERDAY_DATE.year, YESTERDAY_DATE.month, YESTERDAY_DATE.day, dep_hour, dep_min, 0)
+
         # ETA 계산
         eta_time = dep_time + timedelta(seconds=int(final_elapsed))
         eta_time_str = eta_time.strftime("%H:%M:%S")
