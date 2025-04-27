@@ -2,95 +2,123 @@
 
 import os
 import sys
+import json
+import time
+import random
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, TensorDataset
-import pandas as pd
-import joblib
+from torch.utils.data import Dataset, DataLoader
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
 # 설정
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "20250424.parquet")
-ROUTE_ENCODER_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "route_encoder.pkl")
-NODE_ENCODER_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "node_encoder.pkl")
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", "20250424.pth")
+YESTERDAY_DATE = datetime(2025, 4, 25) - timedelta(days=1)  # 4/24 기준
+YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
-INPUT_DIM = 9
-BATCH_SIZE = 1024
-EPOCHS = 300
-LEARNING_RATE = 1e-3
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.parquet")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
+
+INPUT_DIM = 6  # Dense로 들어갈 feature 개수
+EMBEDDING_DIMS = {
+    'route_id': (500, 8),  # 약 451개 노선 → 8차원 임베딩
+    'node_id': (3200, 16), # 약 3000개 정류장 → 16차원 임베딩
+    'weekday': (3, 2),     # weekday/saturday/holiday → 2차원 임베딩
+}
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+EPOCHS = 300
+BATCH_SIZE = 4096
+LEARNING_RATE = 1e-3
 
-# MLP 모델 정의
+# Dataset
+class ETADataset(Dataset):
+    def __init__(self, df):
+        self.route_id = df['route_id_encoded'].values
+        self.node_id = df['node_id_encoded'].values
+        self.weekday = df['weekday_encoded'].values
+        self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H']].values
+        self.targets = df['delta_elapsed'].values
+
+    def __len__(self):
+        return len(self.route_id)
+
+    def __getitem__(self, idx):
+        return (
+            torch.tensor(self.route_id[idx], dtype=torch.long),
+            torch.tensor(self.node_id[idx], dtype=torch.long),
+            torch.tensor(self.weekday[idx], dtype=torch.long),
+            torch.tensor(self.dense_feats[idx], dtype=torch.float32),
+            torch.tensor(self.targets[idx], dtype=torch.float32)
+        )
+
+# Model
 class ETA_MLP(nn.Module):
     def __init__(self):
         super(ETA_MLP, self).__init__()
-        self.fc1 = nn.Linear(INPUT_DIM, 128)
+        self.route_emb = nn.Embedding(*EMBEDDING_DIMS['route_id'])
+        self.node_emb = nn.Embedding(*EMBEDDING_DIMS['node_id'])
+        self.weekday_emb = nn.Embedding(*EMBEDDING_DIMS['weekday'])
+
+        self.fc1 = nn.Linear(INPUT_DIM + 8 + 16 + 2, 128)  # Dense + Embedding들
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, 1)
         self.relu = nn.ReLU()
 
-    def forward(self, x):
+    def forward(self, route_id, node_id, weekday, dense_feats):
+        route_emb = self.route_emb(route_id)
+        node_emb = self.node_emb(node_id)
+        weekday_emb = self.weekday_emb(weekday)
+
+        x = torch.cat([dense_feats, route_emb, node_emb, weekday_emb], dim=1)
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
         x = self.fc3(x)
-        return x
+        return x.squeeze()
 
-def main():
-    # 데이터 불러오기
+# 학습 함수
+def train():
     df = pd.read_parquet(PARQUET_PATH)
+    start_time = time.time()
 
-    feature_cols = ['route_id_encoded', 'node_id_encoded', 'stop_ord',
-                    'departure_time_sin', 'departure_time_cos',
-                    'weekday', 'PTY', 'RN1', 'T1H']
-    target_col = 'delta_elapsed'
+    dataset = ETADataset(df)
+    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
 
-    X = df[feature_cols].values
-    y = df[target_col].values.reshape(-1, 1)
-
-    X = torch.tensor(X, dtype=torch.float32)
-    y = torch.tensor(y, dtype=torch.float32)
-
-    dataset = TensorDataset(X, y)
-    loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
-
-    # 모델, 손실함수, 옵티마이저 세팅
     model = ETA_MLP().to(DEVICE)
-    criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
+    criterion = nn.MSELoss()
 
-    # 학습 시작
-    model.train()
     for epoch in range(EPOCHS):
-        running_loss = 0.0
-        for batch_X, batch_y in loader:
-            batch_X, batch_y = batch_X.to(DEVICE), batch_y.to(DEVICE)
+        model.train()
+        total_loss = 0
+
+        for route_id, node_id, weekday, dense_feats, targets in dataloader:
+            route_id = route_id.to(DEVICE)
+            node_id = node_id.to(DEVICE)
+            weekday = weekday.to(DEVICE)
+            dense_feats = dense_feats.to(DEVICE)
+            targets = targets.to(DEVICE)
 
             optimizer.zero_grad()
-            outputs = model(batch_X)
-            loss = criterion(outputs, batch_y)
+            outputs = model(route_id, node_id, weekday, dense_feats)
+            loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()
 
-            running_loss += loss.item() * batch_X.size(0)
+            total_loss += loss.item() * route_id.size(0)
 
-        epoch_loss = running_loss / len(loader.dataset)
-        if (epoch+1) % 10 == 0 or epoch == 0:
-            print(f"[Epoch {epoch+1}/{EPOCHS}] Loss: {epoch_loss:.4f}")
+        scheduler.step()
+        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}")
 
-    # 모델 저장
     os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
     torch.save(model.state_dict(), MODEL_SAVE_PATH)
-    print(f"✅ 모델 저장 완료: {MODEL_SAVE_PATH}")
-
-    # (선택) LabelEncoder 저장 - 이건 나중 추론 때 쓰려고
-    if os.path.exists(ROUTE_ENCODER_PATH) and os.path.exists(NODE_ENCODER_PATH):
-        print("✅ 이미 인코더 저장되어 있음.")
-    else:
-        print("⚠️ 인코더 저장은 별도로 진행 필요.")
+    print(f"모델 저장 완료: {MODEL_SAVE_PATH}")
+    print("총 소요시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
-    main()
+    train()
