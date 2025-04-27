@@ -3,27 +3,38 @@
 import os
 import sys
 import json
-import pandas as pd
 import torch
-import torch.nn as nn
 import time
-import math
-from datetime import datetime, timedelta
 import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
-from source.utils.logger import log
+# 설정
+YESTERDAY_DATE = datetime(2025, 4, 25) - timedelta(days=1)  # 2025-04-24
+YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
-# ETA 예측용 MLP 모델
-class ETA_MLP(nn.Module):
-    def __init__(self, input_dim):
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.parquet")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "mode", f"{YESTERDAY_STR}.pth")
+BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
+SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
+STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
+with open(STDID_NUMBER_PATH, 'r') as f:
+    stdid_number = json.load(f)
+
+INPUT_DIM = 9
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# 모델 정의
+class ETA_MLP(torch.nn.Module):
+    def __init__(self):
         super(ETA_MLP, self).__init__()
-        self.fc1 = nn.Linear(input_dim, 64)
-        self.fc2 = nn.Linear(64, 64)
-        self.fc3 = nn.Linear(64, 1)
-        self.relu = nn.ReLU()
+        self.fc1 = torch.nn.Linear(INPUT_DIM, 128)
+        self.fc2 = torch.nn.Linear(128, 64)
+        self.fc3 = torch.nn.Linear(64, 1)
+        self.relu = torch.nn.ReLU()
 
     def forward(self, x):
         x = self.relu(self.fc1(x))
@@ -31,149 +42,86 @@ class ETA_MLP(nn.Module):
         x = self.fc3(x)
         return x
 
-def generate_eta_table():
-    # 날짜 설정
-    # today = datetime.now().date()
-    today = datetime(2025, 4, 25).date()  # << 수동 지정
-    yesterday = today - timedelta(days=1)
-    two_days_ago = today - timedelta(days=2)
+def main():
+    # 데이터 로드
+    df = pd.read_parquet(PARQUET_PATH)
+    start_time = time.time()
 
-    YESTERDAY = yesterday.strftime("%Y%m%d")
-    TWO_DAYS_AGO = two_days_ago.strftime("%Y%m%d")
+    feature_cols = ['route_id_encoded', 'node_id_encoded', 'stop_ord',
+                    'departure_time_sin', 'departure_time_cos',
+                    'weekday', 'PTY', 'RN1', 'T1H']
 
-    # 경로 설정
-    PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY}.parquet")
-    MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "firstETA", f"{YESTERDAY}.pth")
-    ETA_BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{TWO_DAYS_AGO}.json")
-    STDID_MAP_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
-    SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY}.json")
-    os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
+    X = df[feature_cols].values
+    baseline_elapsed_list = df['baseline_elapsed'].values
+    route_id_list = df['route_id'].values
+    stop_ord_list = df['stop_ord'].values
+    departure_time_sin_list = df['departure_time_sin'].values
+    departure_time_cos_list = df['departure_time_cos'].values
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    log("generateETATable", f"Using device: {device}")
+    # departure_hhmm 계산
+    dep_seconds = (np.arctan2(departure_time_sin_list, departure_time_cos_list) / (2 * np.pi)) * 86400
+    dep_seconds = dep_seconds % 86400  # 0~86400 사이로 조정
+    dep_hours = (dep_seconds // 3600).astype(int)
+    dep_minutes = ((dep_seconds % 3600) // 60).astype(int)
+    departure_hhmm_list = dep_hours * 100 + dep_minutes
 
-    # 파일 로드
-    try:
-        df = pd.read_parquet(PARQUET_PATH)
-    except Exception as e:
-        log("generateETATable", f"Parquet 불러오기 실패: {e}")
-        return
+    X = torch.tensor(X, dtype=torch.float32).to(DEVICE)
 
-    try:
-        with open(MODEL_PATH, "rb") as f:
-            checkpoint = torch.load(f, map_location=device, weights_only=False)
-    except Exception as e:
-        log("generateETATable", f"모델 불러오기 실패: {e}")
-        return
-
-    try:
-        with open(ETA_BASELINE_PATH, encoding="utf-8") as f:
-            eta_baseline = json.load(f)
-    except Exception as e:
-        log("generateETATable", f"Baseline ETA 불러오기 실패: {e}")
-        return
-
-    try:
-        with open(STDID_MAP_PATH, encoding="utf-8") as f:
-            stdid_to_route = json.load(f)
-    except Exception as e:
-        log("generateETATable", f"STDID 매핑파일 불러오기 실패: {e}")
-        return
-
-    # 매핑 준비
-    route_to_stdid = {}
-    for stdid, route_id in stdid_to_route.items():
-        route_to_stdid.setdefault(route_id, []).append(stdid)
-
-    model = ETA_MLP(input_dim=9).to(device)
-    model.load_state_dict(checkpoint["model_state_dict"])
+    # 모델 로드
+    model = ETA_MLP().to(DEVICE)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
     model.eval()
 
-    route_le = checkpoint["route_label_encoder"]
-    node_le = checkpoint["node_label_encoder"]
-
-    # 라벨 인코딩
-    df["PTY"] = df["PTY"].fillna(0)
-    df["RN1"] = df["RN1"].fillna(0)
-    df["T1H"] = df["T1H"].fillna(0)
-    df["route_id_encoded"] = route_le.transform(df["route_id"])
-    df["node_id_encoded"] = node_le.transform(df["node_id"])
-
-    # feature 뽑기 (sin/cos는 parquet 안에 있는 걸 그대로 사용)
-    feature_cols = [
-        "route_id_encoded",
-        "departure_time_sin",
-        "departure_time_cos",
-        "day_type",
-        "stop_order",
-        "node_id_encoded",
-        "PTY",
-        "RN1",
-        "T1H"
-    ]
-
-    X = torch.from_numpy(df[feature_cols].to_numpy(dtype=np.float32)).to(device)
-
-    # 추론 시작
-    start_time = time.time()
-    log("generateETATable", f"{YESTERDAY} ETA Table 생성 시작")
-
+    # 예측
     with torch.no_grad():
-        pred_delays = model(X).squeeze(1).tolist()
+        pred_delta = model(X).squeeze().cpu().numpy()
 
+    # baseline 불러오기
+    with open(BASELINE_PATH, 'r') as f:
+        baseline_table = json.load(f)
+
+    # ETA Table 생성
     eta_table = {}
 
-    for idx, row in df.iterrows():
-        route_id = row["route_id"]
-        departure_time_min = int(row["departure_time"])
-        stop_order = str(row["stop_order"])
+    for idx in range(len(df)):
+        route_id = route_id_list[idx]
+        departure_hhmm = departure_hhmm_list[idx]
+        stop_ord = str(int(stop_ord_list[idx]))
 
-        stdid_list = route_to_stdid.get(route_id)
-        if not stdid_list:
-            log("generateETATable", f"STDID 매칭 실패: {route_id}")
-            sys.exit(1)
+        # route_id를 통해 stdid 찾기
+        stdid_candidates = [stdid for stdid, rname in stdid_number.items() if rname == route_id]
 
-        stdid = stdid_list[0]
-        departure_time_str = f"{departure_time_min:04d}"
-        key = f"{stdid}_{departure_time_str}"
+        if not stdid_candidates:
+            continue  # 매칭 실패 시 그냥 스킵 (혹시라도 문제 생길때 대비)
 
-        try:
-            base_arrival_time = eta_baseline[key][stop_order]
-        except KeyError:
-            continue
+        stdid = stdid_candidates[0]
+        stdid_hhmm = f"{stdid}_{departure_hhmm:04d}"
 
-        base_dt = datetime.strptime(base_arrival_time, "%H:%M:%S")
-        base_seconds = base_dt.hour * 3600 + base_dt.minute * 60 + base_dt.second
-        new_arrival_seconds = max(base_seconds + pred_delays[idx], 0)
+        baseline_elapsed = baseline_elapsed_list[idx]
+        delta = pred_delta[idx]
+        final_elapsed = baseline_elapsed + delta
 
-        arr_hour = int(new_arrival_seconds // 3600) % 24
-        arr_minute = int((new_arrival_seconds % 3600) // 60)
-        arr_second = int(new_arrival_seconds % 60)
-        arr_time_str = f"{arr_hour:02d}:{arr_minute:02d}:{arr_second:02d}"
+        if final_elapsed < 0:
+            final_elapsed = 0
 
-        if key not in eta_table:
-            eta_table[key] = {}
-        eta_table[key][stop_order] = arr_time_str
+        # 출발 시간 기반 ETA 계산
+        dep_hour = departure_hhmm // 100
+        dep_min = departure_hhmm % 100
+        dep_time = datetime(2025, 4, 24, dep_hour, dep_min, 0)
+        eta_time = dep_time + timedelta(seconds=final_elapsed)
+        eta_time_str = eta_time.strftime("%H:%M:%S")
 
-    # # baseline과 merge
-    # merged_table = {}
+        if stdid_hhmm not in eta_table:
+            eta_table[stdid_hhmm] = {}
+        eta_table[stdid_hhmm][stop_ord] = eta_time_str
 
-    # for key, stops in eta_baseline.items():
-    #     merged_table[key] = stops.copy()
-
-    # for key, stops in eta_table.items():
-    #     if key not in merged_table:
-    #         merged_table[key] = {}
-    #     for ord, t in stops.items():
-    #         merged_table[key][ord] = t
-
-    # 최종 저장
-    with open(SAVE_PATH, "w", encoding="utf-8") as f:
+    # 저장
+    os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
+    with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
         json.dump(eta_table, f, indent=2, ensure_ascii=False)
 
-    elapsed = time.time() - start_time
-    log("generateETATable", f"ETA Table 저장 완료 → {SAVE_PATH}")
-    log("generateETATable", f"총 소요시간: {elapsed:.2f}초")
+    print(f"ETA Table 생성 완료: {SAVE_JSON_PATH}")
+    print("총 소요시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
-    generate_eta_table()
+    main()
