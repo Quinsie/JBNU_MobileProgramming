@@ -119,6 +119,8 @@ def process_std_folder(stdid_folder, args):
             data_list.append({
                 'route_id_encoded': route_encoder.transform([route_name])[0],
                 'node_id_encoded': node_encoder.transform([node_id])[0],
+                'route_id': route_name,             # 추가
+                'node_id': node_id, 
                 'stop_ord': int(ord_num),
                 'departure_time_sin': departure_time_sin,
                 'departure_time_cos': departure_time_cos,
