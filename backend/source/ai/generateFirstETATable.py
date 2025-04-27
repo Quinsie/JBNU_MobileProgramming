@@ -102,9 +102,16 @@ def main():
             final_elapsed = 0
 
         # 출발 시간 기반 ETA 계산
-        dep_hour = departure_hhmm // 100
-        dep_min = departure_hhmm % 100
-        dep_time = datetime(2025, 4, 24, dep_hour, dep_min, 0)
+        dep_time = datetime(2025, 4, 24, 0, 0, 0)
+
+        baseline_elapsed = baseline_elapsed_list[idx]
+        delta = pred_delta[idx]
+        final_elapsed = baseline_elapsed + delta
+
+        if final_elapsed < 0:
+            final_elapsed = 0
+
+        # eta 계산
         eta_time = dep_time + timedelta(seconds=final_elapsed)
         eta_time_str = eta_time.strftime("%H:%M:%S")
 
@@ -112,7 +119,6 @@ def main():
             eta_table[stdid_hhmm] = {}
         eta_table[stdid_hhmm][stop_ord] = eta_time_str
 
-        print(departure_hhmm, baseline_elapsed) # debug
 
     # 저장
     os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
