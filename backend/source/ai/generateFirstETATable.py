@@ -69,6 +69,9 @@ def main():
     # 예측
     with torch.no_grad():
         pred_delta = model(X).squeeze().cpu().numpy()
+    
+    # debug!
+    print(pred_delta[:20])
 
     # baseline 불러오기
     with open(BASELINE_PATH, 'r') as f:
