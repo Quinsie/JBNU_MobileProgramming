@@ -1,133 +1,96 @@
 # backend/source/ai/trainFirstETA.py
 
 import os
-import pandas as pd
+import sys
 import torch
 import torch.nn as nn
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
-from datetime import datetime, timedelta
-import time
-import sys
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+import pandas as pd
+import joblib
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
-from source.utils.logger import log  # logger 추가
+# 설정
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "20250424.parquet")
+ROUTE_ENCODER_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "route_encoder.pkl")
+NODE_ENCODER_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "node_encoder.pkl")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", "20250424.pth")
 
-def train_first_eta():
-    # 날짜 설정
-    # today = datetime.now().date()
-    today = datetime(2025, 4, 25).date()  # << 과거 날짜 지정 가능
-    yesterday = today - timedelta(days=1)
-    two_days_ago = today - timedelta(days=2)
-    YMD = yesterday.strftime("%Y%m%d")
+INPUT_DIM = 9
+BATCH_SIZE = 1024
+EPOCHS = 300
+LEARNING_RATE = 1e-3
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YMD}.parquet")
-    MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "models", "firstETA", f"{YMD}.pth")
-    os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
+# MLP 모델 정의
+class ETA_MLP(nn.Module):
+    def __init__(self):
+        super(ETA_MLP, self).__init__()
+        self.fc1 = nn.Linear(INPUT_DIM, 128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 1)
+        self.relu = nn.ReLU()
 
-    # GPU 설정
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    log("trainFirstETA", f"Using device: {device}")
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
+def main():
     # 데이터 불러오기
-    try:
-        df = pd.read_parquet(PARQUET_PATH)
-    except Exception as e:
-        log("trainFirstETA", f"Parquet 불러오기 실패: {e}")
-        return
+    df = pd.read_parquet(PARQUET_PATH)
 
-    # 결측치 처리
-    df["PTY"] = df["PTY"].fillna(0)
-    df["RN1"] = df["RN1"].fillna(0)
-    df["T1H"] = df["T1H"].fillna(0)
+    feature_cols = ['route_id_encoded', 'node_id_encoded', 'stop_ord',
+                    'departure_time_sin', 'departure_time_cos',
+                    'weekday', 'PTY', 'RN1', 'T1H']
+    target_col = 'delta_elapsed'
 
-    # 라벨 인코딩 (route_id, node_id 둘 다)
-    route_le = LabelEncoder()
-    node_le = LabelEncoder()
-
-    df["route_id_encoded"] = route_le.fit_transform(df["route_id"])
-    df["node_id_encoded"] = node_le.fit_transform(df["node_id"])
-
-    # Feature, Target 분리
-    feature_cols = [
-        "route_id_encoded",
-        "departure_time_sin",
-        "departure_time_cos",
-        "day_type",
-        "stop_order",
-        "node_id_encoded",  # 추가
-        "PTY",
-        "RN1",
-        "T1H"
-    ]
     X = df[feature_cols].values
-    y = df["target_elapsed_time"].values
+    y = df[target_col].values.reshape(-1, 1)
 
-    # train/test split
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.1, random_state=42)
+    X = torch.tensor(X, dtype=torch.float32)
+    y = torch.tensor(y, dtype=torch.float32)
 
-    # Tensor 변환
-    X_train = torch.tensor(X_train, dtype=torch.float32).to(device)
-    y_train = torch.tensor(y_train, dtype=torch.float32).unsqueeze(1).to(device)
-    X_val = torch.tensor(X_val, dtype=torch.float32).to(device)
-    y_val = torch.tensor(y_val, dtype=torch.float32).unsqueeze(1).to(device)
+    dataset = TensorDataset(X, y)
+    loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-    # MLP 모델 정의
-    class ETA_MLP(nn.Module):
-        def __init__(self, input_dim):
-            super(ETA_MLP, self).__init__()
-            self.fc1 = nn.Linear(input_dim, 64)
-            self.fc2 = nn.Linear(64, 64)
-            self.fc3 = nn.Linear(64, 1)
-            self.relu = nn.ReLU()
-
-        def forward(self, x):
-            x = self.relu(self.fc1(x))
-            x = self.relu(self.fc2(x))
-            x = self.fc3(x)
-            return x
-
-    model = ETA_MLP(input_dim=X_train.shape[1]).to(device)
-
-    # Loss, Optimizer
+    # 모델, 손실함수, 옵티마이저 세팅
+    model = ETA_MLP().to(DEVICE)
     criterion = nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-    # 학습 소요시간 측정 시작
-    start_time = time.time()
-    log("trainFirstETA", f"{YMD} ETA 학습 시작")
+    # 학습 시작
+    model.train()
+    for epoch in range(EPOCHS):
+        running_loss = 0.0
+        for batch_X, batch_y in loader:
+            batch_X, batch_y = batch_X.to(DEVICE), batch_y.to(DEVICE)
 
-    # 학습
-    epochs = 300
-    for epoch in range(epochs):
-        model.train()
-        optimizer.zero_grad()
-        output = model(X_train)
-        loss = criterion(output, y_train)
-        loss.backward()
-        optimizer.step()
+            optimizer.zero_grad()
+            outputs = model(batch_X)
+            loss = criterion(outputs, batch_y)
+            loss.backward()
+            optimizer.step()
 
-        # validation
-        model.eval()
-        with torch.no_grad():
-            val_output = model(X_val)
-            val_loss = criterion(val_output, y_val)
+            running_loss += loss.item() * batch_X.size(0)
 
-        if epoch % 10 == 0:
-            log("trainFirstETA", f"[Epoch {epoch}] Train Loss: {loss.item():.4f} / Val Loss: {val_loss.item():.4f}")
+        epoch_loss = running_loss / len(loader.dataset)
+        if (epoch+1) % 10 == 0 or epoch == 0:
+            print(f"[Epoch {epoch+1}/{EPOCHS}] Loss: {epoch_loss:.4f}")
 
-    # 모델 저장 (route, node 둘 다 저장)
-    torch.save({
-        "model_state_dict": model.state_dict(),
-        "route_label_encoder": route_le,
-        "node_label_encoder": node_le,
-    }, MODEL_SAVE_PATH)
+    # 모델 저장
+    os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
+    torch.save(model.state_dict(), MODEL_SAVE_PATH)
+    print(f"✅ 모델 저장 완료: {MODEL_SAVE_PATH}")
 
-    elapsed = time.time() - start_time
-    log("trainFirstETA", f"모델 저장 완료: {MODEL_SAVE_PATH}")
-    log("trainFirstETA", f"총 학습 소요시간: {elapsed:.2f}초")
+    # (선택) LabelEncoder 저장 - 이건 나중 추론 때 쓰려고
+    if os.path.exists(ROUTE_ENCODER_PATH) and os.path.exists(NODE_ENCODER_PATH):
+        print("✅ 이미 인코더 저장되어 있음.")
+    else:
+        print("⚠️ 인코더 저장은 별도로 진행 필요.")
 
 if __name__ == "__main__":
-    train_first_eta()
+    main()

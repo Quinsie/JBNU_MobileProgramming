@@ -142,6 +142,7 @@ def main():
     NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
 
     start_time = time.time()
+    # today = datetime.now()
     today = datetime(2025, 4, 25)  # 임시로 4월 25일
     yesterday = today - timedelta(days=1)
     day_before = today - timedelta(days=2)
@@ -196,7 +197,7 @@ def main():
         log("generateParquet", f"Parquet 생성 완료: {parquet_save_path}")
     else:
         log("generateParquet", "생성할 데이터가 없습니다.")
-    print("소요 시간: ", start_time - time.time(), "sec")
+    print("소요 시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
     main()
