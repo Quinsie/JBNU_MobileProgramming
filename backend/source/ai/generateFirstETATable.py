@@ -118,7 +118,7 @@ def main():
         # 정확한 ETA 계산
         dep_hour = departure_hhmm // 100
         dep_min = departure_hhmm % 100
-        dep_time = datetime(YESTERDAY_DATE, dep_hour, dep_min, 0)
+        dep_time = datetime(YESTERDAY_DATE.year, YESTERDAY_DATE.month, YESTERDAY_DATE.day, dep_hour, dep_min, 0)
         # 출발 기준 시간 보정
         baseline_dep_time = dep_time - timedelta(seconds=baseline_elapsed)
         # ETA 계산
