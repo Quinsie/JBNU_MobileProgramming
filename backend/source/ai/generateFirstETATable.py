@@ -62,6 +62,30 @@ class ETA_MLP(torch.nn.Module):
         x = self.fc3(x)
         return x.squeeze()
 
+# 2. raw 기반 누락 복구
+def process_std_folder(stdid_folder_args):
+    stdid_folder, REALTIME_BUS_DIR, YESTERDAY_STR = stdid_folder_args
+    folder_path = os.path.join(REALTIME_BUS_DIR, stdid_folder)
+    recovered = {}
+
+    if not os.path.isdir(folder_path):
+        return recovered
+
+    for file in os.listdir(folder_path):
+        if not file.startswith(YESTERDAY_STR):
+            continue
+        file_path = os.path.join(folder_path, file)
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+            for log in data.get('stop_reached_logs', []):
+                ord_num = str(log['ord'])
+                time_str = log['time'][-8:]
+                recovered.setdefault(f"{stdid_folder}_{file.split('_')[-1].split('.')[0]}", {})[ord_num] = time_str
+        except:
+            continue
+    return recovered
+
 def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday_str):
     # 1. baseline 기반 누락 복구
     for stdid_hhmm, stops in baseline_table.items():
@@ -71,46 +95,17 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday
             if ord_str not in eta_table[stdid_hhmm]:
                 eta_table[stdid_hhmm][ord_str] = time_val
 
-    # 2. raw 기반 누락 복구
-    def process_std_folder(stdid_folder):
-        recovered = {}
-        stdid_path = os.path.join(realtime_raw_dir, stdid_folder)
-        if not os.path.isdir(stdid_path):
-            return recovered
-
-        for file in os.listdir(stdid_path):
-            if not file.startswith(yesterday_str):
-                continue
-
-            hhmm = file.split('_')[-1].split('.')[0]
-            stdid_hhmm = f"{stdid_folder}_{hhmm}"
-
-            if stdid_hhmm not in eta_table:
-                eta_table[stdid_hhmm] = {}
-
-            file_path = os.path.join(stdid_path, file)
-            try:
-                with open(file_path, 'r') as f:
-                    data = json.load(f)
-                logs = data.get("stop_reached_logs", [])
-                for log in logs:
-                    ord_str = str(log['ord'])
-                    time_val = log['time'][-8:]
-                    if ord_str not in eta_table[stdid_hhmm]:
-                        recovered.setdefault(stdid_hhmm, {})[ord_str] = time_val
-            except Exception as e:
-                continue
-        return recovered
-
     stdid_folders = os.listdir(realtime_raw_dir)
     with Pool(cpu_count()) as pool:
-        results = pool.map(process_std_folder, stdid_folders)
-
+        results = pool.map(process_std_folder, [(stdid, REALTIME_BUS_DIR, YESTERDAY_STR) for stdid in stdid_folders])
+        
     for partial_table in results:
         for stdid_hhmm, stops in partial_table.items():
             if stdid_hhmm not in eta_table:
                 eta_table[stdid_hhmm] = {}
-            eta_table[stdid_hhmm].update(stops)
+            for ord_str, time_val in stops.items():
+                if ord_str not in eta_table[stdid_hhmm]:
+                    eta_table[stdid_hhmm][ord_str] = time_val
 
     return eta_table
 
