@@ -69,7 +69,7 @@ def collect_forecast(nx, ny):
                     if timestamp not in result:
                         result[timestamp] = {}
 
-                    result[timestamp][category] = float(value) if "." in str(value) else int(value)
+                    result[timestamp][category] = float(value) if str(value).replace('.', '', 1).isdigit() else 0.0
 
                 # 여기! 성공한 base_date/base_time을 명시적으로 남긴다
                 log("forecastCollector", f"[성공] {base_date} {base_time} 기준 예보 수집 완료 (nx={nx}, ny={ny})")
