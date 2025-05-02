@@ -20,14 +20,14 @@ sys.path.append(BASE_DIR)
 
 # 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 25)
+TODAY = datetime(2025, 4, 26)
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_2.parquet")
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_2.pth")
 
-INPUT_DIM = 7  # Dense로 들어갈 feature 개수 <-- 6/7 조절.
+INPUT_DIM = 6  # Dense로 들어갈 feature 개수 <-- 6/7 조절.
 EMBEDDING_DIMS = {
     'route_id': (500, 8),  # 약 451개 노선 → 8차원 임베딩
     'node_id': (3200, 16), # 약 3000개 정류장 → 16차원 임베딩
@@ -45,7 +45,7 @@ class ETADataset(Dataset):
         self.node_id = df['node_id_encoded'].values
         self.weekday = df['weekday_encoded'].values
         self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group',
-                               'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']].values
+                               'PTY', 'RN1', 'T1H']].values
         # actual_elapsed_from_departure 지우면 6, 있으면 7.
         self.targets = df['delta_elapsed'].values
 

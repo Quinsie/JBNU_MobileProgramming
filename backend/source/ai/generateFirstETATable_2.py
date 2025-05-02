@@ -16,7 +16,7 @@ sys.path.append(BASE_DIR)
 
 # 날짜 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 25)  # 지금 날짜
+TODAY = datetime(2025, 4, 26)  # 지금 날짜
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 학습용 어제 날짜
 TARGET_DATE = TODAY  # 추론 목표 날짜
 
@@ -34,7 +34,7 @@ STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.js
 with open(STDID_NUMBER_PATH, 'r') as f:
     stdid_number = json.load(f)
 
-INPUT_DIM = 7 # 6//7 조절.
+INPUT_DIM = 6 # 6//7 조절.
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
@@ -135,7 +135,7 @@ def main():
 
     # 여기 맨뒤에꺼 지우고 넣고로 6/7 조절 가능.
     # 'actual_elapsed_from_departure'
-    feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']
+    feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H']
     X_dense = df[feature_cols].values
     route_id_list = df['route_id'].values
     node_id_list = df['node_id'].values
