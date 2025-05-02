@@ -21,6 +21,20 @@ def is_within_active_hours():
     now = datetime.now().time()
     return now >= time(5, 30) or now <= time(0, 30)
 
+async def run_zombie_cleaner():
+    while True:
+        cleaned = 0
+        for p in psutil.process_iter(attrs=["pid", "status"]):
+            try:
+                if p.info["status"] == psutil.STATUS_ZOMBIE:
+                    os.waitpid(p.info["pid"], os.WNOHANG)
+                    cleaned += 1
+            except (ChildProcessError, PermissionError, ProcessLookupError):
+                continue
+        if cleaned > 0:
+            log("runAll", f"[CLEANER] 좀비 프로세스 {cleaned}개 수거 완료")
+        await asyncio.sleep(60)  # 1분마다 반복
+
 async def run_weather():
     while True:
         if is_within_active_hours():
@@ -96,7 +110,8 @@ async def main():
         run_weather(),
         run_traffic(),
         run_scheduler(),
-        run_forecast()
+        run_forecast(),
+        run_zombie_cleaner()
     )
 
 if __name__ == "__main__":

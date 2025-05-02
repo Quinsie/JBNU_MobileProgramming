@@ -65,8 +65,22 @@ def run_tracking_job():
             hhmm  # ex: "05:30"
         ], cwd = BASE_DIR)
 
+def clean_zombie_processes():
+    cleaned = 0
+    for p in psutil.process_iter(attrs=["pid", "status", "ppid"]):
+        try:
+            if p.info["status"] == psutil.STATUS_ZOMBIE:
+                os.waitpid(p.info["pid"], os.WNOHANG)  # 자식 프로세스 수거
+                cleaned += 1
+        except (ChildProcessError, PermissionError, ProcessLookupError):
+            continue
+
+    if cleaned > 0:
+        log("scheduler", f"[CLEANER] 좀비 프로세스 {cleaned}개 수거 완료")
+
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
     scheduler.add_job(run_tracking_job, "cron", minute="*", second=0)
-    log("scheduler", "실시간 버스 감시 스케줄러 시작")  # log 사용
+    scheduler.add_job(clean_zombie_processes, "cron", minute="*", second=30)
+    log("scheduler", "실시간 버스 감시 스케줄러 시작")
     scheduler.start()
