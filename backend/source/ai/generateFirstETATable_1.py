@@ -188,6 +188,7 @@ def main():
 
         eta_time = dep_time + timedelta(seconds=int(final_elapsed))
         eta_time_str = eta_time.strftime("%H:%M:%S")
+        print(f"{stdid_hhmm} / {idx} → ETA = {eta_time_str}, delta = {final_elapsed:.2f}") # debug
 
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
