@@ -90,7 +90,8 @@ def process_std_folder(stdid_folder_args):
             continue
     return recovered
 
-def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday_str):
+def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
+    # 1. baseline fallback: 모델이 예측하지 않은 key만 채운다
     for stdid_hhmm, stops in baseline_table.items():
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
@@ -98,6 +99,7 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday
             if ord_str not in eta_table[stdid_hhmm]:
                 eta_table[stdid_hhmm][ord_str] = time_val
 
+    # 2. 실제 도착 시간 보정 (단, 모델 예측값보다 우선하지 않도록!)
     stdid_folders = os.listdir(realtime_raw_dir)
     with Pool(cpu_count()) as pool:
         results = pool.map(process_std_folder, [(stdid, REALTIME_BUS_DIR, YESTERDAY_STR) for stdid in stdid_folders])
@@ -106,7 +108,12 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday
         for stdid_hhmm, stops in partial_table.items():
             if stdid_hhmm not in eta_table:
                 eta_table[stdid_hhmm] = {}
-            eta_table[stdid_hhmm].update(stops)
+            for ord_str, time_val in stops.items():
+                # ❗ 이미 모델이 예측한 값은 절대 덮지 말 것
+                if ord_str not in eta_table[stdid_hhmm]:
+                    eta_table[stdid_hhmm][ord_str] = time_val
+
+    return eta_table
 
     return eta_table
 
@@ -188,13 +195,13 @@ def main():
 
         eta_time = dep_time + timedelta(seconds=int(final_elapsed))
         eta_time_str = eta_time.strftime("%H:%M:%S")
-        print(f"{stdid_hhmm} / {idx} → ETA = {eta_time_str}, delta = {final_elapsed:.2f}") # debug
+        # print(f"{stdid_hhmm} / {idx} → ETA = {eta_time_str}, delta = {final_elapsed:.2f}") # debug
 
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
         eta_table[stdid_hhmm][stop_ord] = eta_time_str
 
-    eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR, YESTERDAY_STR)
+    eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR)
 
     os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
     with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
