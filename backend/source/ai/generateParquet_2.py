@@ -1,5 +1,5 @@
 # backend/source/ai/generateParquet.py
-# dimension 6/7버전
+# dimension 7버전
 
 import os
 import sys
@@ -136,7 +136,7 @@ def process_std_folder(stdid_folder, args):
                 'departure_time_cos': departure_time_cos,
                 'departure_time_group': departure_time_group,
                 # 이거 쓰면 7, 안쓰면 6
-                # 'actual_elapsed_from_departure': actual_elapsed_from_departure,
+                'actual_elapsed_from_departure': actual_elapsed_from_departure,
                 'PTY': weather['PTY'],
                 'RN1': weather['RN1'],
                 'T1H': weather['T1H'],
@@ -176,13 +176,13 @@ def main():
 
     start_time = time.time()
     # today = datetime.now()
-    today = datetime(2025, 4, 26)
+    today = datetime(2025, 4, 25)
     yesterday = today - timedelta(days=1)
     day_before = today - timedelta(days=2)
     yesterday_str = yesterday.strftime('%Y%m%d')
     day_before_str = day_before.strftime('%Y%m%d')
 
-    baseline_path = os.path.join(ETA_TABLE_DIR, f'{day_before_str}.json')
+    baseline_path = os.path.join(ETA_TABLE_DIR, f'{day_before_str}_1.json')
     parquet_save_path = os.path.join(PARQUET_DIR, f'{yesterday_str}_2.parquet')
 
     with open(baseline_path, 'r') as f:

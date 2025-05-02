@@ -1,5 +1,5 @@
 # backend/source/ai/trainContinualFirstETA.py
-# dimension 6/7 버전
+# dimension 7 버전
 
 import os
 import sys
@@ -20,14 +20,14 @@ sys.path.append(BASE_DIR)
 
 # 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 26)
+TODAY = datetime(2025, 4, 25)
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_2.parquet")
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_2.pth")
 
-INPUT_DIM = 6  # Dense로 들어갈 feature 개수 <-- 6/7 조절.
+INPUT_DIM = 7  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {
     'route_id': (500, 8),  # 약 451개 노선 → 8차원 임베딩
     'node_id': (3200, 16), # 약 3000개 정류장 → 16차원 임베딩
@@ -45,8 +45,7 @@ class ETADataset(Dataset):
         self.node_id = df['node_id_encoded'].values
         self.weekday = df['weekday_encoded'].values
         self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group',
-                               'PTY', 'RN1', 'T1H']].values
-        # actual_elapsed_from_departure 지우면 6, 있으면 7.
+                               'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']].values
         self.targets = df['delta_elapsed'].values
 
     def __len__(self):
@@ -96,7 +95,7 @@ def train():
     model = ETA_MLP().to(DEVICE)
 
     # 전날 모델 경로
-    DAY_BEFORE_MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_2.pth")
+    DAY_BEFORE_MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "first_eta", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_2.pth")
 
     # 전날 모델이 존재하면 불러오기
     if os.path.exists(DAY_BEFORE_MODEL_PATH):

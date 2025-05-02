@@ -24,7 +24,7 @@ YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 TARGET_STR = TARGET_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_1.parquet")
-MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_1.pth")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "first_eta", f"{YESTERDAY_STR}_1.pth")
 BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_1.json")
 SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}_1.json")
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")

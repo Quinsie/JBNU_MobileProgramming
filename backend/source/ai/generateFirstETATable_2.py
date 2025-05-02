@@ -1,5 +1,5 @@
 # backend/source/ai/generateFirstETATable.py
-# dimension 6&7버전 table을 만든다. Forecast true/false 유의할 것.
+# dimension 7버전 table을 만든다. Forecast true/false 유의할 것.
 
 import os
 import sys
@@ -16,7 +16,7 @@ sys.path.append(BASE_DIR)
 
 # 날짜 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 26)  # 지금 날짜
+TODAY = datetime(2025, 4, 25)  # 지금 날짜
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 학습용 어제 날짜
 TARGET_DATE = TODAY  # 추론 목표 날짜
 
@@ -24,7 +24,7 @@ YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 TARGET_STR = TARGET_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_2.parquet")
-MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_2.pth")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "models", "first_eta", f"{YESTERDAY_STR}_2.pth")
 BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_2.json")
 SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}_2.json")
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
@@ -34,7 +34,7 @@ STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.js
 with open(STDID_NUMBER_PATH, 'r') as f:
     stdid_number = json.load(f)
 
-INPUT_DIM = 6 # 6//7 조절.
+INPUT_DIM = 7
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
@@ -90,7 +90,8 @@ def process_std_folder(stdid_folder_args):
             continue
     return recovered
 
-def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday_str):
+def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
+    # 1. baseline fallback: 모델이 예측하지 않은 key만 채운다
     for stdid_hhmm, stops in baseline_table.items():
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
@@ -98,6 +99,7 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday
             if ord_str not in eta_table[stdid_hhmm]:
                 eta_table[stdid_hhmm][ord_str] = time_val
 
+    # 2. 실제 도착 시간 보정 (단, 모델 예측값보다 우선하지 않도록!)
     stdid_folders = os.listdir(realtime_raw_dir)
     with Pool(cpu_count()) as pool:
         results = pool.map(process_std_folder, [(stdid, REALTIME_BUS_DIR, YESTERDAY_STR) for stdid in stdid_folders])
@@ -106,7 +108,12 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday
         for stdid_hhmm, stops in partial_table.items():
             if stdid_hhmm not in eta_table:
                 eta_table[stdid_hhmm] = {}
-            eta_table[stdid_hhmm].update(stops)
+            for ord_str, time_val in stops.items():
+                # ❗ 이미 모델이 예측한 값은 절대 덮지 말 것
+                if ord_str not in eta_table[stdid_hhmm]:
+                    eta_table[stdid_hhmm][ord_str] = time_val
+
+    return eta_table
 
     return eta_table
 
@@ -133,9 +140,7 @@ def main():
 
     df = pd.read_parquet(PARQUET_PATH)
 
-    # 여기 맨뒤에꺼 지우고 넣고로 6/7 조절 가능.
-    # 'actual_elapsed_from_departure'
-    feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H']
+    feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']
     X_dense = df[feature_cols].values
     route_id_list = df['route_id'].values
     node_id_list = df['node_id'].values
@@ -190,12 +195,13 @@ def main():
 
         eta_time = dep_time + timedelta(seconds=int(final_elapsed))
         eta_time_str = eta_time.strftime("%H:%M:%S")
+        # print(f"{stdid_hhmm} / {idx} → ETA = {eta_time_str}, delta = {final_elapsed:.2f}") # debug
 
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
         eta_table[stdid_hhmm][stop_ord] = eta_time_str
 
-    eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR, YESTERDAY_STR)
+    eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR)
 
     os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
     with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
