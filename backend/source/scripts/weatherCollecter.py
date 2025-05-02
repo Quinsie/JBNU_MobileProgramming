@@ -51,6 +51,13 @@ def collect_weather(nx, ny, retry=2):
                 data = response.json()
                 items = data.get("response", {}).get("body", {}).get("items", {}).get("item", [])
 
+                # 빈 응답일 경우 재시도
+                if not items:
+                    log("weatherCollector", f"빈 응답 items → 재시도. (nx={nx}, ny={ny}) [시도 {try_count}]")
+                    base_dt -= timedelta(minutes=30)
+                    time.sleep(0.5)
+                    continue
+
                 result = {}
                 for cat in CATEGORIES:
                     val = next((i["obsrValue"] for i in items if i["category"] == cat), None)
@@ -58,6 +65,13 @@ def collect_weather(nx, ny, retry=2):
                         result[cat] = float(val) if "." in str(val) else int(val)
                     else:
                         result[cat] = None
+
+                # 모든 값이 None일 경우 무효 처리
+                if all(v is None for v in result.values()):
+                    log("weatherCollector", f"모든 항목 None → 무효 응답 간주. 재시도. (nx={nx}, ny={ny}) [시도 {try_count}]")
+                    base_dt -= timedelta(minutes=30)
+                    time.sleep(0.5)
+                    continue
 
                 log("weatherCollector", f"대체 시각 사용: {base_time} (nx={nx}, ny={ny})")
                 return result

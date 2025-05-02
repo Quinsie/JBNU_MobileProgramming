@@ -48,7 +48,7 @@ def load_all_weather_files():
 
 def fill_missing_data(data_by_date):
     for date, entries in data_by_date.items():
-        log("fillNullWeather_all", f"\n📅 처리 중: {date} ({len(entries)}개 파일)")
+        log("fillNullWeather_all", f"\n처리 중: {date} ({len(entries)}개 파일)")
 
         for i, entry in enumerate(entries):
             current_data = entry["data"]
@@ -67,7 +67,7 @@ def fill_missing_data(data_by_date):
             if updated:
                 with open(entry["path"], "w", encoding="utf-8") as f:
                     json.dump(current_data, f, ensure_ascii=False, indent=2)
-                log("fillNullWeather_all", f"✅ {entry['filename']} 저장 완료")
+                log("fillNullWeather_all", f"{entry['filename']} 저장 완료")
 
 if __name__ == "__main__":
     all_data = load_all_weather_files()

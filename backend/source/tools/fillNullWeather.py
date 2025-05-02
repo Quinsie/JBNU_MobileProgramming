@@ -41,11 +41,11 @@ def get_yesterday_file_list():
 def fill_yesterday_missing():
     entries = get_yesterday_file_list()
     if not entries:
-        log("fillNullWeather", "⚠️ 어제 날짜 파일 없음. 종료.")
+        log("fillNullWeather", "어제 날짜 파일 없음. 종료.")
         return
 
     date = entries[0]["datetime"].strftime("%Y%m%d")
-    log("fillNullWeather", f"📅 어제 날짜 {date} 총 {len(entries)}개 파일 처리")
+    log("fillNullWeather", f"어제 날짜 {date} 총 {len(entries)}개 파일 처리")
 
     for i, entry in enumerate(entries):
         current_data = entry["data"]
@@ -64,7 +64,7 @@ def fill_yesterday_missing():
         if updated:
             with open(entry["path"], "w", encoding="utf-8") as f:
                 json.dump(current_data, f, ensure_ascii=False, indent=2)
-            log("fillNullWeather", f"✅ {entry['filename']} 저장 완료")
+            log("fillNullWeather", f"{entry['filename']} 저장 완료")
 
 if __name__ == "__main__":
     fill_yesterday_missing()
