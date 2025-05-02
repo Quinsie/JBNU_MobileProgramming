@@ -182,7 +182,7 @@ def main():
     yesterday_str = yesterday.strftime('%Y%m%d')
     day_before_str = day_before.strftime('%Y%m%d')
 
-    baseline_path = os.path.join(ETA_TABLE_DIR, f'{day_before_str}.json')
+    baseline_path = os.path.join(ETA_TABLE_DIR, f'{day_before_str}_1.json')
     parquet_save_path = os.path.join(PARQUET_DIR, f'{yesterday_str}_3.parquet')
 
     with open(baseline_path, 'r') as f:
