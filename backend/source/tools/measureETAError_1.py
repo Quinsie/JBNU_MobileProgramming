@@ -15,6 +15,7 @@ REALTIME_RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtim
 
 def load_eta_table(target_date_str):
     eta_path = os.path.join(ETA_TABLE_DIR, f"{target_date_str}_1.json")
+    print(f"ETA table 로딩 경로: {eta_path}")  # load_eta_table() 안에 추가
     with open(eta_path, 'r') as f:
         eta_table = json.load(f)
     return eta_table
