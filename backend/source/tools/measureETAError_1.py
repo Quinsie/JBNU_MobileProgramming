@@ -59,6 +59,9 @@ def measure_error(eta_table, realtime_logs, stdid_filter=None, hhmm_filter=None)
         for ord_num, eta_time in stops.items():
             if ord_num not in realtime_stops:
                 continue
+
+            print(f"ETA 비교 → key: {stdid_hhmm} / {ord_num}, ETA: {eta_time}, REAL: {realtime_stops[ord_num]}") # debug
+
             eta_sec = time_to_seconds(eta_time)
             real_sec = time_to_seconds(realtime_stops[ord_num])
             error = real_sec - eta_sec
