@@ -20,7 +20,7 @@ sys.path.append(BASE_DIR)
 
 # 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 28)
+TODAY = datetime(2025, 4, 29)
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
