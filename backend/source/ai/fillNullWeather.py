@@ -35,7 +35,7 @@ def get_yesterday_file_list():
                 "data": data
             })
         except Exception as e:
-            log("fillNullWeather", f"❌ 파일 무시: {f} → {e}")
+            log("fillNullWeather", f"파일 무시: {f} → {e}")
     return sorted(entries, key=lambda x: x["datetime"])
 
 def fill_yesterday_missing():
