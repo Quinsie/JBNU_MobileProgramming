@@ -27,7 +27,7 @@ YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_1.parquet")
 MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_1.pth")
 
-INPUT_DIM = 7  # Dense로 들어갈 feature 개수
+INPUT_DIM = 6  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {
     'route_id': (500, 8),  # 약 451개 노선 → 8차원 임베딩
     'node_id': (3200, 16), # 약 3000개 정류장 → 16차원 임베딩
