@@ -25,7 +25,7 @@ YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_1.parquet")
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_1.pth")
+MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "models", "first_eta", f"{YESTERDAY_STR}_1.pth")
 
 INPUT_DIM = 6  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {
