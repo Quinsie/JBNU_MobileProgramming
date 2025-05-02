@@ -71,7 +71,12 @@ def collect_forecast(nx, ny):
 
                     result[timestamp][category] = float(value) if str(value).replace('.', '', 1).isdigit() else 0.0
 
-                # 여기! 성공한 base_date/base_time을 명시적으로 남긴다
+                # 새로 추가된 fallback 조건
+                if not result:
+                    log("forecastCollector", f"유효한 카테고리 없음 → fallback 계속 (nx={nx}, ny={ny})")
+                    time.sleep(0.5)
+                    continue
+
                 log("forecastCollector", f"[성공] {base_date} {base_time} 기준 예보 수집 완료 (nx={nx}, ny={ny})")
                 return result
 
@@ -82,7 +87,7 @@ def collect_forecast(nx, ny):
 
         time.sleep(0.5)
 
-    log("forecastCollector", f"[실패] 최종 수집 실패 (nx={nx}, ny={ny})")
+    log("forecastCollector", f"[실패] 최종 수집 실패: (nx={nx}, ny={ny})")
     return None
 
 
