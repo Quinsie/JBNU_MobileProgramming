@@ -167,7 +167,7 @@ def find_closest_weather_file(weather_files, target_time):
 
 def main():
     ETA_TABLE_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'eta_table')
-    PARQUET_DIR = os.paht.join(BASE_DIR, 'data', 'preprocessed', 'first_train')
+    PARQUET_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'first_train')
     REALTIME_BUS_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo', 'realtime_bus')
     WEATHER_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo', 'weather')
     STDID_TO_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_to_stops.json')
