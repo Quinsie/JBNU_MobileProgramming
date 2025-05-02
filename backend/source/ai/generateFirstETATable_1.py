@@ -16,7 +16,7 @@ sys.path.append(BASE_DIR)
 
 # 날짜 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 30)  # 지금 날짜
+TODAY = datetime(2025, 5, 1)  # 지금 날짜
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 학습용 어제 날짜
 TARGET_DATE = TODAY  # 추론 목표 날짜
 
