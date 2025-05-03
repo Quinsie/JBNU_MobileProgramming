@@ -93,6 +93,7 @@ def process_route(stdid):
     cur_pos = vtx_list[0]
     visited = set()
     last_angle_check = None
+    last_detected_ord = -1
 
     for i in range(1, len(vtx_list)):
         prev = cur_pos
@@ -122,7 +123,11 @@ def process_route(stdid):
             if stop_index < len(stops):
                 current_stop = stops[stop_index]
                 dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
-                if dist_to_stop < STOP_MATCH_THRESHOLD and current_stop["STOP_ID"] not in detected_stop_ids:
+                if (
+                    dist_to_stop < STOP_MATCH_THRESHOLD and
+                    current_stop["STOP_ID"] not in detected_stop_ids and
+                    current_stop["ORD"] > last_detected_ord
+                ):
                     output.append({
                         "NODE_ID": node_id,
                         "TYPE": "STOP",
@@ -132,6 +137,7 @@ def process_route(stdid):
                     })
                     node_id += 1
                     detected_stop_ids.add(current_stop["STOP_ID"])
+                    last_detected_ord = current_stop["ORD"]
                     stop_index += 1
                     continue
 
@@ -149,7 +155,7 @@ def process_route(stdid):
     for i, stop in enumerate(stops):
         if stop["STOP_ID"] not in detected_stop_ids:
             if i > 0 and stops[i - 1]["STOP_ID"] not in detected_stop_ids:
-                continue  # 이전 정류장이 감지되지 않았으면 추가하지 않음
+                continue
             min_d = float("inf")
             insert_idx = 0
             for j, node in enumerate(output):
