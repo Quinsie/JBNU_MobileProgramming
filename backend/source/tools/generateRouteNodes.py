@@ -1,12 +1,15 @@
 # backend/source/tools/generateRouteNodes.py
 
 import os
+import sys
 import json
 from multiprocessing import Pool
-from source.utils.haversine import haversine_distance
+
 
 # 기본 경로 설정
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(BASE_DIR)
+from source.utils.haversine import haversine_distance
 STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
 VTX_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes")
