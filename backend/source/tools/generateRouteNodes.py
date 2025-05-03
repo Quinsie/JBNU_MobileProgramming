@@ -75,18 +75,25 @@ def process_route(stdid):
     detected_stop_ids = set()
     cur_pos = vtx_list[0]
 
+    visited = set()
+
     for i in range(1, len(vtx_list)):
         prev = cur_pos
         nxt = vtx_list[i]
         seg_dist = haversine_distance(*prev, *nxt)
         if seg_dist == 0:
-            seg_dist = 0.001
+            continue
 
         step = 0.0
         while step < seg_dist:
             interp = interpolate_point(prev, nxt, step)
             step += FINE_STEP
             cur_pos = interp
+
+            key = (round(cur_pos[0], 6), round(cur_pos[1], 6))
+            if key in visited:
+                continue
+            visited.add(key)
 
             while current_stop:
                 dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
@@ -135,7 +142,6 @@ def process_route(stdid):
             })
             print(f"[FIXED] {stdid}: inserted STOP {stop['STOP_ID']} at {insert_idx}")
 
-    # 시점 STOP이 첫 번째에 없으면 앞에 추가
     if output[0]["TYPE"] != "STOP" or output[0]["STOP_ID"] != stops[0]["STOP_ID"]:
         output.insert(0, {
             "NODE_ID": None,
@@ -146,7 +152,6 @@ def process_route(stdid):
         })
         print(f"[FIXED] {stdid}: forced insert of first STOP {stops[0]['STOP_ID']} at HEAD")
 
-    # 종점 STOP이 마지막에 없으면 뒤에 추가
     if output[-1]["TYPE"] != "STOP" or output[-1]["STOP_ID"] != stops[-1]["STOP_ID"]:
         output.append({
             "NODE_ID": None,
