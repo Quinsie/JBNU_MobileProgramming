@@ -73,16 +73,18 @@ def process_single_stdid(stdid):
             sub_path = [(a["lat"], a["lng"]), (b["lat"], b["lng"])]
 
         sampled = []
-        for lat, lng in sub_path:
-            sampled.append({"type": "mid", **get_nearest_node(lat, lng)})
+        dist_accum = 0
+        prev = sub_path[0]
+        sampled.append({"type": "mid", **get_nearest_node(*prev)})
 
-        filtered = []
-        for node in sampled:
-            if any(haversine_distance(node["lat"], node["lng"], x["lat"], x["lng"]) < 50 for x in filtered):
-                continue
-            filtered.append(node)
+        for lat, lng in sub_path[1:]:
+            dist_accum += haversine_distance(prev[0], prev[1], lat, lng)
+            if dist_accum >= 50:
+                sampled.append({"type": "mid", **get_nearest_node(lat, lng)})
+                dist_accum = 0
+            prev = (lat, lng)
 
-        route_nodes.extend(filtered)
+        route_nodes.extend(sampled)
 
     route_nodes.append(stop_points[-1])
 
