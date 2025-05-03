@@ -26,7 +26,7 @@ traffic_node_coords = [
     if t.get("lat") is not None and t.get("lng") is not None
 ]
 
-def get_nearest_node(lat, lng, radius=300):
+def get_nearest_node(lat, lng, radius=100):
     dists = [(haversine_distance(lat, lng, t["lat"], t["lng"]), t) for t in traffic_node_coords]
     dists = [item for item in dists if item[0] <= radius]
     return sorted(dists, key=lambda x: x[0])[0][1] if dists else {"id": None, "sub": None, "lat": lat, "lng": lng}
@@ -47,15 +47,22 @@ def filter_by_stop_segment(nodes, stop_points):
         seg_nodes = []
         for node in nodes:
             d = distance_to_segment(node["lat"], node["lng"], a["lat"], a["lng"], b["lat"], b["lng"])
-            if d <= 100:  # 100m 이내만 인정
+            if d <= 100:
                 seg_nodes.append(node)
-        seen = set()
+
+        seg_nodes.sort(key=lambda x: (x["id"] is not None, -1 if x["id"] is None else 0))
         filtered = []
         for node in seg_nodes:
-            key = (round(node["lat"], 5), round(node["lng"], 5))
-            if key not in seen:
+            is_duplicate = False
+            for f in filtered:
+                if node["type"] == "stop":
+                    is_duplicate = False
+                    break
+                if haversine_distance(node["lat"], node["lng"], f["lat"], f["lng"]) < 50:
+                    is_duplicate = True
+                    break
+            if not is_duplicate:
                 filtered.append(node)
-                seen.add(key)
         result.extend(filtered)
     return result
 
@@ -87,18 +94,14 @@ def process_single_stdid(stdid):
     for i in range(len(vtx_points) - 1):
         A, B = vtx_points[i], vtx_points[i + 1]
 
-        for pt in [A, B]:
-            node = get_nearest_node(*pt)
-            node["type"] = "vtx"
-            route_nodes.append(node)
+        route_nodes.append({"type": "vtx", **get_nearest_node(*A)})
+        route_nodes.append({"type": "vtx", **get_nearest_node(*B)})
 
         for j in range(1, 4):
             ratio = j / 4
             px = A[0] + (B[0] - A[0]) * ratio
             py = A[1] + (B[1] - A[1]) * ratio
-            node = get_nearest_node(px, py)
-            node["type"] = "mid"
-            route_nodes.append(node)
+            route_nodes.append({"type": "mid", **get_nearest_node(px, py)})
 
         for lat, lng, stop_id in stop_coords:
             if stop_id in included_stops: continue
@@ -109,7 +112,6 @@ def process_single_stdid(stdid):
                 route_nodes.append(node)
                 included_stops.add(stop_id)
 
-    # 중복 제거는 정류장 기준으로 정렬 후 적용
     all_nodes = filter_by_stop_segment(route_nodes, stop_points)
 
     with open(os.path.join(OUTPUT_DIR, f"{stdid}.json"), "w", encoding="utf-8") as f:
