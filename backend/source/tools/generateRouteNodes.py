@@ -26,9 +26,6 @@ traffic_node_coords = [
     if t.get("lat") is not None and t.get("lng") is not None
 ]
 
-if not traffic_node_coords:
-    raise ValueError("[ERROR] No valid traffic node coordinates found. Check latest traffic file.")
-
 # stdid 목록
 stdid_list = [fn.replace(".json", "") for fn in os.listdir(VTX_DIR) if fn.endswith(".json")]
 
@@ -86,9 +83,13 @@ for stdid in tqdm(stdid_list):
                 if 0 <= t_val <= 1:
                     dist = haversine_distance(tx, ty, ax + t_val * dx, ay + t_val * dy)
                     result.append((dist, t))
-            return [r[1] for r in sorted(result, key=lambda x: x[0])[:3]]
+            return [r[1] for r in sorted(result, key=lambda x: x[0])[:3]] if result else []
 
-        route_nodes.extend(project_and_filter())
+        segment_nodes = project_and_filter()
+        if not segment_nodes:
+            print(f"[INFO] No traffic node found between VTX segment {i}-{i+1} for STDID {stdid}, skipping segment.")
+        else:
+            route_nodes.extend(segment_nodes)
 
         # 정류장 삽입 (A→B 사이에 존재하는 정류장 추가)
         for lat, lng, stop_id in stop_coords:
