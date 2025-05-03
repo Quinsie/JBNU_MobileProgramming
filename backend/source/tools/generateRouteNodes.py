@@ -2,18 +2,19 @@
 
 import os
 import json
-import sys
 from multiprocessing import Pool
-import math
-
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.append(BASE_DIR)
 from source.utils.haversine import haversine_distance
 
-SAMPLE_INTERVAL = 200  # INTERMEDIATE 노드 간격
-STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리
-FINE_STEP = 1  # 정류장 감시용 복간 거리 (m)
-ANGLE_THRESHOLD = 150  # 까마로 방향 전환 경우 판단 하키는 가장 적절한 각도 (deg)
+# 기본 경로 설정
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
+VTX_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx")
+SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes")
+
+STOP_MATCH_THRESHOLD = 30
+SAMPLE_INTERVAL = 200
+FINE_STEP = 1
+
 
 def interpolate_point(p1, p2, dist_from_p1):
     lat1, lng1 = p1
@@ -26,142 +27,95 @@ def interpolate_point(p1, p2, dist_from_p1):
     lng = lng1 + (lng2 - lng1) * ratio
     return (lat, lng)
 
-def angle_between(p1, p2, p3):
-    def to_vec(a, b):
-        return (b[0] - a[0], b[1] - a[1])
-    def dot(u, v):
-        return u[0]*v[0] + u[1]*v[1]
-    def norm(v):
-        return math.sqrt(v[0]**2 + v[1]**2)
-
-    u = to_vec(p2, p1)
-    v = to_vec(p2, p3)
-    denom = norm(u) * norm(v)
-    if denom == 0:
-        return 180
-    cos_theta = dot(u, v) / denom
-    cos_theta = max(-1.0, min(1.0, cos_theta))
-    angle_rad = math.acos(cos_theta)
-    return math.degrees(angle_rad)
 
 def process_route(stdid):
-    VTX_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx", f"{stdid}.json")
-    STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops", f"{stdid}.json")
-    SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "route_nodes", f"{stdid}.json")
+    vtx_path = os.path.join(VTX_DIR, f"{stdid}.json")
+    stop_path = os.path.join(STOP_DIR, f"{stdid}.json")
+    save_path = os.path.join(SAVE_DIR, f"{stdid}.json")
 
-    if not os.path.exists(VTX_PATH) or not os.path.exists(STOP_PATH):
-        return f"{stdid} skipped"
+    if not os.path.exists(vtx_path) or not os.path.exists(stop_path):
+        return f"[SKIP] {stdid} - 파일 없음"
 
-    with open(VTX_PATH, encoding="utf-8") as f:
-        vtx_list = [(pt["LAT"], pt["LNG"]) for pt in json.load(f)["resultList"]]
+    with open(vtx_path, encoding="utf-8") as f:
+        vtx = [(pt["LAT"], pt["LNG"]) for pt in json.load(f)["resultList"]]
 
-    with open(STOP_PATH, encoding="utf-8") as f:
-        stop_data = json.load(f)["resultList"]
-        stop_seq = sorted(stop_data, key=lambda x: x["STOP_ORD"])
-        stops = [{"STOP_ID": s["STOP_ID"], "LAT": s["LAT"], "LNG": s["LNG"], "ORD": s["STOP_ORD"]} for s in stop_seq]
+    with open(stop_path, encoding="utf-8") as f:
+        stops = sorted(json.load(f)["resultList"], key=lambda x: x["STOP_ORD"])
 
-    if not stops:
-        return f"{stdid} has no stops"
+    if len(stops) < 2 or len(vtx) < 2:
+        return f"[SKIP] {stdid} - 데이터 부족"
 
-    def find_nearest_idx(target):
-        min_d = float("inf")
-        min_idx = 0
-        for i, (lat, lng) in enumerate(vtx_list):
-            d = haversine_distance(lat, lng, target["LAT"], target["LNG"])
-            if d < min_d:
-                min_d = d
-                min_idx = i
-        return min_idx
-
-    start_idx = find_nearest_idx(stops[0])
-    end_idx = find_nearest_idx(stops[-1])
-    if start_idx > end_idx:
-        start_idx, end_idx = end_idx, start_idx
-
-    vtx_crop = vtx_list[start_idx:end_idx + 1]
-    if len(vtx_crop) < 2:
-        print(f"[WARN] {stdid}: VTX too short in cropped range {start_idx}~{end_idx}, using full VTX")
-        vtx_crop = vtx_list
-
-    vtx_list = vtx_crop
-
-    output = []
-    node_id = 0
-    sample_acc = 0.0
-    stop_index = 0
-    cur_pos = vtx_list[0]
+    output, node_id = [], 0
     visited = set()
-    last_angle_check = None
+    stop_index = 0
+    acc_dist = 0.0
+    cur_pos = vtx[0]
 
-    for i in range(1, len(vtx_list)):
-        prev = cur_pos
-        nxt = vtx_list[i]
+    def add_stop_node(stop):
+        nonlocal node_id
+        output.append({
+            "NODE_ID": node_id,
+            "TYPE": "STOP",
+            "STOP_ID": stop["STOP_ID"],
+            "LAT": stop["LAT"],
+            "LNG": stop["LNG"]
+        })
+        node_id += 1
+
+    def add_intermediate_node(pos):
+        nonlocal node_id
+        output.append({
+            "NODE_ID": node_id,
+            "TYPE": "INTERMEDIATE",
+            "LAT": pos[0],
+            "LNG": pos[1]
+        })
+        node_id += 1
+
+    for i in range(1, len(vtx)):
+        prev, nxt = cur_pos, vtx[i]
         seg_dist = haversine_distance(*prev, *nxt)
         if seg_dist == 0:
             continue
 
-        step = 0.0
-        while step < seg_dist:
-            interp = interpolate_point(prev, nxt, step)
-            step += FINE_STEP
-
-            if last_angle_check:
-                ang = angle_between(last_angle_check, cur_pos, interp)
-                if ang < ANGLE_THRESHOLD:
-                    step += FINE_STEP * 3
-                    continue
-            last_angle_check = cur_pos
+        d = 0
+        while d < seg_dist:
+            interp = interpolate_point(prev, nxt, d)
+            d += FINE_STEP
             cur_pos = interp
 
-            key = (round(cur_pos[0], 6), round(cur_pos[1], 6))
-            if key in visited:
-                continue
-            visited.add(key)
-
+            # STOP 감지
             if stop_index < len(stops):
-                current_stop = stops[stop_index]
-                dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
-                if dist_to_stop < STOP_MATCH_THRESHOLD:
-                    output.append({
-                        "NODE_ID": node_id,
-                        "TYPE": "STOP",
-                        "STOP_ID": current_stop["STOP_ID"],
-                        "LAT": current_stop["LAT"],
-                        "LNG": current_stop["LNG"]
-                    })
-                    node_id += 1
+                s = stops[stop_index]
+                dist = haversine_distance(interp[0], interp[1], s["LAT"], s["LNG"])
+                if dist < STOP_MATCH_THRESHOLD:
+                    add_stop_node(s)
                     stop_index += 1
                     continue
 
-            sample_acc += FINE_STEP
-            if sample_acc >= SAMPLE_INTERVAL:
-                output.append({
-                    "NODE_ID": node_id,
-                    "TYPE": "INTERMEDIATE",
-                    "LAT": cur_pos[0],
-                    "LNG": cur_pos[1]
-                })
-                node_id += 1
-                sample_acc = 0.0
+            acc_dist += FINE_STEP
+            if acc_dist >= SAMPLE_INTERVAL:
+                acc_dist = 0
+                key = (round(interp[0], 6), round(interp[1], 6))
+                if key not in visited:
+                    visited.add(key)
+                    add_intermediate_node(interp)
 
-    for i, node in enumerate(output):
-        node["NODE_ID"] = i
-
-    os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
-    with open(SAVE_PATH, "w", encoding="utf-8") as f:
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    with open(save_path, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    return f"{stdid} done"
+    return f"[OK] {stdid} - {len(output)} nodes"
+
 
 def run_all_routes():
-    STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
-    stdid_list = [fname.replace(".json", "") for fname in os.listdir(STOP_PATH) if fname.endswith(".json")]
-
+    stdid_list = [f.replace(".json", "") for f in os.listdir(STOP_DIR) if f.endswith(".json")]
     with Pool() as pool:
         results = pool.map(process_route, stdid_list)
 
     for r in results:
         print(r)
+
 
 if __name__ == "__main__":
     run_all_routes()
