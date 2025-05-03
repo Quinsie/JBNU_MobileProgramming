@@ -32,13 +32,18 @@ def get_nearest_node(lat, lng, radius=100):
     return sorted(dists, key=lambda x: x[0])[0][1] if dists else {"id": None, "sub": None, "lat": lat, "lng": lng}
 
 def process_single_stdid(stdid):
+    vtx_path = os.path.join(VTX_DIR, f"{stdid}.json")
     stop_path = os.path.join(STOP_DIR, f"{stdid}.json")
-    if not os.path.exists(stop_path):
+
+    if not os.path.exists(stop_path) or not os.path.exists(vtx_path):
         return
 
     with open(stop_path, encoding="utf-8") as f:
         stop_data = json.load(f)["resultList"]
+    with open(vtx_path, encoding="utf-8") as f:
+        vtx_data = json.load(f)["resultList"]
 
+    vtx_points = [(v["LAT"], v["LNG"]) for v in vtx_data if v.get("LAT") and v.get("LNG")]
     stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data if s.get("LAT") and s.get("LNG")]
     stop_points = [
         {"lat": s[0], "lng": s[1], "stop_id": s[2], "type": "stop", **get_nearest_node(s[0], s[1])}
@@ -46,26 +51,38 @@ def process_single_stdid(stdid):
     ]
 
     route_nodes = []
+
     for i in range(len(stop_points) - 1):
         a = stop_points[i]
         b = stop_points[i + 1]
         route_nodes.append(a)
 
-        dist = haversine_distance(a["lat"], a["lng"], b["lat"], b["lng"])
-        num_samples = 0
-        if dist > 180:
-            num_samples = 3
-        elif dist > 120:
-            num_samples = 2
-        elif dist > 60:
-            num_samples = 1
+        sub_path = []
+        found_a, found_b = None, None
+        for idx, (lat, lng) in enumerate(vtx_points):
+            if found_a is None and haversine_distance(lat, lng, a["lat"], a["lng"]) < 30:
+                found_a = idx
+            if haversine_distance(lat, lng, b["lat"], b["lng"]) < 30:
+                found_b = idx
+                if found_a is not None:
+                    break
 
-        for j in range(1, num_samples + 1):
-            ratio = j / (num_samples + 1)
-            px = a["lat"] + (b["lat"] - a["lat"]) * ratio
-            py = a["lng"] + (b["lng"] - a["lng"]) * ratio
-            node = get_nearest_node(px, py)
-            route_nodes.append({"type": "mid", **node})
+        if found_a is not None and found_b is not None and found_a < found_b:
+            sub_path = vtx_points[found_a:found_b + 1]
+        else:
+            sub_path = [(a["lat"], a["lng"]), (b["lat"], b["lng"])]
+
+        sampled = []
+        for lat, lng in sub_path:
+            sampled.append({"type": "mid", **get_nearest_node(lat, lng)})
+
+        filtered = []
+        for node in sampled:
+            if any(haversine_distance(node["lat"], node["lng"], x["lat"], x["lng"]) < 50 for x in filtered):
+                continue
+            filtered.append(node)
+
+        route_nodes.extend(filtered)
 
     route_nodes.append(stop_points[-1])
 
