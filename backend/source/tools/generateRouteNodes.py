@@ -51,11 +51,14 @@ def process_single_stdid(stdid):
     ]
 
     route_nodes = []
+    seen = []
 
     for i in range(len(stop_points) - 1):
         a = stop_points[i]
         b = stop_points[i + 1]
-        route_nodes.append(a)
+        if not seen or haversine_distance(a["lat"], a["lng"], seen[-1]["lat"], seen[-1]["lng"]) >= 30:
+            route_nodes.append(a)
+            seen.append(a)
 
         sub_path = []
         found_a, found_b = None, None
@@ -75,36 +78,25 @@ def process_single_stdid(stdid):
         sampled = []
         dist_accum = 0
         prev = sub_path[0]
-        sampled.append({"type": "mid", **get_nearest_node(*prev)})
-
         for lat, lng in sub_path[1:]:
-            dist_accum += haversine_distance(prev[0], prev[1], lat, lng)
+            dist = haversine_distance(prev[0], prev[1], lat, lng)
+            dist_accum += dist
             if dist_accum >= 50:
-                sampled.append({"type": "mid", **get_nearest_node(lat, lng)})
+                node = {"type": "mid", **get_nearest_node(lat, lng)}
+                if not any(haversine_distance(node["lat"], node["lng"], n["lat"], n["lng"]) < 30 for n in seen):
+                    sampled.append(node)
+                    seen.append(node)
                 dist_accum = 0
             prev = (lat, lng)
 
         route_nodes.extend(sampled)
 
-    route_nodes.append(stop_points[-1])
-
-    final_nodes = []
-    for node in route_nodes:
-        is_duplicate = False
-        for existing in final_nodes:
-            if haversine_distance(node["lat"], node["lng"], existing["lat"], existing["lng"]) < 50:
-                if existing["type"] == "stop":
-                    continue
-                if node["id"] is not None and existing["id"] is None:
-                    final_nodes.remove(existing)
-                    break
-                is_duplicate = True
-                break
-        if not is_duplicate:
-            final_nodes.append(node)
+    last = stop_points[-1]
+    if not route_nodes or haversine_distance(last["lat"], last["lng"], route_nodes[-1]["lat"], route_nodes[-1]["lng"]) > 30:
+        route_nodes.append(last)
 
     with open(os.path.join(OUTPUT_DIR, f"{stdid}.json"), "w", encoding="utf-8") as f:
-        json.dump(final_nodes, f, indent=2, ensure_ascii=False)
+        json.dump(route_nodes, f, indent=2, ensure_ascii=False)
 
 if __name__ == "__main__":
     stdid_list = [fn.replace(".json", "") for fn in os.listdir(VTX_DIR) if fn.endswith(".json")]
