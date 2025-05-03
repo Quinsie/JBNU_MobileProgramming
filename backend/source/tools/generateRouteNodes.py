@@ -4,6 +4,7 @@ import os
 import json
 import sys
 from multiprocessing import Pool
+import math
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
@@ -12,7 +13,7 @@ from source.utils.haversine import haversine_distance
 SAMPLE_INTERVAL = 200  # INTERMEDIATE 노드 간격
 STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리
 FINE_STEP = 1  # 정류장 감시용 보간 간격 (단위: meter)
-
+ANGLE_THRESHOLD = 150  # 급격한 방향 전환으로 판단할 최소 각도 (degrees)
 
 def interpolate_point(p1, p2, dist_from_p1):
     lat1, lng1 = p1
@@ -25,6 +26,23 @@ def interpolate_point(p1, p2, dist_from_p1):
     lng = lng1 + (lng2 - lng1) * ratio
     return (lat, lng)
 
+def angle_between(p1, p2, p3):
+    def to_vec(a, b):
+        return (b[0] - a[0], b[1] - a[1])
+    def dot(u, v):
+        return u[0]*v[0] + u[1]*v[1]
+    def norm(v):
+        return math.sqrt(v[0]**2 + v[1]**2)
+
+    u = to_vec(p2, p1)
+    v = to_vec(p2, p3)
+    denom = norm(u) * norm(v)
+    if denom == 0:
+        return 180
+    cos_theta = dot(u, v) / denom
+    cos_theta = max(-1.0, min(1.0, cos_theta))
+    angle_rad = math.acos(cos_theta)
+    return math.degrees(angle_rad)
 
 def process_route(stdid):
     VTX_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx", f"{stdid}.json")
@@ -74,8 +92,8 @@ def process_route(stdid):
     current_stop = stops[stop_index] if stop_index < len(stops) else None
     detected_stop_ids = set()
     cur_pos = vtx_list[0]
-
     visited = set()
+    last_angle_check = None
 
     for i in range(1, len(vtx_list)):
         prev = cur_pos
@@ -88,6 +106,13 @@ def process_route(stdid):
         while step < seg_dist:
             interp = interpolate_point(prev, nxt, step)
             step += FINE_STEP
+
+            if last_angle_check:
+                ang = angle_between(last_angle_check, cur_pos, interp)
+                if ang < ANGLE_THRESHOLD:
+                    step += FINE_STEP * 3
+                    continue
+            last_angle_check = cur_pos
             cur_pos = interp
 
             key = (round(cur_pos[0], 6), round(cur_pos[1], 6))
@@ -132,7 +157,6 @@ def process_route(stdid):
                 if d < min_d:
                     min_d = d
                     insert_idx = j
-
             output.insert(insert_idx, {
                 "NODE_ID": None,
                 "TYPE": "STOP",
@@ -143,24 +167,26 @@ def process_route(stdid):
             print(f"[FIXED] {stdid}: inserted STOP {stop['STOP_ID']} at {insert_idx}")
 
     if output[0]["TYPE"] != "STOP" or output[0]["STOP_ID"] != stops[0]["STOP_ID"]:
-        output.insert(0, {
-            "NODE_ID": None,
-            "TYPE": "STOP",
-            "STOP_ID": stops[0]["STOP_ID"],
-            "LAT": stops[0]["LAT"],
-            "LNG": stops[0]["LNG"]
-        })
-        print(f"[FIXED] {stdid}: forced insert of first STOP {stops[0]['STOP_ID']} at HEAD")
+        if stops[0]["STOP_ID"] not in detected_stop_ids:
+            output.insert(0, {
+                "NODE_ID": None,
+                "TYPE": "STOP",
+                "STOP_ID": stops[0]["STOP_ID"],
+                "LAT": stops[0]["LAT"],
+                "LNG": stops[0]["LNG"]
+            })
+            print(f"[FIXED] {stdid}: forced insert of first STOP {stops[0]['STOP_ID']} at HEAD")
 
     if output[-1]["TYPE"] != "STOP" or output[-1]["STOP_ID"] != stops[-1]["STOP_ID"]:
-        output.append({
-            "NODE_ID": None,
-            "TYPE": "STOP",
-            "STOP_ID": stops[-1]["STOP_ID"],
-            "LAT": stops[-1]["LAT"],
-            "LNG": stops[-1]["LNG"]
-        })
-        print(f"[FIXED] {stdid}: forced insert of last STOP {stops[-1]['STOP_ID']} at TAIL")
+        if stops[-1]["STOP_ID"] not in detected_stop_ids:
+            output.append({
+                "NODE_ID": None,
+                "TYPE": "STOP",
+                "STOP_ID": stops[-1]["STOP_ID"],
+                "LAT": stops[-1]["LAT"],
+                "LNG": stops[-1]["LNG"]
+            })
+            print(f"[FIXED] {stdid}: forced insert of last STOP {stops[-1]['STOP_ID']} at TAIL")
 
     for i, node in enumerate(output):
         node["NODE_ID"] = i
@@ -171,7 +197,6 @@ def process_route(stdid):
 
     return f"{stdid} done"
 
-
 def run_all_routes():
     STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
     stdid_list = [fname.replace(".json", "") for fname in os.listdir(STOP_PATH) if fname.endswith(".json")]
@@ -181,7 +206,6 @@ def run_all_routes():
 
     for r in results:
         print(r)
-
 
 if __name__ == "__main__":
     run_all_routes()
