@@ -67,8 +67,11 @@ def process_single_stdid(stdid):
                 if found_a is not None:
                     break
 
-        if found_a is not None and found_b is not None and found_a < found_b:
-            sub_path = vtx_points[found_a:found_b + 1]
+        if found_a is not None and found_b is not None:
+            if found_a < found_b:
+                sub_path = vtx_points[found_a:found_b + 1]
+            else:
+                sub_path = vtx_points[found_b:found_a + 1][::-1]
         else:
             sub_path = [(a["lat"], a["lng"]), (b["lat"], b["lng"])]
 
@@ -80,7 +83,7 @@ def process_single_stdid(stdid):
             dist_accum += dist
             if dist_accum >= 50:
                 node = {"type": "mid", **get_nearest_node(lat, lng)}
-                if all(haversine_distance(node["lat"], node["lng"], n["lat"], n["lng"]) >= 50 for n in sampled):
+                if all(haversine_distance(node["lat"], node["lng"], n["lat"], n["lng"]) >= 45 for n in sampled):
                     sampled.append(node)
                     dist_accum = 0
             prev = (lat, lng)
