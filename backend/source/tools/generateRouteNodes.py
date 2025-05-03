@@ -10,7 +10,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."));
 from source.utils.haversine import haversine_distance
 
 # 설정
-SAMPLE_INTERVAL = 50  # meters
+SAMPLE_INTERVAL = 100  # meters
 
 # 두 점 사이 보간 함수
 def interpolate_point(p1, p2, target_dist):
