@@ -21,9 +21,13 @@ with open(os.path.join(TRAFFIC_NODE_PATH, latest_traffic_file), encoding="utf-8"
 
 # traffic node 좌표만 추출
 traffic_node_coords = [
-    {"id": t["id"], "sub": t["sub"], "lat": t["lat"], "lng": t["lng"]}
-    for t in traffic_nodes if "lat" in t and "lng" in t
+    {"id": t["id"], "sub": t["sub"], "lat": t.get("lat"), "lng": t.get("lng")}
+    for t in traffic_nodes
+    if t.get("lat") is not None and t.get("lng") is not None
 ]
+
+if not traffic_node_coords:
+    raise ValueError("[ERROR] No valid traffic node coordinates found. Check latest traffic file.")
 
 # stdid 목록
 stdid_list = [fn.replace(".json", "") for fn in os.listdir(VTX_DIR) if fn.endswith(".json")]
@@ -43,10 +47,12 @@ for stdid in tqdm(stdid_list):
         stop_data = json.load(f)["resultList"]
 
     # VTX point list
-    vtx_points = [(v["LAT"], v["LNG"]) for v in vtx_data]
+    vtx_points = [(v["LAT"], v["LNG"]) for v in vtx_data if v.get("LAT") and v.get("LNG")]
+    if len(vtx_points) < 2:
+        continue
 
     # 정류장 좌표 목록
-    stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data]
+    stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data if s.get("LAT") and s.get("LNG")]
 
     # 최종 노드 리스트
     route_nodes = []
@@ -59,9 +65,11 @@ for stdid in tqdm(stdid_list):
         # A, B도 포함
         def get_nearest_node(lat, lng):
             dists = [(haversine_distance(lat, lng, t["lat"], t["lng"]), t) for t in traffic_node_coords]
-            return sorted(dists, key=lambda x: x[0])[0][1]
+            return sorted(dists, key=lambda x: x[0])[0][1] if dists else {}
 
-        route_nodes.append({"type": "vtx", **get_nearest_node(*A)})
+        nearest_A = get_nearest_node(*A)
+        if nearest_A:
+            route_nodes.append({"type": "vtx", **nearest_A})
 
         # A→B 선분 기준 가까운 traffic node 3개
         def project_and_filter():
@@ -98,11 +106,15 @@ for stdid in tqdm(stdid_list):
 
             d = distance_to_segment(lat, lng, *A, *B)
             if d < 50:
-                route_nodes.append({"type": "stop", **get_nearest_node(lat, lng), "stop_id": stop_id})
-                included_stops.add(stop_id)
+                nearest_stop = get_nearest_node(lat, lng)
+                if nearest_stop:
+                    route_nodes.append({"type": "stop", **nearest_stop, "stop_id": stop_id})
+                    included_stops.add(stop_id)
 
     # 마지막 B도 포함
-    route_nodes.append({"type": "vtx", **get_nearest_node(*vtx_points[-1])})
+    nearest_B = get_nearest_node(*vtx_points[-1])
+    if nearest_B:
+        route_nodes.append({"type": "vtx", **nearest_B})
 
     # 저장
     with open(os.path.join(OUTPUT_DIR, f"{stdid}.json"), "w", encoding="utf-8") as f:
