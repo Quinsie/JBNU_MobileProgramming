@@ -27,7 +27,6 @@ traffic_node_coords = [
 ]
 
 # 유틸 함수
-
 def get_nearest_node(lat, lng, radius=300):
     dists = [(haversine_distance(lat, lng, t["lat"], t["lng"]), t) for t in traffic_node_coords]
     dists = [item for item in dists if item[0] <= radius]
@@ -66,8 +65,9 @@ def process_single_stdid(stdid):
 
     stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data if s.get("LAT") and s.get("LNG")]
 
-    route_nodes = []
+    all_nodes = []
     included_stops = set()
+    stop_nodes = []
 
     for i in range(len(vtx_points) - 1):
         A = vtx_points[i]
@@ -76,7 +76,9 @@ def process_single_stdid(stdid):
         for point in [A, B]:
             node = get_nearest_node(*point)
             if node:
-                route_nodes.append({"type": "vtx", **node})
+                all_nodes.append({"type": "vtx", **node})
+            else:
+                all_nodes.append({"type": "vtx", "lat": point[0], "lng": point[1], "id": None, "sub": None})
 
         for j in range(1, 4):
             ratio = j / 4
@@ -84,7 +86,9 @@ def process_single_stdid(stdid):
             py = A[1] + (B[1] - A[1]) * ratio
             node = get_nearest_node(px, py)
             if node:
-                route_nodes.append({"type": "mid", **node})
+                all_nodes.append({"type": "mid", **node})
+            else:
+                all_nodes.append({"type": "mid", "lat": px, "lng": py, "id": None, "sub": None})
 
         for lat, lng, stop_id in stop_coords:
             if stop_id in included_stops:
@@ -93,26 +97,33 @@ def process_single_stdid(stdid):
             if d < 70:
                 node = get_nearest_node(lat, lng)
                 if node:
-                    route_nodes.append({"type": "stop", **node, "stop_id": stop_id})
-                    included_stops.add(stop_id)
+                    stop_nodes.append({"type": "stop", **node, "stop_id": stop_id})
+                else:
+                    stop_nodes.append({"type": "stop", "lat": lat, "lng": lng, "id": None, "sub": None, "stop_id": stop_id})
+                included_stops.add(stop_id)
 
+    # 정류장-정류장 기준 필터링
     final_nodes = []
-    for node in route_nodes:
-        is_duplicate = False
-        for f in final_nodes:
-            if node["id"] == f["id"] and node["sub"] == f["sub"]:
-                is_duplicate = True
-                break
-            if haversine_distance(node["lat"], node["lng"], f["lat"], f["lng"]) < 50:
-                is_duplicate = True
-                break
-        if not is_duplicate:
-            final_nodes.append(node)
+    current_segment = []
+    for node in all_nodes:
+        current_segment.append(node)
+        if node["type"] == "stop":
+            deduped = []
+            for n in current_segment:
+                if n["type"] == "stop" or all(haversine_distance(n["lat"], n["lng"], d["lat"], d["lng"]) >= 50 for d in deduped):
+                    deduped.append(n)
+            final_nodes.extend(deduped)
+            current_segment = [node]
+
+    if current_segment:
+        final_nodes.extend(current_segment)
+
+    final_nodes.extend(stop_nodes)
 
     with open(os.path.join(OUTPUT_DIR, f"{stdid}.json"), "w", encoding="utf-8") as f:
         json.dump(final_nodes, f, indent=2, ensure_ascii=False)
 
-# 멀티프로세싱으로 실행
+# 멀티프로세싱 실행
 if __name__ == "__main__":
     stdid_list = [fn.replace(".json", "") for fn in os.listdir(VTX_DIR) if fn.endswith(".json")]
     with Pool(cpu_count()) as pool:
