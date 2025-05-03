@@ -111,18 +111,29 @@ def process_route(stdid):
                 node_id += 1
                 sample_acc = 0.0
 
-    # 누락된 STOP 보완 삽입
+    # 누락된 STOP 보완 삽입 (경로 순서 유지)
     for stop in stops:
         if stop["STOP_ID"] not in detected_stop_ids:
-            output.append({
-                "NODE_ID": node_id,
+            # 가장 가까운 output 상 위치 찾기
+            min_d = float("inf")
+            insert_idx = len(output)
+            for j, node in enumerate(output):
+                d = haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"])
+                if d < min_d:
+                    min_d = d
+                    insert_idx = j
+            output.insert(insert_idx, {
+                "NODE_ID": None,  # 나중에 재부여
                 "TYPE": "STOP",
                 "STOP_ID": stop["STOP_ID"],
                 "LAT": stop["LAT"],
                 "LNG": stop["LNG"]
             })
-            node_id += 1
-            print(f"[FIXED] {stdid}: forcibly added STOP {stop['STOP_ID']}")
+            print(f"[FIXED] {stdid}: forcibly inserted STOP {stop['STOP_ID']} at idx {insert_idx}")
+
+    # NODE_ID 재부여
+    for i, node in enumerate(output):
+        node["NODE_ID"] = i
 
     os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
