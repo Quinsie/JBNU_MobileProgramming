@@ -114,15 +114,20 @@ def process_route(stdid):
                 node_id += 1
                 sample_acc = 0.0
 
-    for stop in stops:
+    for i, stop in enumerate(stops):
         if stop["STOP_ID"] not in detected_stop_ids:
             min_d = float("inf")
             insert_idx = len(output)
-            for j, node in enumerate(output):
-                d = haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"])
+
+            prev_idx = next((j for j, node in enumerate(output) if node.get("STOP_ID") == stops[i - 1]["STOP_ID"]), 0) if i > 0 else 0
+            next_idx = next((j for j, node in enumerate(output) if node.get("STOP_ID") == stops[i + 1]["STOP_ID"]), len(output)) if i < len(stops) - 1 else len(output)
+
+            for j in range(prev_idx, next_idx):
+                d = haversine_distance(output[j]["LAT"], output[j]["LNG"], stop["LAT"], stop["LNG"])
                 if d < min_d:
                     min_d = d
                     insert_idx = j
+
             near_stop = any(
                 haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"]) < STOP_MATCH_THRESHOLD
                 and node["TYPE"] == "STOP"
@@ -137,6 +142,16 @@ def process_route(stdid):
                     "LNG": stop["LNG"]
                 })
                 print(f"[FIXED] {stdid}: forcibly inserted STOP {stop['STOP_ID']} at idx {insert_idx}")
+
+    if stops[-1]["STOP_ID"] not in detected_stop_ids:
+        output.append({
+            "NODE_ID": None,
+            "TYPE": "STOP",
+            "STOP_ID": stops[-1]["STOP_ID"],
+            "LAT": stops[-1]["LAT"],
+            "LNG": stops[-1]["LNG"]
+        })
+        print(f"[FIXED-END] {stdid}: forcibly appended last STOP {stops[-1]['STOP_ID']}")
 
     for i, node in enumerate(output):
         node["NODE_ID"] = i
