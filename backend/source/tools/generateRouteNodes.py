@@ -10,7 +10,7 @@ sys.path.append(BASE_DIR)
 from source.utils.haversine import haversine_distance
 
 SAMPLE_INTERVAL = 100  # INTERMEDIATE 노드 간격
-STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리
+STOP_MATCH_THRESHOLD = 50  # 정류장 인식 거리
 FINE_STEP = 1  # 정류장 감시용 보간 간격 (단위: meter)
 
 def interpolate_point(p1, p2, dist_from_p1):
@@ -45,7 +45,6 @@ def process_route(stdid):
     sample_acc = 0.0
     stop_index = 0
     current_stop = stops[stop_index] if stop_index < len(stops) else None
-    stop_cooldown = False  # 연속 감지 방지
 
     cur_pos = vtx_list[0]
 
@@ -53,6 +52,8 @@ def process_route(stdid):
         prev = cur_pos
         nxt = vtx_list[i]
         seg_dist = haversine_distance(*prev, *nxt)
+        if seg_dist == 0:
+            seg_dist = 0.001  # 최소 이동 보장
 
         step = 0.0
         while step < seg_dist:
@@ -61,7 +62,7 @@ def process_route(stdid):
             cur_pos = interp
 
             # STOP 감시
-            if current_stop and not stop_cooldown:
+            if current_stop:
                 dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
                 if dist_to_stop < STOP_MATCH_THRESHOLD:
                     output.append({
@@ -74,8 +75,7 @@ def process_route(stdid):
                     node_id += 1
                     stop_index += 1
                     current_stop = stops[stop_index] if stop_index < len(stops) else None
-                    stop_cooldown = True  # 바로 다음 보간 구간에선 STOP 감지 건너뛰기
-                    continue
+                    continue  # 중복 감지 방지
 
             # INTERMEDIATE 노드 감지
             sample_acc += FINE_STEP
@@ -88,8 +88,6 @@ def process_route(stdid):
                 })
                 node_id += 1
                 sample_acc = 0.0
-
-        stop_cooldown = False  # 보간 루프 끝나면 다시 감시 허용
 
     os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
