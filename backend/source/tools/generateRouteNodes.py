@@ -118,6 +118,8 @@ def process_route(stdid):
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
+    print(f"[DEBUG] {stdid}: vtx size = {len(vtx_list)} / stops = {len(stops)} / range = {start_idx}~{end_idx}")
+
     return f"{stdid} done"
 
 def run_all_routes():
