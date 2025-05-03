@@ -53,7 +53,7 @@ def process_single_stdid(stdid):
     stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data if s.get("LAT") and s.get("LNG")]
     stop_points = [{"lat": s[0], "lng": s[1], "stop_id": s[2], "type": "stop", **get_nearest_node(s[0], s[1])} for s in stop_coords]
 
-    mid_nodes = []
+    mid_nodes_per_segment = []
     for i in range(len(stop_coords) - 1):
         a = stop_coords[i]
         b = stop_coords[i + 1]
@@ -67,21 +67,20 @@ def process_single_stdid(stdid):
         elif dist > 60:
             num_samples = 1
 
+        segment_mid_nodes = []
         for j in range(1, num_samples + 1):
             ratio = j / (num_samples + 1)
             px = a[0] + (b[0] - a[0]) * ratio
             py = a[1] + (b[1] - a[1]) * ratio
             node = get_nearest_node(px, py)
-            mid_nodes.append({"type": "mid", **node})
+            segment_mid_nodes.append({"type": "mid", **node})
+        mid_nodes_per_segment.append(segment_mid_nodes)
 
-    # 세그먼트별로 중복 제거
     filtered_nodes = []
     for i in range(len(stop_points) - 1):
         a = stop_points[i]
         b = stop_points[i + 1]
-        segment_nodes = [a]
-        segment_nodes += [n for n in mid_nodes if distance_to_segment(n["lat"], n["lng"], a["lat"], a["lng"], b["lat"], b["lng"]) <= 100]
-        segment_nodes.append(b)
+        segment_nodes = [a] + mid_nodes_per_segment[i] + [b]
 
         cleaned = []
         for node in segment_nodes:
