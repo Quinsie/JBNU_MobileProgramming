@@ -12,8 +12,8 @@ from source.utils.haversine import haversine_distance
 
 SAMPLE_INTERVAL = 200  # INTERMEDIATE 노드 간격
 STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리
-FINE_STEP = 1  # 정류장 감시용 보간 간격 (단위: meter)
-ANGLE_THRESHOLD = 150  # 급격한 방향 전환으로 판단할 최소 각도 (degrees)
+FINE_STEP = 1  # 정류장 감시용 복간 거리 (m)
+ANGLE_THRESHOLD = 150  # 까마로 방향 전환 경우 판단 하키는 가장 적절한 각도 (deg)
 
 def interpolate_point(p1, p2, dist_from_p1):
     lat1, lng1 = p1
@@ -126,7 +126,7 @@ def process_route(stdid):
                 if (
                     dist_to_stop < STOP_MATCH_THRESHOLD and
                     current_stop["STOP_ID"] not in detected_stop_ids and
-                    current_stop["ORD"] > last_detected_ord
+                    current_stop["ORD"] == last_detected_ord + 1
                 ):
                     output.append({
                         "NODE_ID": node_id,
