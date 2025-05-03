@@ -9,7 +9,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 from source.utils.haversine import haversine_distance
 
-SAMPLE_INTERVAL = 100  # meters
+SAMPLE_INTERVAL = 30  # meters
 STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리 (m)
 
 def interpolate_point(p1, p2, target_dist):
