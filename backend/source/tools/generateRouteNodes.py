@@ -135,6 +135,28 @@ def process_route(stdid):
             })
             print(f"[FIXED] {stdid}: inserted STOP {stop['STOP_ID']} at {insert_idx}")
 
+    # 시점 STOP이 첫 번째에 없으면 앞에 추가
+    if output[0]["TYPE"] != "STOP" or output[0]["STOP_ID"] != stops[0]["STOP_ID"]:
+        output.insert(0, {
+            "NODE_ID": None,
+            "TYPE": "STOP",
+            "STOP_ID": stops[0]["STOP_ID"],
+            "LAT": stops[0]["LAT"],
+            "LNG": stops[0]["LNG"]
+        })
+        print(f"[FIXED] {stdid}: forced insert of first STOP {stops[0]['STOP_ID']} at HEAD")
+
+    # 종점 STOP이 마지막에 없으면 뒤에 추가
+    if output[-1]["TYPE"] != "STOP" or output[-1]["STOP_ID"] != stops[-1]["STOP_ID"]:
+        output.append({
+            "NODE_ID": None,
+            "TYPE": "STOP",
+            "STOP_ID": stops[-1]["STOP_ID"],
+            "LAT": stops[-1]["LAT"],
+            "LNG": stops[-1]["LNG"]
+        })
+        print(f"[FIXED] {stdid}: forced insert of last STOP {stops[-1]['STOP_ID']} at TAIL")
+
     for i, node in enumerate(output):
         node["NODE_ID"] = i
 
