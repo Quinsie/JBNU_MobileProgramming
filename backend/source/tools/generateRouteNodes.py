@@ -13,7 +13,6 @@ SAMPLE_INTERVAL = 200  # INTERMEDIATE 노드 간격
 STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리
 FINE_STEP = 1  # 정류장 감시용 보간 간격 (단위: meter)
 
-
 def interpolate_point(p1, p2, dist_from_p1):
     lat1, lng1 = p1
     lat2, lng2 = p2
@@ -24,7 +23,6 @@ def interpolate_point(p1, p2, dist_from_p1):
     lat = lat1 + (lat2 - lat1) * ratio
     lng = lng1 + (lng2 - lng1) * ratio
     return (lat, lng)
-
 
 def process_route(stdid):
     VTX_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx", f"{stdid}.json")
@@ -112,33 +110,6 @@ def process_route(stdid):
                 node_id += 1
                 sample_acc = 0.0
 
-    # 누락된 STOP 보완 삽입 (경로 순서 유지, 중복 최소화)
-    for stop in stops:
-        if stop["STOP_ID"] not in detected_stop_ids:
-            # 경로와 가장 가까운 위치 탐색
-            min_d = float("inf")
-            insert_idx = len(output)
-            for j, node in enumerate(output):
-                d = haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"])
-                if d < min_d:
-                    min_d = d
-                    insert_idx = j
-            # 주변 STOP과 거리 체크 (중복 방지)
-            near_stop = any(
-                haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"]) < STOP_MATCH_THRESHOLD
-                and node["TYPE"] == "STOP"
-                for node in output[max(0, insert_idx - 3):insert_idx + 3]
-            )
-            if not near_stop:
-                output.insert(insert_idx, {
-                    "NODE_ID": None,
-                    "TYPE": "STOP",
-                    "STOP_ID": stop["STOP_ID"],
-                    "LAT": stop["LAT"],
-                    "LNG": stop["LNG"]
-                })
-                print(f"[FIXED] {stdid}: forcibly inserted STOP {stop['STOP_ID']} at idx {insert_idx}")
-
     # NODE_ID 재부여
     for i, node in enumerate(output):
         node["NODE_ID"] = i
@@ -149,7 +120,6 @@ def process_route(stdid):
 
     return f"{stdid} done"
 
-
 def run_all_routes():
     STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
     stdid_list = [fname.replace(".json", "") for fname in os.listdir(STOP_PATH) if fname.endswith(".json")]
@@ -159,7 +129,6 @@ def run_all_routes():
 
     for r in results:
         print(r)
-
 
 if __name__ == "__main__":
     run_all_routes()
