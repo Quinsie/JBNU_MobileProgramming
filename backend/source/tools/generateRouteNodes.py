@@ -60,21 +60,21 @@ for stdid in tqdm(stdid_list):
     route_nodes = []
     included_stops = set()
 
+    def get_nearest_node(lat, lng):
+        dists = [(haversine_distance(lat, lng, t["lat"], t["lng"]), t) for t in traffic_node_coords]
+        return sorted(dists, key=lambda x: x[0])[0][1] if dists else None
+
     for i in range(len(vtx_points) - 1):
         A = vtx_points[i]
         B = vtx_points[i + 1]
 
         # A, B도 포함
-        def get_nearest_node(lat, lng):
-            dists = [(haversine_distance(lat, lng, t["lat"], t["lng"]), t) for t in traffic_node_coords]
-            return sorted(dists, key=lambda x: x[0])[0][1] if dists else {}
-
         nearest_A = get_nearest_node(*A)
         if nearest_A:
             route_nodes.append({"type": "vtx", **nearest_A})
 
         # A→B 구간을 4등분하여 각 지점 기준으로 반경 내 교통노드 추출
-        def segment_sample_nodes(A, B, sample_n=3, radius=150):
+        def segment_sample_nodes(A, B, sample_n=3, radius=300):
             ax, ay = A
             bx, by = B
             segment_nodes = []
@@ -85,17 +85,13 @@ for stdid in tqdm(stdid_list):
                 dists = [
                     (haversine_distance(px, py, t["lat"], t["lng"]), t)
                     for t in traffic_node_coords
-                    if haversine_distance(px, py, t["lat"], t["lng"]) <= radius
                 ]
                 if dists:
                     segment_nodes.append(sorted(dists, key=lambda x: x[0])[0][1])
             return segment_nodes
 
         sampled_nodes = segment_sample_nodes(A, B)
-        if not sampled_nodes:
-            print(f"[INFO] No nearby traffic nodes for segment {i}-{i+1} in STDID {stdid}, skipping.")
-        else:
-            route_nodes.extend(sampled_nodes)
+        route_nodes.extend(sampled_nodes)
 
         # 정류장 삽입 (A→B 사이에 존재하는 정류장 추가)
         for lat, lng, stop_id in stop_coords:
@@ -112,7 +108,7 @@ for stdid in tqdm(stdid_list):
                 return haversine_distance(px, py, proj_x, proj_y)
 
             d = distance_to_segment(lat, lng, *A, *B)
-            if d < 50:
+            if d < 70:
                 nearest_stop = get_nearest_node(lat, lng)
                 if nearest_stop:
                     route_nodes.append({"type": "stop", **nearest_stop, "stop_id": stop_id})
