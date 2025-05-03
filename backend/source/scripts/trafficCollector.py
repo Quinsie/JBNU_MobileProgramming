@@ -66,7 +66,9 @@ def process_and_save(data):
             result.append({
                 "id": point["id"],
                 "sub": sub_idx,
-                "grade": point["grade"]
+                "grade": point["grade"],
+                "lat": point["lat"],
+                "lng": point["lng"]
             })
 
     # 저장
