@@ -40,34 +40,6 @@ def distance_to_segment(px, py, ax, ay, bx, by):
     proj_y = ay + t * dy
     return haversine_distance(px, py, proj_x, proj_y)
 
-def filter_by_stop_segment(nodes, stop_points):
-    result = []
-    for i in range(len(stop_points) - 1):
-        a, b = stop_points[i], stop_points[i + 1]
-        seg_nodes = []
-        for node in nodes:
-            d = distance_to_segment(node["lat"], node["lng"], a["lat"], a["lng"], b["lat"], b["lng"])
-            if d <= 100:
-                seg_nodes.append(node)
-
-        seg_nodes.sort(key=lambda x: (x["id"] is not None, x["lat"], x["lng"]))
-        filtered = []
-        for node in seg_nodes:
-            if node.get("type") == "stop":
-                filtered.append(node)
-                continue
-            is_duplicate = False
-            for f in filtered:
-                if f.get("type") == "stop":
-                    continue
-                if haversine_distance(node["lat"], node["lng"], f["lat"], f["lng"]) < 50:
-                    is_duplicate = True
-                    break
-            if not is_duplicate:
-                filtered.append(node)
-        result.extend(filtered)
-    return result
-
 def process_single_stdid(stdid):
     vtx_path = os.path.join(VTX_DIR, f"{stdid}.json")
     stop_path = os.path.join(STOP_DIR, f"{stdid}.json")
@@ -78,34 +50,56 @@ def process_single_stdid(stdid):
     with open(stop_path, encoding="utf-8") as f:
         stop_data = json.load(f)["resultList"]
 
-    vtx_points = []
-    seen = set()
-    for v in vtx_data:
-        key = (v["LAT"], v["LNG"])
-        if v.get("LAT") and v.get("LNG") and key not in seen:
-            vtx_points.append(key)
-            seen.add(key)
-    if len(vtx_points) < 2: return
-
     stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data if s.get("LAT") and s.get("LNG")]
     stop_points = [{"lat": s[0], "lng": s[1], "stop_id": s[2], "type": "stop", **get_nearest_node(s[0], s[1])} for s in stop_coords]
 
-    route_nodes = stop_points.copy()
+    mid_nodes = []
+    for i in range(len(stop_coords) - 1):
+        a = stop_coords[i]
+        b = stop_coords[i + 1]
+        dist = haversine_distance(a[0], a[1], b[0], b[1])
 
-    for i in range(len(vtx_points) - 1):
-        A, B = vtx_points[i], vtx_points[i + 1]
+        num_samples = 0
+        if dist > 180:
+            num_samples = 3
+        elif dist > 120:
+            num_samples = 2
+        elif dist > 60:
+            num_samples = 1
 
-        for j in range(1, 4):
-            ratio = j / 4
-            px = A[0] + (B[0] - A[0]) * ratio
-            py = A[1] + (B[1] - A[1]) * ratio
+        for j in range(1, num_samples + 1):
+            ratio = j / (num_samples + 1)
+            px = a[0] + (b[0] - a[0]) * ratio
+            py = a[1] + (b[1] - a[1]) * ratio
             node = get_nearest_node(px, py)
-            route_nodes.append({"type": "mid", **node})
+            mid_nodes.append({"type": "mid", **node})
 
-    all_nodes = filter_by_stop_segment(route_nodes, stop_points)
+    # 세그먼트별로 중복 제거
+    filtered_nodes = []
+    for i in range(len(stop_points) - 1):
+        a = stop_points[i]
+        b = stop_points[i + 1]
+        segment_nodes = [a]
+        segment_nodes += [n for n in mid_nodes if distance_to_segment(n["lat"], n["lng"], a["lat"], a["lng"], b["lat"], b["lng"]) <= 100]
+        segment_nodes.append(b)
+
+        cleaned = []
+        for node in segment_nodes:
+            is_dup = False
+            for f in cleaned:
+                if haversine_distance(node["lat"], node["lng"], f["lat"], f["lng"]) < 50:
+                    if node["id"] is not None and f["id"] is None:
+                        cleaned.remove(f)
+                        break
+                    else:
+                        is_dup = True
+                        break
+            if not is_dup:
+                cleaned.append(node)
+        filtered_nodes.extend(cleaned)
 
     with open(os.path.join(OUTPUT_DIR, f"{stdid}.json"), "w", encoding="utf-8") as f:
-        json.dump(all_nodes, f, indent=2, ensure_ascii=False)
+        json.dump(filtered_nodes, f, indent=2, ensure_ascii=False)
 
 if __name__ == "__main__":
     stdid_list = [fn.replace(".json", "") for fn in os.listdir(VTX_DIR) if fn.endswith(".json")]
