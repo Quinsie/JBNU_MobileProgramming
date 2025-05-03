@@ -93,7 +93,6 @@ def process_route(stdid):
     cur_pos = vtx_list[0]
     visited = set()
     last_angle_check = None
-    last_detected_ord = -1
 
     for i in range(1, len(vtx_list)):
         prev = cur_pos
@@ -120,26 +119,23 @@ def process_route(stdid):
                 continue
             visited.add(key)
 
+            # 정류장 감지 순서 강제 고정
             if stop_index < len(stops):
                 current_stop = stops[stop_index]
-                dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
-                if (
-                    dist_to_stop < STOP_MATCH_THRESHOLD and
-                    current_stop["STOP_ID"] not in detected_stop_ids and
-                    current_stop["ORD"] == stops[stop_index]["ORD"]
-                ):
-                    output.append({
-                        "NODE_ID": node_id,
-                        "TYPE": "STOP",
-                        "STOP_ID": current_stop["STOP_ID"],
-                        "LAT": current_stop["LAT"],
-                        "LNG": current_stop["LNG"]
-                    })
-                    node_id += 1
-                    detected_stop_ids.add(current_stop["STOP_ID"])
-                    last_detected_ord = current_stop["ORD"]
-                    stop_index += 1
-                    continue
+                if current_stop["STOP_ID"] not in detected_stop_ids:
+                    dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
+                    if dist_to_stop < STOP_MATCH_THRESHOLD:
+                        output.append({
+                            "NODE_ID": node_id,
+                            "TYPE": "STOP",
+                            "STOP_ID": current_stop["STOP_ID"],
+                            "LAT": current_stop["LAT"],
+                            "LNG": current_stop["LNG"]
+                        })
+                        node_id += 1
+                        detected_stop_ids.add(current_stop["STOP_ID"])
+                        stop_index += 1
+                        continue
 
             sample_acc += FINE_STEP
             if sample_acc >= SAMPLE_INTERVAL:
