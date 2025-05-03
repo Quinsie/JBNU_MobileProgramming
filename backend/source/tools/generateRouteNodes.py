@@ -87,6 +87,8 @@ def process_single_stdid(stdid):
             is_dup = False
             for f in cleaned:
                 if haversine_distance(node["lat"], node["lng"], f["lat"], f["lng"]) < 50:
+                    if f["type"] == "stop":
+                        continue  # 정류장은 절대 제거하지 않음
                     if node["id"] is not None and f["id"] is None:
                         cleaned.remove(f)
                         break
