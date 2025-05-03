@@ -28,7 +28,7 @@ def interpolate_point(p1, p2, target_dist):
 def process_route(stdid):
     VTX_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx", f"{stdid}.json")
     STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops", f"{stdid}.json")
-    SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "route_node", f"{stdid}.json")
+    SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "route_nodes", f"{stdid}.json")
 
     if not os.path.exists(VTX_PATH) or not os.path.exists(STOP_PATH):
         return f"{stdid} skipped"
