@@ -14,7 +14,7 @@ STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
 VTX_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes")
 
-STOP_MATCH_THRESHOLD = 30
+SSTOP_MATCH_THRESHOLD = 100  # 범위 확장
 SAMPLE_INTERVAL = 200
 FINE_STEP = 1
 
@@ -92,7 +92,7 @@ def process_route(stdid):
                 s = stops[stop_index]
                 dist = haversine_distance(interp[0], interp[1], s["LAT"], s["LNG"])
                 if dist < STOP_MATCH_THRESHOLD:
-                    add_stop_node(s)
+                    add_stop_node(s)  # 정류장 위치 기준으로 노드 추가
                     stop_index += 1
                     continue
 
