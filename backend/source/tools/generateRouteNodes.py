@@ -123,7 +123,6 @@ def process_route(stdid):
             while current_stop:
                 dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
                 if dist_to_stop < STOP_MATCH_THRESHOLD and current_stop["STOP_ID"] not in detected_stop_ids:
-                    # 이전 정류장 먼저 감지 안 됐으면 무시
                     if stop_index > 0:
                         prev_stop = stops[stop_index - 1]
                         if prev_stop["STOP_ID"] not in detected_stop_ids:
@@ -154,8 +153,10 @@ def process_route(stdid):
                 node_id += 1
                 sample_acc = 0.0
 
-    for stop in stops:
+    for i, stop in enumerate(stops):
         if stop["STOP_ID"] not in detected_stop_ids:
+            if i > 0 and stops[i - 1]["STOP_ID"] not in detected_stop_ids:
+                continue  # 이전 정류장이 감지되지 않았으면 추가하지 않음
             min_d = float("inf")
             insert_idx = 0
             for j, node in enumerate(output):
