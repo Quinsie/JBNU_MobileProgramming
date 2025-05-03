@@ -50,13 +50,16 @@ def filter_by_stop_segment(nodes, stop_points):
             if d <= 100:
                 seg_nodes.append(node)
 
+        seg_nodes.sort(key=lambda x: (x["id"] is not None, x["lat"], x["lng"]))
         filtered = []
         for node in seg_nodes:
-            if node["type"] == "stop":
+            if node.get("type") == "stop":
                 filtered.append(node)
                 continue
             is_duplicate = False
             for f in filtered:
+                if f.get("type") == "stop":
+                    continue
                 if haversine_distance(node["lat"], node["lng"], f["lat"], f["lng"]) < 50:
                     is_duplicate = True
                     break
@@ -85,10 +88,9 @@ def process_single_stdid(stdid):
     if len(vtx_points) < 2: return
 
     stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data if s.get("LAT") and s.get("LNG")]
-    stop_points = [{"lat": s[0], "lng": s[1], "stop_id": s[2]} for s in stop_coords]
+    stop_points = [{"lat": s[0], "lng": s[1], "stop_id": s[2], "type": "stop", **get_nearest_node(s[0], s[1])} for s in stop_coords]
 
-    route_nodes = []
-    included_stops = set()
+    route_nodes = stop_points.copy()
 
     for i in range(len(vtx_points) - 1):
         A, B = vtx_points[i], vtx_points[i + 1]
@@ -97,16 +99,8 @@ def process_single_stdid(stdid):
             ratio = j / 4
             px = A[0] + (B[0] - A[0]) * ratio
             py = A[1] + (B[1] - A[1]) * ratio
-            route_nodes.append({"type": "mid", **get_nearest_node(px, py)})
-
-        for lat, lng, stop_id in stop_coords:
-            if stop_id in included_stops: continue
-            if distance_to_segment(lat, lng, *A, *B) < 70:
-                node = get_nearest_node(lat, lng)
-                node["type"] = "stop"
-                node["stop_id"] = stop_id
-                route_nodes.append(node)
-                included_stops.add(stop_id)
+            node = get_nearest_node(px, py)
+            route_nodes.append({"type": "mid", **node})
 
     all_nodes = filter_by_stop_segment(route_nodes, stop_points)
 
