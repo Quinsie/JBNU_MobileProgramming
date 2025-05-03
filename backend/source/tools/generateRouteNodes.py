@@ -9,16 +9,17 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 from source.utils.haversine import haversine_distance
 
-SAMPLE_INTERVAL = 30  # meters
-STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리 (m)
+SAMPLE_INTERVAL = 100  # INTERMEDIATE 노드 간격
+STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리
+FINE_STEP = 1  # 정류장 감시용 보간 간격 (단위: meter)
 
-def interpolate_point(p1, p2, target_dist):
+def interpolate_point(p1, p2, dist_from_p1):
     lat1, lng1 = p1
     lat2, lng2 = p2
     total_dist = haversine_distance(lat1, lng1, lat2, lng2)
     if total_dist == 0:
         return p1
-    ratio = target_dist / total_dist
+    ratio = dist_from_p1 / total_dist
     lat = lat1 + (lat2 - lat1) * ratio
     lng = lng1 + (lng2 - lng1) * ratio
     return (lat, lng)
@@ -41,50 +42,54 @@ def process_route(stdid):
 
     output = []
     node_id = 0
-    acc_dist = 0
-    i = 0
+    sample_acc = 0.0
+    stop_index = 0
+    current_stop = stops[stop_index] if stop_index < len(stops) else None
+    stop_cooldown = False  # 연속 감지 방지
+
     cur_pos = vtx_list[0]
 
-    stop_index = 0
-    current_stop = stops[stop_index] if stops else None
+    for i in range(1, len(vtx_list)):
+        prev = cur_pos
+        nxt = vtx_list[i]
+        seg_dist = haversine_distance(*prev, *nxt)
 
-    while i < len(vtx_list) - 1:
-        next_pos = vtx_list[i + 1]
-        seg_dist = haversine_distance(*cur_pos, *next_pos)
+        step = 0.0
+        while step < seg_dist:
+            interp = interpolate_point(prev, nxt, step)
+            step += FINE_STEP
+            cur_pos = interp
 
-        # 샘플 노드 생성
-        if acc_dist + seg_dist >= SAMPLE_INTERVAL:
-            remain = SAMPLE_INTERVAL - acc_dist
-            new_node = interpolate_point(cur_pos, next_pos, remain)
-            output.append({
-                "NODE_ID": node_id,
-                "TYPE": "INTERMEDIATE",
-                "LAT": new_node[0],
-                "LNG": new_node[1]
-            })
-            node_id += 1
-            cur_pos = new_node
-            acc_dist = 0
-            continue
+            # STOP 감시
+            if current_stop and not stop_cooldown:
+                dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
+                if dist_to_stop < STOP_MATCH_THRESHOLD:
+                    output.append({
+                        "NODE_ID": node_id,
+                        "TYPE": "STOP",
+                        "STOP_ID": current_stop["STOP_ID"],
+                        "LAT": cur_pos[0],
+                        "LNG": cur_pos[1]
+                    })
+                    node_id += 1
+                    stop_index += 1
+                    current_stop = stops[stop_index] if stop_index < len(stops) else None
+                    stop_cooldown = True  # 바로 다음 보간 구간에선 STOP 감지 건너뛰기
+                    continue
 
-        # STOP: 일정 거리 이내 진입 시 즉시 찍기
-        if current_stop:
-            dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
-            if dist_to_stop < STOP_MATCH_THRESHOLD:
+            # INTERMEDIATE 노드 감지
+            sample_acc += FINE_STEP
+            if sample_acc >= SAMPLE_INTERVAL:
                 output.append({
                     "NODE_ID": node_id,
-                    "TYPE": "STOP",
-                    "STOP_ID": current_stop["STOP_ID"],
+                    "TYPE": "INTERMEDIATE",
                     "LAT": cur_pos[0],
                     "LNG": cur_pos[1]
                 })
                 node_id += 1
-                stop_index += 1
-                current_stop = stops[stop_index] if stop_index < len(stops) else None
+                sample_acc = 0.0
 
-        acc_dist += seg_dist
-        cur_pos = next_pos
-        i += 1
+        stop_cooldown = False  # 보간 루프 끝나면 다시 감시 허용
 
     os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
