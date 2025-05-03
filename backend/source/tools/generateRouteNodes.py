@@ -74,11 +74,11 @@ def process_route(stdid):
         # 정류장 거리 체크
         if current_stop:
             dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
-            if dist_to_stop < min_dist:
+            
+            if dist_to_stop < min_dist and dist_to_stop < 100:  # 100m 이하에서만 유효
                 min_dist = dist_to_stop
                 best_pos = (cur_pos[0], cur_pos[1])
             elif best_pos is not None:
-                # 최단 거리 지점 도달 → 정류장 노드 삽입
                 output.append({
                     "NODE_ID": node_id,
                     "TYPE": "STOP",
