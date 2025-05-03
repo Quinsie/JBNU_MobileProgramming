@@ -58,7 +58,12 @@ def process_route(stdid):
     if start_idx > end_idx:
         start_idx, end_idx = end_idx, start_idx
 
-    vtx_list = vtx_list[start_idx:end_idx + 1]  # 시점~종점만 사용
+    vtx_crop = vtx_list[start_idx:end_idx + 1]
+    if len(vtx_crop) < 2:
+        print(f"[WARN] {stdid}: VTX too short in cropped range {start_idx}~{end_idx}, using full VTX")
+        vtx_crop = vtx_list
+
+    vtx_list = vtx_crop
 
     output = []
     node_id = 0
@@ -81,7 +86,6 @@ def process_route(stdid):
             step += FINE_STEP
             cur_pos = interp
 
-            # STOP 감시
             while current_stop:
                 dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
                 if dist_to_stop < STOP_MATCH_THRESHOLD and current_stop["STOP_ID"] not in detected_stop_ids:
@@ -110,15 +114,36 @@ def process_route(stdid):
                 node_id += 1
                 sample_acc = 0.0
 
-    # NODE_ID 재부여
+    for stop in stops:
+        if stop["STOP_ID"] not in detected_stop_ids:
+            min_d = float("inf")
+            insert_idx = len(output)
+            for j, node in enumerate(output):
+                d = haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"])
+                if d < min_d:
+                    min_d = d
+                    insert_idx = j
+            near_stop = any(
+                haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"]) < STOP_MATCH_THRESHOLD
+                and node["TYPE"] == "STOP"
+                for node in output[max(0, insert_idx - 3):insert_idx + 3]
+            )
+            if not near_stop:
+                output.insert(insert_idx, {
+                    "NODE_ID": None,
+                    "TYPE": "STOP",
+                    "STOP_ID": stop["STOP_ID"],
+                    "LAT": stop["LAT"],
+                    "LNG": stop["LNG"]
+                })
+                print(f"[FIXED] {stdid}: forcibly inserted STOP {stop['STOP_ID']} at idx {insert_idx}")
+
     for i, node in enumerate(output):
         node["NODE_ID"] = i
 
     os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-
-    print(f"[DEBUG] {stdid}: vtx size = {len(vtx_list)} / stops = {len(stops)} / range = {start_idx}~{end_idx}")
 
     return f"{stdid} done"
 
