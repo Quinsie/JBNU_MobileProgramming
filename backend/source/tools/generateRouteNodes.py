@@ -13,6 +13,7 @@ SAMPLE_INTERVAL = 200  # INTERMEDIATE 노드 간격
 STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리
 FINE_STEP = 1  # 정류장 감시용 보간 간격 (단위: meter)
 
+
 def interpolate_point(p1, p2, dist_from_p1):
     lat1, lng1 = p1
     lat2, lng2 = p2
@@ -23,6 +24,7 @@ def interpolate_point(p1, p2, dist_from_p1):
     lat = lat1 + (lat2 - lat1) * ratio
     lng = lng1 + (lng2 - lng1) * ratio
     return (lat, lng)
+
 
 def process_route(stdid):
     VTX_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx", f"{stdid}.json")
@@ -114,44 +116,24 @@ def process_route(stdid):
                 node_id += 1
                 sample_acc = 0.0
 
-    for i, stop in enumerate(stops):
+    for stop in stops:
         if stop["STOP_ID"] not in detected_stop_ids:
             min_d = float("inf")
-            insert_idx = len(output)
-
-            prev_idx = next((j for j, node in enumerate(output) if node.get("STOP_ID") == stops[i - 1]["STOP_ID"]), 0) if i > 0 else 0
-            next_idx = next((j for j, node in enumerate(output) if node.get("STOP_ID") == stops[i + 1]["STOP_ID"]), len(output)) if i < len(stops) - 1 else len(output)
-
-            for j in range(prev_idx, next_idx):
-                d = haversine_distance(output[j]["LAT"], output[j]["LNG"], stop["LAT"], stop["LNG"])
+            insert_idx = 0
+            for j, node in enumerate(output):
+                d = haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"])
                 if d < min_d:
                     min_d = d
                     insert_idx = j
 
-            near_stop = any(
-                haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"]) < STOP_MATCH_THRESHOLD
-                and node["TYPE"] == "STOP"
-                for node in output[max(0, insert_idx - 3):insert_idx + 3]
-            )
-            if not near_stop:
-                output.insert(insert_idx, {
-                    "NODE_ID": None,
-                    "TYPE": "STOP",
-                    "STOP_ID": stop["STOP_ID"],
-                    "LAT": stop["LAT"],
-                    "LNG": stop["LNG"]
-                })
-                print(f"[FIXED] {stdid}: forcibly inserted STOP {stop['STOP_ID']} at idx {insert_idx}")
-
-    if stops[-1]["STOP_ID"] not in detected_stop_ids:
-        output.append({
-            "NODE_ID": None,
-            "TYPE": "STOP",
-            "STOP_ID": stops[-1]["STOP_ID"],
-            "LAT": stops[-1]["LAT"],
-            "LNG": stops[-1]["LNG"]
-        })
-        print(f"[FIXED-END] {stdid}: forcibly appended last STOP {stops[-1]['STOP_ID']}")
+            output.insert(insert_idx, {
+                "NODE_ID": None,
+                "TYPE": "STOP",
+                "STOP_ID": stop["STOP_ID"],
+                "LAT": stop["LAT"],
+                "LNG": stop["LNG"]
+            })
+            print(f"[FIXED] {stdid}: inserted STOP {stop['STOP_ID']} at {insert_idx}")
 
     for i, node in enumerate(output):
         node["NODE_ID"] = i
@@ -162,6 +144,7 @@ def process_route(stdid):
 
     return f"{stdid} done"
 
+
 def run_all_routes():
     STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
     stdid_list = [fname.replace(".json", "") for fname in os.listdir(STOP_PATH) if fname.endswith(".json")]
@@ -171,6 +154,7 @@ def run_all_routes():
 
     for r in results:
         print(r)
+
 
 if __name__ == "__main__":
     run_all_routes()
