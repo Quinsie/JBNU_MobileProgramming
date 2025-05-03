@@ -51,15 +51,12 @@ def process_single_stdid(stdid):
     ]
 
     route_nodes = []
-    seen = []
 
     for i in range(len(stop_points) - 1):
         a = stop_points[i]
         b = stop_points[i + 1]
-        if not seen or haversine_distance(a["lat"], a["lng"], seen[-1]["lat"], seen[-1]["lng"]) >= 30:
-            route_nodes.append(a)
-            seen.append(a)
 
+        route_nodes.append(a)
         sub_path = []
         found_a, found_b = None, None
         for idx, (lat, lng) in enumerate(vtx_points):
@@ -75,7 +72,7 @@ def process_single_stdid(stdid):
         else:
             sub_path = [(a["lat"], a["lng"]), (b["lat"], b["lng"])]
 
-        sampled = []
+        sampled = [a]
         dist_accum = 0
         prev = sub_path[0]
         for lat, lng in sub_path[1:]:
@@ -83,14 +80,15 @@ def process_single_stdid(stdid):
             dist_accum += dist
             if dist_accum >= 50:
                 node = {"type": "mid", **get_nearest_node(lat, lng)}
-                if not any(haversine_distance(node["lat"], node["lng"], n["lat"], n["lng"]) < 30 for n in seen):
+                if all(haversine_distance(node["lat"], node["lng"], n["lat"], n["lng"]) >= 50 for n in sampled):
                     sampled.append(node)
-                    seen.append(node)
-                dist_accum = 0
+                    dist_accum = 0
             prev = (lat, lng)
 
-        route_nodes.extend(sampled)
+        sampled.append(b)
+        route_nodes.extend(sampled[1:])
 
+    # 마지막 정류장 처리
     last = stop_points[-1]
     if not route_nodes or haversine_distance(last["lat"], last["lng"], route_nodes[-1]["lat"], route_nodes[-1]["lng"]) > 30:
         route_nodes.append(last)
