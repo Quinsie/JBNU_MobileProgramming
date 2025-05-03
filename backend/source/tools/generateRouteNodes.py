@@ -89,7 +89,6 @@ def process_route(stdid):
     node_id = 0
     sample_acc = 0.0
     stop_index = 0
-    current_stop = stops[stop_index] if stop_index < len(stops) else None
     detected_stop_ids = set()
     cur_pos = vtx_list[0]
     visited = set()
@@ -120,14 +119,10 @@ def process_route(stdid):
                 continue
             visited.add(key)
 
-            while current_stop:
+            if stop_index < len(stops):
+                current_stop = stops[stop_index]
                 dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
                 if dist_to_stop < STOP_MATCH_THRESHOLD and current_stop["STOP_ID"] not in detected_stop_ids:
-                    if stop_index > 0:
-                        prev_stop = stops[stop_index - 1]
-                        if prev_stop["STOP_ID"] not in detected_stop_ids:
-                            break
-
                     output.append({
                         "NODE_ID": node_id,
                         "TYPE": "STOP",
@@ -138,9 +133,7 @@ def process_route(stdid):
                     node_id += 1
                     detected_stop_ids.add(current_stop["STOP_ID"])
                     stop_index += 1
-                    current_stop = stops[stop_index] if stop_index < len(stops) else None
-                else:
-                    break
+                    continue
 
             sample_acc += FINE_STEP
             if sample_acc >= SAMPLE_INTERVAL:
