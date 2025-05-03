@@ -3,103 +3,117 @@
 import os
 import json
 import sys
-from tqdm import tqdm
-from multiprocessing import Pool, cpu_count
-from functools import partial
+from multiprocessing import Pool
 
-# 경로 설정
+# haversine.py를 import할 수 있도록 경로 추가
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
-VTX_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx")
-STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
-TRAFFIC_NODE_PATH = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic", "20250503_2000.json")
-OUTPUT_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes")
 from source.utils.haversine import haversine_distance
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# 트래픽 노드 불러오기
-with open(os.path.join(TRAFFIC_NODE_PATH), encoding="utf-8") as f:
-    traffic_nodes = json.load(f)
+# 설정
+SAMPLE_INTERVAL = 50  # meters
 
-traffic_node_coords = [
-    {"id": t["id"], "sub": t["sub"], "lat": t.get("lat"), "lng": t.get("lng")}
-    for t in traffic_nodes
-    if t.get("lat") is not None and t.get("lng") is not None
-]
+# 두 점 사이 보간 함수
+def interpolate_point(p1, p2, target_dist):
+    lat1, lng1 = p1
+    lat2, lng2 = p2
+    total_dist = haversine_distance(lat1, lng1, lat2, lng2)
+    if total_dist == 0:
+        return p1
+    ratio = target_dist / total_dist
+    lat = lat1 + (lat2 - lat1) * ratio
+    lng = lng1 + (lng2 - lng1) * ratio
+    return (lat, lng)
 
-def get_nearest_node(lat, lng, radius=100):
-    dists = [(haversine_distance(lat, lng, t["lat"], t["lng"]), t) for t in traffic_node_coords]
-    dists = [item for item in dists if item[0] <= radius]
-    return sorted(dists, key=lambda x: x[0])[0][1] if dists else {"id": None, "sub": None, "lat": lat, "lng": lng}
+# 하나의 STDID 처리
+def process_route(stdid):
+    VTX_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx", f"{stdid}.json")
+    STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops", f"{stdid}.json")
+    SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "route_node", f"{stdid}.json")
 
-def process_single_stdid(stdid):
-    vtx_path = os.path.join(VTX_DIR, f"{stdid}.json")
-    stop_path = os.path.join(STOP_DIR, f"{stdid}.json")
+    if not os.path.exists(VTX_PATH) or not os.path.exists(STOP_PATH):
+        return f"{stdid} skipped"
 
-    if not os.path.exists(stop_path) or not os.path.exists(vtx_path):
-        return
+    with open(VTX_PATH, encoding="utf-8") as f:
+        vtx_list = [(pt["LAT"], pt["LNG"]) for pt in json.load(f)["resultList"]]
 
-    with open(stop_path, encoding="utf-8") as f:
+    with open(STOP_PATH, encoding="utf-8") as f:
         stop_data = json.load(f)["resultList"]
-    with open(vtx_path, encoding="utf-8") as f:
-        vtx_data = json.load(f)["resultList"]
+        stop_seq = sorted(stop_data, key=lambda x: x["STOP_ORD"])
+        stops = [{"STOP_ID": s["STOP_ID"], "LAT": s["LAT"], "LNG": s["LNG"]} for s in stop_seq]
 
-    vtx_points = [(v["LAT"], v["LNG"]) for v in vtx_data if v.get("LAT") and v.get("LNG")]
-    stop_coords = [(s["LAT"], s["LNG"], s["STOP_ID"]) for s in stop_data if s.get("LAT") and s.get("LNG")]
-    stop_points = [
-        {"lat": s[0], "lng": s[1], "stop_id": s[2], "type": "stop", **get_nearest_node(s[0], s[1])}
-        for s in stop_coords
-    ]
+    output = []
+    node_id = 0
+    acc_dist = 0
+    i = 0
+    cur_pos = vtx_list[0]
 
-    route_nodes = []
+    stop_index = 0
+    current_stop = stops[stop_index] if stops else None
+    min_dist = float("inf")
+    best_pos = None
 
-    for i in range(len(stop_points) - 1):
-        a = stop_points[i]
-        b = stop_points[i + 1]
+    while i < len(vtx_list) - 1:
+        next_pos = vtx_list[i + 1]
+        seg_dist = haversine_distance(*cur_pos, *next_pos)
 
-        route_nodes.append(a)
-        sub_path = []
-        found_a, found_b = None, None
-        for idx, (lat, lng) in enumerate(vtx_points):
-            if found_a is None and haversine_distance(lat, lng, a["lat"], a["lng"]) < 30:
-                found_a = idx
-            if haversine_distance(lat, lng, b["lat"], b["lng"]) < 30:
-                found_b = idx
-                if found_a is not None:
-                    break
+        # 샘플 노드 생성
+        if acc_dist + seg_dist >= SAMPLE_INTERVAL:
+            remain = SAMPLE_INTERVAL - acc_dist
+            new_node = interpolate_point(cur_pos, next_pos, remain)
+            output.append({
+                "NODE_ID": node_id,
+                "TYPE": "INTERMEDIATE",
+                "LAT": new_node[0],
+                "LNG": new_node[1]
+            })
+            node_id += 1
+            cur_pos = new_node
+            acc_dist = 0
+            continue  # 다음 segment 이동 없이 다시 current에서 진행
 
-        if found_a is not None and found_b is not None:
-            if found_a < found_b:
-                sub_path = vtx_points[found_a:found_b + 1]
-            else:
-                sub_path = vtx_points[found_b:found_a + 1][::-1]
-        else:
-            sub_path = [(a["lat"], a["lng"]), (b["lat"], b["lng"])]
+        # 정류장 거리 체크
+        if current_stop:
+            dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
+            if dist_to_stop < min_dist:
+                min_dist = dist_to_stop
+                best_pos = (cur_pos[0], cur_pos[1])
+            elif best_pos is not None:
+                # 최단 거리 지점 도달 → 정류장 노드 삽입
+                output.append({
+                    "NODE_ID": node_id,
+                    "TYPE": "STOP",
+                    "STOP_ID": current_stop["STOP_ID"],
+                    "LAT": best_pos[0],
+                    "LNG": best_pos[1]
+                })
+                node_id += 1
+                stop_index += 1
+                current_stop = stops[stop_index] if stop_index < len(stops) else None
+                min_dist = float("inf")
+                best_pos = None
 
-        sampled = [a]
-        dist_accum = 0
-        prev = sub_path[0]
-        for lat, lng in sub_path[1:]:
-            dist = haversine_distance(prev[0], prev[1], lat, lng)
-            dist_accum += dist
-            if dist_accum >= 50:
-                node = {"type": "mid", **get_nearest_node(lat, lng)}
-                if all(haversine_distance(node["lat"], node["lng"], n["lat"], n["lng"]) >= 45 for n in sampled):
-                    sampled.append(node)
-                    dist_accum = 0
-            prev = (lat, lng)
+        acc_dist += seg_dist
+        cur_pos = next_pos
+        i += 1
 
-        sampled.append(b)
-        route_nodes.extend(sampled[1:])
+    # 저장
+    os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
+    with open(SAVE_PATH, "w", encoding="utf-8") as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
 
-    # 마지막 정류장 처리
-    last = stop_points[-1]
-    if not route_nodes or haversine_distance(last["lat"], last["lng"], route_nodes[-1]["lat"], route_nodes[-1]["lng"]) > 30:
-        route_nodes.append(last)
+    return f"{stdid} done"
 
-    with open(os.path.join(OUTPUT_DIR, f"{stdid}.json"), "w", encoding="utf-8") as f:
-        json.dump(route_nodes, f, indent=2, ensure_ascii=False)
+# 전체 노선 병렬 처리
+def run_all_routes():
+    STOP_PATH = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
+    stdid_list = [fname.replace(".json", "") for fname in os.listdir(STOP_PATH) if fname.endswith(".json")]
 
+    with Pool() as pool:
+        results = pool.map(process_route, stdid_list)
+
+    for r in results:
+        print(r)
+
+# 진입점
 if __name__ == "__main__":
-    stdid_list = [fn.replace(".json", "") for fn in os.listdir(VTX_DIR) if fn.endswith(".json")]
-    with Pool(cpu_count()) as pool:
-        list(tqdm(pool.imap(process_single_stdid, stdid_list), total=len(stdid_list)))
+    run_all_routes()
