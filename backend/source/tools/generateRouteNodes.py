@@ -42,8 +42,14 @@ for stdid in tqdm(stdid_list):
     with open(stop_path, encoding="utf-8") as f:
         stop_data = json.load(f)["resultList"]
 
-    # VTX point list
-    vtx_points = [(v["LAT"], v["LNG"]) for v in vtx_data if v.get("LAT") and v.get("LNG")]
+    # VTX point list (중복 제거)
+    vtx_points = []
+    seen = set()
+    for v in vtx_data:
+        key = (v["LAT"], v["LNG"])
+        if v.get("LAT") and v.get("LNG") and key not in seen:
+            vtx_points.append(key)
+            seen.add(key)
     if len(vtx_points) < 2:
         continue
 
@@ -67,28 +73,29 @@ for stdid in tqdm(stdid_list):
         if nearest_A:
             route_nodes.append({"type": "vtx", **nearest_A})
 
-        # A→B 선분 기준 가까운 traffic node 3개
-        def project_and_filter():
-            result = []
-            for t in traffic_node_coords:
-                ax, ay = A
-                bx, by = B
-                tx, ty = t["lat"], t["lng"]
+        # A→B 구간을 4등분하여 각 지점 기준으로 반경 내 교통노드 추출
+        def segment_sample_nodes(A, B, sample_n=3, radius=150):
+            ax, ay = A
+            bx, by = B
+            segment_nodes = []
+            for j in range(1, sample_n + 1):
+                ratio = j / (sample_n + 1)
+                px = ax + (bx - ax) * ratio
+                py = ay + (by - ay) * ratio
+                dists = [
+                    (haversine_distance(px, py, t["lat"], t["lng"]), t)
+                    for t in traffic_node_coords
+                    if haversine_distance(px, py, t["lat"], t["lng"]) <= radius
+                ]
+                if dists:
+                    segment_nodes.append(sorted(dists, key=lambda x: x[0])[0][1])
+            return segment_nodes
 
-                dx, dy = bx - ax, by - ay
-                if dx == dy == 0:
-                    continue
-                t_val = ((tx - ax) * dx + (ty - ay) * dy) / (dx * dx + dy * dy)
-                if 0 <= t_val <= 1:
-                    dist = haversine_distance(tx, ty, ax + t_val * dx, ay + t_val * dy)
-                    result.append((dist, t))
-            return [r[1] for r in sorted(result, key=lambda x: x[0])[:3]] if result else []
-
-        segment_nodes = project_and_filter()
-        if not segment_nodes:
-            print(f"[INFO] No traffic node found between VTX segment {i}-{i+1} for STDID {stdid}, skipping segment.")
+        sampled_nodes = segment_sample_nodes(A, B)
+        if not sampled_nodes:
+            print(f"[INFO] No nearby traffic nodes for segment {i}-{i+1} in STDID {stdid}, skipping.")
         else:
-            route_nodes.extend(segment_nodes)
+            route_nodes.extend(sampled_nodes)
 
         # 정류장 삽입 (A→B 사이에 존재하는 정류장 추가)
         for lat, lng, stop_id in stop_coords:
