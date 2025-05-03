@@ -126,7 +126,7 @@ def process_route(stdid):
                 if (
                     dist_to_stop < STOP_MATCH_THRESHOLD and
                     current_stop["STOP_ID"] not in detected_stop_ids and
-                    current_stop["ORD"] == last_detected_ord + 1
+                    current_stop["ORD"] == stops[stop_index]["ORD"]
                 ):
                     output.append({
                         "NODE_ID": node_id,
