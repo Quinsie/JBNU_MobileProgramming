@@ -9,7 +9,7 @@ from tqdm import tqdm
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 VTX_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx")
 STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
-TRAFFIC_NODE_PATH = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic", "20250503_1141.json")
+TRAFFIC_NODE_PATH = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic", "20250503_2000.json")
 OUTPUT_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes")
 from source.utils.haversine import haversine_distance
 os.makedirs(OUTPUT_DIR, exist_ok=True)
