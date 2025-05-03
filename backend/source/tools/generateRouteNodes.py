@@ -5,12 +5,12 @@ import json
 import sys
 from multiprocessing import Pool
 
-# 경로 설정
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 from source.utils.haversine import haversine_distance
 
-SAMPLE_INTERVAL = 100  # 노드 간 간격 (meters)
+SAMPLE_INTERVAL = 100  # meters
+STOP_MATCH_THRESHOLD = 30  # 정류장 인식 거리 (m)
 
 def interpolate_point(p1, p2, target_dist):
     lat1, lng1 = p1
@@ -47,14 +47,12 @@ def process_route(stdid):
 
     stop_index = 0
     current_stop = stops[stop_index] if stops else None
-    best_pos = None
-    prev_dist_to_stop = float("inf")
 
     while i < len(vtx_list) - 1:
         next_pos = vtx_list[i + 1]
         seg_dist = haversine_distance(*cur_pos, *next_pos)
 
-        # INTERMEDIATE 노드 생성
+        # 샘플 노드 생성
         if acc_dist + seg_dist >= SAMPLE_INTERVAL:
             remain = SAMPLE_INTERVAL - acc_dist
             new_node = interpolate_point(cur_pos, next_pos, remain)
@@ -69,29 +67,20 @@ def process_route(stdid):
             acc_dist = 0
             continue
 
-        # STOP 처리
+        # STOP: 일정 거리 이내 진입 시 즉시 찍기
         if current_stop:
             dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
-
-            if dist_to_stop < prev_dist_to_stop:
-                best_pos = (cur_pos[0], cur_pos[1])
-                prev_dist_to_stop = dist_to_stop
-            else:
-                # STOP 판단: 가까워지다가 멀어지기 시작하면 STOP 인식
-                if best_pos is not None and prev_dist_to_stop < 100:  # 100m 내에서만 인정
-                    output.append({
-                        "NODE_ID": node_id,
-                        "TYPE": "STOP",
-                        "STOP_ID": current_stop["STOP_ID"],
-                        "LAT": best_pos[0],
-                        "LNG": best_pos[1]
-                    })
-                    node_id += 1
-
+            if dist_to_stop < STOP_MATCH_THRESHOLD:
+                output.append({
+                    "NODE_ID": node_id,
+                    "TYPE": "STOP",
+                    "STOP_ID": current_stop["STOP_ID"],
+                    "LAT": cur_pos[0],
+                    "LNG": cur_pos[1]
+                })
+                node_id += 1
                 stop_index += 1
                 current_stop = stops[stop_index] if stop_index < len(stops) else None
-                best_pos = None
-                prev_dist_to_stop = float("inf")
 
         acc_dist += seg_dist
         cur_pos = next_pos
