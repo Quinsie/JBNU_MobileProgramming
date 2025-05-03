@@ -50,14 +50,13 @@ def filter_by_stop_segment(nodes, stop_points):
             if d <= 100:
                 seg_nodes.append(node)
 
-        seg_nodes.sort(key=lambda x: (x["id"] is not None, -1 if x["id"] is None else 0))
         filtered = []
         for node in seg_nodes:
+            if node["type"] == "stop":
+                filtered.append(node)
+                continue
             is_duplicate = False
             for f in filtered:
-                if node["type"] == "stop":
-                    is_duplicate = False
-                    break
                 if haversine_distance(node["lat"], node["lng"], f["lat"], f["lng"]) < 50:
                     is_duplicate = True
                     break
@@ -93,9 +92,6 @@ def process_single_stdid(stdid):
 
     for i in range(len(vtx_points) - 1):
         A, B = vtx_points[i], vtx_points[i + 1]
-
-        route_nodes.append({"type": "vtx", **get_nearest_node(*A)})
-        route_nodes.append({"type": "vtx", **get_nearest_node(*B)})
 
         for j in range(1, 4):
             ratio = j / 4
