@@ -9,14 +9,13 @@ from tqdm import tqdm
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 VTX_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx")
 STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
-TRAFFIC_NODE_PATH = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic")  # 최신 파일 선택
+TRAFFIC_NODE_PATH = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic", "20250503_1141.json")  # 최신 파일 선택
 OUTPUT_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes")
 from source.utils.haversine import haversine_distance
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # 가장 최근 traffic json 불러오기 (파일명 최신순)
-latest_traffic_file = sorted(os.listdir(TRAFFIC_NODE_PATH))[-1]
-with open(os.path.join(TRAFFIC_NODE_PATH, latest_traffic_file), encoding="utf-8") as f:
+with open(os.path.join(TRAFFIC_NODE_PATH), encoding="utf-8") as f:
     traffic_nodes = json.load(f)
 
 # traffic node 좌표만 추출
