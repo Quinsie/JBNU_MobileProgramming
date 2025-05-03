@@ -89,7 +89,6 @@ def process_route(stdid):
     node_id = 0
     sample_acc = 0.0
     stop_index = 0
-    detected_stop_ids = set()
     cur_pos = vtx_list[0]
     visited = set()
     last_angle_check = None
@@ -119,23 +118,20 @@ def process_route(stdid):
                 continue
             visited.add(key)
 
-            # 정류장 감지 순서 강제 고정
             if stop_index < len(stops):
                 current_stop = stops[stop_index]
-                if current_stop["STOP_ID"] not in detected_stop_ids:
-                    dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
-                    if dist_to_stop < STOP_MATCH_THRESHOLD:
-                        output.append({
-                            "NODE_ID": node_id,
-                            "TYPE": "STOP",
-                            "STOP_ID": current_stop["STOP_ID"],
-                            "LAT": current_stop["LAT"],
-                            "LNG": current_stop["LNG"]
-                        })
-                        node_id += 1
-                        detected_stop_ids.add(current_stop["STOP_ID"])
-                        stop_index += 1
-                        continue
+                dist_to_stop = haversine_distance(cur_pos[0], cur_pos[1], current_stop["LAT"], current_stop["LNG"])
+                if dist_to_stop < STOP_MATCH_THRESHOLD:
+                    output.append({
+                        "NODE_ID": node_id,
+                        "TYPE": "STOP",
+                        "STOP_ID": current_stop["STOP_ID"],
+                        "LAT": current_stop["LAT"],
+                        "LNG": current_stop["LNG"]
+                    })
+                    node_id += 1
+                    stop_index += 1
+                    continue
 
             sample_acc += FINE_STEP
             if sample_acc >= SAMPLE_INTERVAL:
@@ -147,48 +143,6 @@ def process_route(stdid):
                 })
                 node_id += 1
                 sample_acc = 0.0
-
-    for i, stop in enumerate(stops):
-        if stop["STOP_ID"] not in detected_stop_ids:
-            if i > 0 and stops[i - 1]["STOP_ID"] not in detected_stop_ids:
-                continue
-            min_d = float("inf")
-            insert_idx = 0
-            for j, node in enumerate(output):
-                d = haversine_distance(node["LAT"], node["LNG"], stop["LAT"], stop["LNG"])
-                if d < min_d:
-                    min_d = d
-                    insert_idx = j
-            output.insert(insert_idx, {
-                "NODE_ID": None,
-                "TYPE": "STOP",
-                "STOP_ID": stop["STOP_ID"],
-                "LAT": stop["LAT"],
-                "LNG": stop["LNG"]
-            })
-            print(f"[FIXED] {stdid}: inserted STOP {stop['STOP_ID']} at {insert_idx}")
-
-    if output[0]["TYPE"] != "STOP" or output[0]["STOP_ID"] != stops[0]["STOP_ID"]:
-        if stops[0]["STOP_ID"] not in detected_stop_ids:
-            output.insert(0, {
-                "NODE_ID": None,
-                "TYPE": "STOP",
-                "STOP_ID": stops[0]["STOP_ID"],
-                "LAT": stops[0]["LAT"],
-                "LNG": stops[0]["LNG"]
-            })
-            print(f"[FIXED] {stdid}: forced insert of first STOP {stops[0]['STOP_ID']} at HEAD")
-
-    if output[-1]["TYPE"] != "STOP" or output[-1]["STOP_ID"] != stops[-1]["STOP_ID"]:
-        if stops[-1]["STOP_ID"] not in detected_stop_ids:
-            output.append({
-                "NODE_ID": None,
-                "TYPE": "STOP",
-                "STOP_ID": stops[-1]["STOP_ID"],
-                "LAT": stops[-1]["LAT"],
-                "LNG": stops[-1]["LNG"]
-            })
-            print(f"[FIXED] {stdid}: forced insert of last STOP {stops[-1]['STOP_ID']} at TAIL")
 
     for i, node in enumerate(output):
         node["NODE_ID"] = i
