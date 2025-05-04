@@ -15,7 +15,7 @@ from source.utils.haversine import haversine_distance
 
 ROUTE_NODE_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_mapped")
 TRAFFIC_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic")
-SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_cong")
+SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_congestion")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 def load_latest_traffic_file():
