@@ -33,18 +33,20 @@ def build_traffic_dict(traffic_data):
 
 def process_std(stdid, traffic_dict):
     input_path = os.path.join(ROUTE_NODE_DIR, f"{stdid}.json")
-    with open(input_path, encoding="utf-8") as f:
-        nodes = json.load(f)["resultList"]
+    try:
+        with open(input_path, encoding="utf-8") as f:
+            nodes = json.load(f)["resultList"]
+    except Exception as e:
+        return stdid, {}  # 실패한 경우 빈 딕셔너리라도 반환
 
     result = {}
     for i, node in enumerate(nodes):
         matched = node.get("matched")
         if matched is None:
-            key = (None, None)
+            grade = "1"
         else:
             key = (matched.get("id"), matched.get("sub"))
-
-        grade = traffic_dict.get(key, "1")
+            grade = traffic_dict.get(key, "1")
         result[str(i)] = {"grade": grade}
     return stdid, result
 
