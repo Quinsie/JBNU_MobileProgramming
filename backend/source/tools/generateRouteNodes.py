@@ -14,7 +14,7 @@ STOP_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
 VTX_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "vtx")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes")
 
-STOP_MATCH_THRESHOLD = 100  # 범위 확장
+STOP_MATCH_THRESHOLD = 30
 SAMPLE_INTERVAL = 200
 FINE_STEP = 1
 
