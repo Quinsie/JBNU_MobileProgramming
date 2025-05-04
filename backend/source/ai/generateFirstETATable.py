@@ -5,17 +5,19 @@ import sys
 import json
 import torch
 import time
-import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
+from sklearn.preprocessing import LabelEncoder
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
+from source.utils.getDayType import getDayType
+
 # 날짜 설정
-TODAY = datetime.now()
-# TODAY = datetime(2025, 4, 26)  # 지금 날짜
+# TODAY = datetime.now()
+TODAY = datetime(2025, 4, 26)  # 지금 날짜
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 학습용 어제 날짜
 TARGET_DATE = TODAY  # 추론 목표 날짜
 
@@ -28,20 +30,22 @@ BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(
 SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
+LOOKUP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_lookup.json")
 
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
 with open(STDID_NUMBER_PATH, 'r') as f:
     stdid_number = json.load(f)
 
-INPUT_DIM = 7
+with open(LOOKUP_PATH, 'r') as f:
+    nx_ny_lookup = json.load(f)
+
+INPUT_DIM = 6
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
     'weekday': (3, 2),
 }
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-USE_FORECAST = True  # True면 예보 사용, False면 기존 방식
 
 class ETA_MLP(torch.nn.Module):
     def __init__(self):
@@ -65,7 +69,39 @@ class ETA_MLP(torch.nn.Module):
         x = self.fc3(x)
         return x.squeeze()
 
-# postprocess 함수
+def load_forecast_candidates(base_today):
+    candidates = []
+    for offset in range(3):
+        date_str = (base_today - timedelta(days=offset)).strftime('%Y%m%d')
+        path = os.path.join(FORECAST_DIR, f"{date_str}.json")
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                candidates.append(json.load(f))
+    return candidates
+
+def get_forecast_values(forecasts_list, forecast_timestamp, nx_ny):
+    hour = int(forecast_timestamp[-4:-2])
+    for time_fallback in range(0, 4):
+        fallback_hour = hour - time_fallback
+        if fallback_hour < 0:
+            continue
+        ts = forecast_timestamp[:-4] + f"{fallback_hour:02d}00"
+        for forecast in forecasts_list:
+            if ts in forecast:
+                # 정확한 grid 먼저 시도
+                if nx_ny in forecast[ts]:
+                    return forecast[ts][nx_ny]
+                # 인근 grid 시도
+                x, y = map(int, nx_ny.split('_'))
+                for dx in [-1, 0, 1]:
+                    for dy in [-1, 0, 1]:
+                        if dx == 0 and dy == 0:
+                            continue
+                        alt_key = f"{x + dx}_{y + dy}"
+                        if alt_key in forecast[ts]:
+                            return forecast[ts][alt_key]
+    return {'PTY': 0, 'PCP': 0.0, 'TMP': 20.0}
+
 def process_std_folder(stdid_folder_args):
     stdid_folder, REALTIME_BUS_DIR, YESTERDAY_STR = stdid_folder_args
     folder_path = os.path.join(REALTIME_BUS_DIR, stdid_folder)
@@ -109,65 +145,75 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday
 
     return eta_table
 
-def load_forecast(target_date):
-    forecast_files = os.listdir(FORECAST_DIR)
-    available_files = [f for f in forecast_files if f.endswith('.json')]
-    target_forecast = None
-
-    # 가장 가까운 예보 찾기
-    for file in sorted(available_files):
-        forecast_path = os.path.join(FORECAST_DIR, file)
-        forecast_date = datetime.strptime(file.replace('.json', ''), "%Y%m%d")
-        if forecast_date <= target_date:
-            target_forecast = forecast_path
-
-    if target_forecast:
-        with open(target_forecast, 'r') as f:
-            return json.load(f)
-    return None
-
 def main():
     start_time = time.time()
     print(f"ETA Table 생성 시작... (target={TARGET_STR})")
 
     df = pd.read_parquet(PARQUET_PATH)
+    forecasts_list = load_forecast_candidates(TODAY)
 
-    feature_cols = ['departure_time_sin', 'departure_time_cos', 'departure_time_group', 'PTY', 'RN1', 'T1H', 'actual_elapsed_from_departure']
-    X_dense = df[feature_cols].values
-    route_id_list = df['route_id'].values
-    node_id_list = df['node_id'].values
-    weekday_list = df['weekday_encoded'].values
-    baseline_elapsed_list = df['baseline_elapsed'].values
-    stop_ord_list = df['stop_ord'].values
-    departure_hhmm_list = df['departure_hhmm'].values
+    # 요일 인코딩
+    day_type = getDayType(TARGET_DATE)
+    weekday_encoder = LabelEncoder()
+    weekday_encoder.fit(['weekday', 'saturday', 'holiday'])
+    weekday_encoded_value = weekday_encoder.transform([day_type])[0]
 
-    X_dense = torch.tensor(X_dense, dtype=torch.float32).to(DEVICE)
-    route_id_encoded = torch.tensor(df['route_id_encoded'].values, dtype=torch.long).to(DEVICE)
-    node_id_encoded = torch.tensor(df['node_id_encoded'].values, dtype=torch.long).to(DEVICE)
-    weekday_encoded = torch.tensor(df['weekday_encoded'].values, dtype=torch.long).to(DEVICE)
+    X_dense_rows = []
+    route_id_encoded_list = []
+    node_id_encoded_list = []
+
+    route_encoder = LabelEncoder()
+    route_encoder.fit(list(stdid_number.values()))
+    node_encoder = LabelEncoder()
+    node_encoder.fit(df['node_id'].unique())
+
+    for idx, row in df.iterrows():
+        departure_hhmm = int(row['departure_hhmm'])
+        dep_hour = departure_hhmm // 100
+        dep_min = departure_hhmm % 100
+        forecast_timestamp = f"{TARGET_DATE.strftime('%Y%m%d')}_{dep_hour:02d}00"
+
+        stdid = [k for k, v in stdid_number.items() if v == row['route_id']]
+        stop_ord = str(int(row['stop_ord']))
+        nx_ny = nx_ny_lookup.get(f"{stdid[0]}_{stop_ord}") if stdid else None
+
+        forecast = get_forecast_values(forecasts_list, forecast_timestamp, nx_ny)
+
+        X_dense_rows.append([
+            row['departure_time_sin'],
+            row['departure_time_cos'],
+            row['departure_time_group'],
+            forecast['PTY'],
+            forecast['PCP'],
+            forecast['TMP']
+        ])
+
+        route_id_encoded_list.append(route_encoder.transform([row['route_id']])[0])
+        node_id_encoded_list.append(node_encoder.transform([row['node_id']])[0])
+
+    X_dense = torch.tensor(X_dense_rows, dtype=torch.float32).to(DEVICE)
+    route_id_tensor = torch.tensor(route_id_encoded_list, dtype=torch.long).to(DEVICE)
+    node_id_tensor = torch.tensor(node_id_encoded_list, dtype=torch.long).to(DEVICE)
+    weekday_tensor = torch.tensor([weekday_encoded_value] * len(df), dtype=torch.long).to(DEVICE)
 
     model = ETA_MLP().to(DEVICE)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
     model.eval()
 
     with torch.no_grad():
-        pred_delta = model(route_id_encoded, node_id_encoded, weekday_encoded, X_dense).cpu().numpy()
+        pred_delta = model(route_id_tensor, node_id_tensor, weekday_tensor, X_dense).cpu().numpy()
 
     with open(BASELINE_PATH, 'r') as f:
         baseline_table = json.load(f)
 
     eta_table = {}
-    forecast_data = load_forecast(TARGET_DATE) if USE_FORECAST else None
-
-    for idx in range(len(df)):
-        route_id = route_id_list[idx]
-        departure_hhmm = departure_hhmm_list[idx]
-        stop_ord = str(int(stop_ord_list[idx]))
-
+    for idx, row in df.iterrows():
+        route_id = row['route_id']
+        stop_ord = str(int(row['stop_ord']))
+        departure_hhmm = int(row['departure_hhmm'])
         stdid_candidates = [stdid for stdid, rname in stdid_number.items() if rname == route_id]
         if not stdid_candidates:
             continue
-
         stdid = stdid_candidates[0]
         stdid_hhmm = f"{stdid}_{departure_hhmm:04d}"
 
@@ -176,7 +222,7 @@ def main():
         dep_time = datetime(TARGET_DATE.year, TARGET_DATE.month, TARGET_DATE.day, dep_hour, dep_min, 0)
 
         dep_seconds = dep_hour * 3600 + dep_min * 60
-        baseline_elapsed = baseline_elapsed_list[idx] - dep_seconds
+        baseline_elapsed = row['baseline_elapsed'] - dep_seconds
         if baseline_elapsed < 0:
             baseline_elapsed = 0
 

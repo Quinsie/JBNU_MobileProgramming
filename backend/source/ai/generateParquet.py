@@ -36,7 +36,7 @@ def get_time_group(arrival_time):
 # multiprocessing용 함수
 def process_std_folder(stdid_folder, args):
     (REALTIME_BUS_DIR, baseline_data, stdid_to_stops, stdid_number, nx_ny_stops,
-     weather_files, WEATHER_DIR, yesterday_str, weekday_label, weekday_encoder,
+     weather_files, yesterday_str, weekday_label, weekday_encoder,
      route_encoder, node_encoder) = args
 
     stdid_path = os.path.join(REALTIME_BUS_DIR, stdid_folder)
@@ -134,7 +134,6 @@ def process_std_folder(stdid_folder, args):
                 'departure_time_sin': departure_time_sin,
                 'departure_time_cos': departure_time_cos,
                 'departure_time_group': departure_time_group,
-                'actual_elapsed_from_departure': actual_elapsed_from_departure,
                 'PTY': weather['PTY'],
                 'RN1': weather['RN1'],
                 'T1H': weather['T1H'],
@@ -167,7 +166,7 @@ def main():
     ETA_TABLE_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'eta_table')
     REALTIME_BUS_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo', 'realtime_bus')
     WEATHER_DIR = os.path.join(BASE_DIR, 'data', 'raw', 'dynamicInfo', 'weather')
-    PARQUET_DIR = os.paht.join(BASE_DIR, 'data', 'preprocessed', 'first_train')
+    PARQUET_DIR = os.path.join(BASE_DIR, 'data', 'preprocessed', 'first_train')
     STDID_TO_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_to_stops.json')
     STDID_NUMBER_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'stdid_number.json')
     NX_NY_STOPS_PATH = os.path.join(BASE_DIR, 'data', 'processed', 'nx_ny_stops.json')
@@ -210,7 +209,7 @@ def main():
     stdid_folders = os.listdir(REALTIME_BUS_DIR)
 
     args = (REALTIME_BUS_DIR, baseline_data, stdid_to_stops, stdid_number, nx_ny_stops,
-            weather_files, WEATHER_DIR, yesterday_str, day_type, weekday_encoder,
+            weather_files, yesterday_str, day_type, weekday_encoder,
             route_encoder, node_encoder)
 
     with Pool(cpu_count()) as pool:
