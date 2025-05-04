@@ -23,11 +23,24 @@ SAVE_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 # 필요한 카테고리
 CATEGORIES = ["PTY", "PCP", "TMP"]
 
+def get_alternate_nxny(nx, ny, coords, tried_set):
+    for dx in [-1, 0, 1]:
+        for dy in [-1, 0, 1]:
+            if dx == 0 and dy == 0:
+                continue
+            alt_nx, alt_ny = nx + dx, ny + dy
+            alt_key = f"{alt_nx}_{alt_ny}"
+            if alt_key in coords and alt_key not in tried_set:
+                return alt_nx, alt_ny
+    return None, None
+
 # 수집 함수 (fallback 추가)
-def collect_forecast(nx, ny):
+def collect_forecast(nx, ny, coords):
     now = datetime.now()
     base_dt = now - timedelta(days=1)
     base_times = ["2300", "2000", "1700"]  # fallback 순서
+    tried_keys = set()
+    origin_key = f"{nx}_{ny}"
 
     for base_time in base_times:
         base_date = base_dt.strftime("%Y%m%d")
@@ -52,6 +65,7 @@ def collect_forecast(nx, ny):
 
                 if not items:
                     log("forecastCollector", f"빈 데이터 (fallback 시도 중): {base_date} {base_time} (nx={nx}, ny={ny})")
+                    time.sleep(0.5)
                     continue
 
                 result = {}
@@ -71,7 +85,6 @@ def collect_forecast(nx, ny):
 
                     result[timestamp][category] = float(value) if str(value).replace('.', '', 1).isdigit() else 0.0
 
-                # 새로 추가된 fallback 조건
                 if not result:
                     log("forecastCollector", f"유효한 카테고리 없음 → fallback 계속 (nx={nx}, ny={ny})")
                     time.sleep(0.5)
@@ -87,9 +100,15 @@ def collect_forecast(nx, ny):
 
         time.sleep(0.5)
 
+    # fallback 실패 시 ±1 grid 대체 시도
+    tried_keys.add(origin_key)
+    alt_nx, alt_ny = get_alternate_nxny(nx, ny, coords, tried_keys)
+    if alt_nx is not None:
+        log("forecastCollector", f"±1 grid 대체 사용 시도: {alt_nx}_{alt_ny} (원래 {origin_key})")
+        return collect_forecast(alt_nx, alt_ny, coords)
+
     log("forecastCollector", f"[실패] 최종 수집 실패: (nx={nx}, ny={ny})")
     return None
-
 
 def main():
     # 좌표 불러오기
@@ -97,7 +116,7 @@ def main():
         coords = json.load(f)
 
     now = datetime.now()
-    timestamp = now.strftime("%Y%m%d")  # 오늘 날짜
+    timestamp = now.strftime("%Y%m%d")
     os.makedirs(SAVE_DIR, exist_ok=True)
     save_path = os.path.join(SAVE_DIR, f"{timestamp}.json")
 
@@ -105,17 +124,17 @@ def main():
 
     for nx_ny in coords:
         nx, ny = map(int, nx_ny.split("_"))
-        log("forecastCollector", f"수집 중: {nx_ny} ({coords[nx_ny]['lat']}, {coords[nx_ny]['lng']})")
+        log("forecastCollector", f"수집 중: {nx_ny}")
 
-        forecast = collect_forecast(nx, ny)
+        forecast = collect_forecast(nx, ny, coords)
         if forecast:
             raw_collected[nx_ny] = forecast
         else:
-            raw_collected[nx_ny] = {}  # 실패시 빈 dict 기록
+            raw_collected[nx_ny] = {}
 
         time.sleep(1.0)
 
-    # 데이터 재구성: timestamp 최상위
+    # timestamp 기준으로 재구성
     reorganized = {}
     for nx_ny, forecasts in raw_collected.items():
         for ts, values in forecasts.items():
@@ -127,7 +146,6 @@ def main():
         json.dump(reorganized, f, ensure_ascii=False, indent=2)
 
     log("forecastCollector", f"저장 완료: {save_path}")
-
 
 if __name__ == "__main__":
     main()

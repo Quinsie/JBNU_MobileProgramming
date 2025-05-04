@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 
 # 상대 경로 import 설정
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
-from source.utils.haversine import haversine_distance  # 거리 계산용
 from source.utils.logger import log  # log 함수 추가
 
 # API 설정
@@ -23,10 +22,25 @@ SAVE_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
 # 필요한 카테고리
 CATEGORIES = ["PTY", "RN1", "T1H"]
 
-def collect_weather(nx, ny, retry=2):
+# ±1 범위 내 대체 nx_ny 찾기
+def get_alternate_nxny(nx, ny, coords, tried_set):
+    for dx in [-1, 0, 1]:
+        for dy in [-1, 0, 1]:
+            if dx == 0 and dy == 0:
+                continue
+            alt_nx, alt_ny = nx + dx, ny + dy
+            alt_key = f"{alt_nx}_{alt_ny}"
+            if alt_key in coords and alt_key not in tried_set:
+                return alt_nx, alt_ny
+    return None, None
+
+
+def collect_weather(nx, ny, coords, retry=2):
     now = datetime.now()
     base_dt = now.replace(minute=0, second=0, microsecond=0)
     try_count = 0
+    tried_keys = set()
+    origin_key = f"{nx}_{ny}"
 
     while try_count <= retry:
         base_date = base_dt.strftime("%Y%m%d")
@@ -51,7 +65,6 @@ def collect_weather(nx, ny, retry=2):
                 data = response.json()
                 items = data.get("response", {}).get("body", {}).get("items", {}).get("item", [])
 
-                # 빈 응답일 경우 재시도
                 if not items:
                     log("weatherCollector", f"빈 응답 items → 재시도. (nx={nx}, ny={ny}) [시도 {try_count}]")
                     base_dt -= timedelta(minutes=30)
@@ -61,12 +74,8 @@ def collect_weather(nx, ny, retry=2):
                 result = {}
                 for cat in CATEGORIES:
                     val = next((i["obsrValue"] for i in items if i["category"] == cat), None)
-                    if val is not None:
-                        result[cat] = float(val) if "." in str(val) else int(val)
-                    else:
-                        result[cat] = None
+                    result[cat] = float(val) if val is not None and "." in str(val) else (int(val) if val is not None else None)
 
-                # 모든 값이 None일 경우 무효 처리
                 if all(v is None for v in result.values()):
                     log("weatherCollector", f"모든 항목 None → 무효 응답 간주. 재시도. (nx={nx}, ny={ny}) [시도 {try_count}]")
                     base_dt -= timedelta(minutes=30)
@@ -84,32 +93,15 @@ def collect_weather(nx, ny, retry=2):
         base_dt -= timedelta(minutes=30)
         time.sleep(0.5)
 
+    # fallback 3회 실패 후 ±1 grid 탐색
+    tried_keys.add(origin_key)
+    alt_nx, alt_ny = get_alternate_nxny(nx, ny, coords, tried_keys)
+    if alt_nx is not None:
+        log("weatherCollector", f"±1 grid 대체 사용 시도: {alt_nx}_{alt_ny} (원래 {origin_key})")
+        return collect_weather(alt_nx, alt_ny, coords, retry=retry)
+
     log("weatherCollector", f"최종 수집 실패: (nx={nx}, ny={ny})")
     return None
-
-def get_nearest_available(nx_ny, current_data, coords):
-    if not current_data:
-        return None
-
-    target_coord = coords[nx_ny]
-    target_pos = (target_coord["lat"], target_coord["lng"])
-
-    min_dist = float("inf")
-    nearest_value = None
-
-    for other_key, val in current_data.items():
-        if val is None or other_key == nx_ny:
-            continue
-        other_coord = coords[other_key]
-        other_pos = (other_coord["lat"], other_coord["lng"])
-        dist = haversine_distance(target_pos, other_pos)
-        if dist < min_dist:
-            min_dist = dist
-            nearest_value = val
-
-    if nearest_value:
-        log("weatherCollector", f"거리 기반 대체 사용: {nx_ny} ← {min_dist:.2f}km 거리")
-    return nearest_value
 
 def main():
     # 좌표 불러오기
@@ -125,17 +117,13 @@ def main():
 
     for nx_ny in coords:
         nx, ny = map(int, nx_ny.split("_"))
-        log("weatherCollector", f"수집 중: {nx_ny} ({coords[nx_ny]['lat']}, {coords[nx_ny]['lng']})")
+        log("weatherCollector", f"수집 중: {nx_ny}")
 
-        weather = collect_weather(nx, ny)
+        weather = collect_weather(nx, ny, coords)
         if weather:
             collected[nx_ny] = weather
         else:
-            fallback = get_nearest_available(nx_ny, collected, coords)
-            if fallback:
-                collected[nx_ny] = fallback
-            else:
-                log("weatherCollector", f"최종 대체 실패: {nx_ny}")
+            log("weatherCollector", f"최종 대체 실패: {nx_ny}")
 
         time.sleep(1.0)
 
@@ -145,5 +133,4 @@ def main():
     log("weatherCollector", f"저장 완료: {save_path}")
 
 if __name__ == "__main__":
-    
     main()
