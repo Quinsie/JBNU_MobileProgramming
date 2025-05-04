@@ -38,8 +38,13 @@ def process_std(stdid, traffic_dict):
 
     result = {}
     for i, node in enumerate(nodes):
-        key = tuple(node.get("matched", {}).get(k) for k in ["id", "sub"])
-        grade = traffic_dict.get(key, "1") if key != (None, None) else "1"
+        matched = node.get("matched")
+        if matched is None:
+            key = (None, None)
+        else:
+            key = (matched.get("id"), matched.get("sub"))
+
+        grade = traffic_dict.get(key, "1")
         result[str(i)] = {"grade": grade}
     return stdid, result
 
