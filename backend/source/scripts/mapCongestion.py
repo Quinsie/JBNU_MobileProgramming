@@ -22,7 +22,7 @@ def load_latest_traffic_file():
     files = sorted([f for f in os.listdir(TRAFFIC_DIR) if f.endswith(".json")])
     if not files:
         raise FileNotFoundError("교통 파일이 존재하지 않습니다.")
-    return os.path.join(TRAFFIC_DIR, files[-1])
+    return files[-1]  # 파일명만 반환
 
 def build_traffic_dict(traffic_data):
     traffic_dict = {}
@@ -33,8 +33,6 @@ def build_traffic_dict(traffic_data):
 
 def process_std(stdid, traffic_dict):
     input_path = os.path.join(ROUTE_NODE_DIR, f"{stdid}.json")
-    output_path = os.path.join(SAVE_DIR, f"{stdid}.json")
-
     with open(input_path, encoding="utf-8") as f:
         nodes = json.load(f)["resultList"]
 
@@ -43,23 +41,27 @@ def process_std(stdid, traffic_dict):
         key = tuple(node.get("matched", {}).get(k) for k in ["id", "sub"])
         grade = traffic_dict.get(key, "1") if key != (None, None) else "1"
         result[str(i)] = {"grade": grade}
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2)
+    return stdid, result
 
 def main():
-    traffic_path = load_latest_traffic_file()
+    latest_filename = load_latest_traffic_file()
+    traffic_path = os.path.join(TRAFFIC_DIR, latest_filename)
     with open(traffic_path, encoding="utf-8") as f:
         traffic_data = json.load(f)
     traffic_dict = build_traffic_dict(traffic_data)
 
     files = [f for f in os.listdir(ROUTE_NODE_DIR) if f.endswith(".json")]
     stdids = [f.replace(".json", "") for f in files]
-
     args = [(stdid, traffic_dict) for stdid in stdids]
 
+    result_dict = {}
     with Pool(cpu_count()) as pool:
-        list(tqdm(pool.starmap(process_std, args), total=len(args)))
+        for stdid, result in tqdm(pool.starmap(process_std, args), total=len(args)):
+            result_dict[stdid] = result
+
+    output_path = os.path.join(SAVE_DIR, latest_filename)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(result_dict, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
     main()
