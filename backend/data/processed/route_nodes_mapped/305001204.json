@@ -1,0 +1,2114 @@
+{
+  "resultList": [
+    {
+      "NODE_ID": 0,
+      "LAT": 35.96657528,
+      "LNG": 127.13682793,
+      "TYPE": "STOP",
+      "STOP_ID": 312101917,
+      "matched": null
+    },
+    {
+      "NODE_ID": 1,
+      "LAT": 35.96523613244688,
+      "LNG": 127.13783433368214,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 2,
+      "LAT": 35.96368613985214,
+      "LNG": 127.13738014071474,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 3,
+      "LAT": 35.96281190473176,
+      "LNG": 127.13606220483771,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 4,
+      "LAT": 35.96284315158781,
+      "LNG": 127.13386264540298,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 5,
+      "LAT": 35.96132810162809,
+      "LNG": 127.13314184277723,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 6,
+      "LAT": 35.95997165529236,
+      "LNG": 127.13358599312373,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 7,
+      "LAT": 35.958833306765946,
+      "LNG": 127.13524814093279,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 8,
+      "LAT": 35.957681672272436,
+      "LNG": 127.13692583102393,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 9,
+      "LAT": 35.95704589,
+      "LNG": 127.13781881,
+      "TYPE": "STOP",
+      "STOP_ID": 312101893,
+      "matched": null
+    },
+    {
+      "NODE_ID": 10,
+      "LAT": 35.95668678739324,
+      "LNG": 127.1386508456183,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 11,
+      "LAT": 35.9555686,
+      "LNG": 127.13946789,
+      "TYPE": "STOP",
+      "STOP_ID": 312101887,
+      "matched": null
+    },
+    {
+      "NODE_ID": 12,
+      "LAT": 35.95552572018854,
+      "LNG": 127.13951974499794,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 13,
+      "LAT": 35.953764622052105,
+      "LNG": 127.13948559677097,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 14,
+      "LAT": 35.95196598038972,
+      "LNG": 127.13948268029134,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 15,
+      "LAT": 35.95017633241034,
+      "LNG": 127.13947949900566,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 16,
+      "LAT": 35.9483776966816,
+      "LNG": 127.13947309017051,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 17,
+      "LAT": 35.94657906095286,
+      "LNG": 127.13946668133538,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 18,
+      "LAT": 35.9462808,
+      "LNG": 127.13940283,
+      "TYPE": "STOP",
+      "STOP_ID": 312101855,
+      "matched": null
+    },
+    {
+      "NODE_ID": 19,
+      "LAT": 35.94477143204548,
+      "LNG": 127.13946024045606,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 20,
+      "LAT": 35.943858972951276,
+      "LNG": 127.13836840035462,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 21,
+      "LAT": 35.94377347275992,
+      "LNG": 127.13622379421781,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 22,
+      "LAT": 35.94202710348752,
+      "LNG": 127.13633960782221,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 23,
+      "LAT": 35.940314079522096,
+      "LNG": 127.13626285560974,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 24,
+      "LAT": 35.93921148978781,
+      "LNG": 127.13789146316417,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 25,
+      "LAT": 35.93868322,
+      "LNG": 127.13807327,
+      "TYPE": "STOP",
+      "STOP_ID": 312101824,
+      "matched": null
+    },
+    {
+      "NODE_ID": 26,
+      "LAT": 35.93778593003133,
+      "LNG": 127.13907678764187,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 27,
+      "LAT": 35.936447553346724,
+      "LNG": 127.14054419311486,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 28,
+      "LAT": 35.93512699,
+      "LNG": 127.14191982,
+      "TYPE": "STOP",
+      "STOP_ID": 312101811,
+      "matched": null
+    },
+    {
+      "NODE_ID": 29,
+      "LAT": 35.93508795758184,
+      "LNG": 127.1419982577955,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 30,
+      "LAT": 35.93350052044963,
+      "LNG": 127.1429592355813,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 31,
+      "LAT": 35.93168,
+      "LNG": 127.14394814,
+      "TYPE": "STOP",
+      "STOP_ID": 312101790,
+      "matched": null
+    },
+    {
+      "NODE_ID": 32,
+      "LAT": 35.93186489609668,
+      "LNG": 127.14388324240343,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 33,
+      "LAT": 35.93182848998136,
+      "LNG": 127.1455067014327,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 34,
+      "LAT": 35.93258201520337,
+      "LNG": 127.1475114109543,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 35,
+      "LAT": 35.93332059831171,
+      "LNG": 127.14948793601944,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 36,
+      "LAT": 35.93396888,
+      "LNG": 127.15166183,
+      "TYPE": "STOP",
+      "STOP_ID": 312101801,
+      "matched": null
+    },
+    {
+      "NODE_ID": 37,
+      "LAT": 35.93405645115501,
+      "LNG": 127.15147829488389,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 38,
+      "LAT": 35.934546300595414,
+      "LNG": 127.15354505916756,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 39,
+      "LAT": 35.93479253,
+      "LNG": 127.15571629,
+      "TYPE": "STOP",
+      "STOP_ID": 312101806,
+      "matched": null
+    },
+    {
+      "NODE_ID": 40,
+      "LAT": 35.93481085722621,
+      "LNG": 127.15575353345447,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 41,
+      "LAT": 35.93506315454469,
+      "LNG": 127.15794173020971,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 42,
+      "LAT": 35.9356299,
+      "LNG": 127.1599571,
+      "TYPE": "STOP",
+      "STOP_ID": 312101814,
+      "matched": null
+    },
+    {
+      "NODE_ID": 43,
+      "LAT": 35.93565492829374,
+      "LNG": 127.1599674072439,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 44,
+      "LAT": 35.93646965,
+      "LNG": 127.16169754,
+      "TYPE": "STOP",
+      "STOP_ID": 312101816,
+      "matched": null
+    },
+    {
+      "NODE_ID": 45,
+      "LAT": 35.9365674446526,
+      "LNG": 127.16182893312033,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 46,
+      "LAT": 35.9374472604426,
+      "LNG": 127.16371533951956,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 47,
+      "LAT": 35.938338431977996,
+      "LNG": 127.16561929235051,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 48,
+      "LAT": 35.93872548,
+      "LNG": 127.16668166,
+      "TYPE": "STOP",
+      "STOP_ID": 312101825,
+      "matched": null
+    },
+    {
+      "NODE_ID": 49,
+      "LAT": 35.93912144455448,
+      "LNG": 127.16759416220428,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 50,
+      "LAT": 35.93783158,
+      "LNG": 127.16815446,
+      "TYPE": "STOP",
+      "STOP_ID": 312101820,
+      "matched": null
+    },
+    {
+      "NODE_ID": 51,
+      "LAT": 35.93797005947309,
+      "LNG": 127.16820480083202,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 52,
+      "LAT": 35.93618263473102,
+      "LNG": 127.16831447390537,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 53,
+      "LAT": 35.934396303706414,
+      "LNG": 127.16844878792362,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 54,
+      "LAT": 35.93265336665691,
+      "LNG": 127.168540158178,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 55,
+      "LAT": 35.9319952,
+      "LNG": 127.168542,
+      "TYPE": "STOP",
+      "STOP_ID": 312101792,
+      "matched": null
+    },
+    {
+      "NODE_ID": 56,
+      "LAT": 35.93089474705776,
+      "LNG": 127.16835676594313,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 57,
+      "LAT": 35.92922914680059,
+      "LNG": 127.16763743788837,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 58,
+      "LAT": 35.927761273547446,
+      "LNG": 127.16639426665343,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 59,
+      "LAT": 35.92743643,
+      "LNG": 127.16602905,
+      "TYPE": "STOP",
+      "STOP_ID": 312101768,
+      "matched": null
+    },
+    {
+      "NODE_ID": 60,
+      "LAT": 35.92631767443712,
+      "LNG": 127.16509252014872,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 61,
+      "LAT": 35.9250368,
+      "LNG": 127.1653387,
+      "TYPE": "STOP",
+      "STOP_ID": 312101752,
+      "matched": null
+    },
+    {
+      "NODE_ID": 62,
+      "LAT": 35.9249209715472,
+      "LNG": 127.16543320921453,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 63,
+      "LAT": 35.923528549595055,
+      "LNG": 127.16680380479836,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 64,
+      "LAT": 35.92212617837991,
+      "LNG": 127.16817668764484,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 65,
+      "LAT": 35.92041312,
+      "LNG": 127.16752884,
+      "TYPE": "STOP",
+      "STOP_ID": 312101728,
+      "matched": null
+    },
+    {
+      "NODE_ID": 66,
+      "LAT": 35.92057155145072,
+      "LNG": 127.16775277186412,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 67,
+      "LAT": 35.91899022514769,
+      "LNG": 127.16676631514272,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 68,
+      "LAT": 35.91740221684839,
+      "LNG": 127.16577158825812,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 69,
+      "LAT": 35.915798150186205,
+      "LNG": 127.16476688055171,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 70,
+      "LAT": 35.91422959562674,
+      "LNG": 127.16373127501889,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 71,
+      "LAT": 35.91296292,
+      "LNG": 127.16194048,
+      "TYPE": "STOP",
+      "STOP_ID": 312101689,
+      "matched": null
+    },
+    {
+      "NODE_ID": 72,
+      "LAT": 35.91298446257075,
+      "LNG": 127.16218323799812,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 73,
+      "LAT": 35.911896458313926,
+      "LNG": 127.16046097591779,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 74,
+      "LAT": 35.910487354330044,
+      "LNG": 127.15924476386692,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 75,
+      "LAT": 35.90907386,
+      "LNG": 127.15814036,
+      "TYPE": "STOP",
+      "STOP_ID": 312101662,
+      "matched": null
+    },
+    {
+      "NODE_ID": 76,
+      "LAT": 35.90890775739327,
+      "LNG": 127.15823087824603,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 77,
+      "LAT": 35.90743444457184,
+      "LNG": 127.15703762755699,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 78,
+      "LAT": 35.90584634753383,
+      "LNG": 127.15650083518311,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 79,
+      "LAT": 35.904808,
+      "LNG": 127.1565683,
+      "TYPE": "STOP",
+      "STOP_ID": 312101637,
+      "matched": null
+    },
+    {
+      "NODE_ID": 80,
+      "LAT": 35.904080512237,
+      "LNG": 127.1566740913503,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 81,
+      "LAT": 35.902341940599264,
+      "LNG": 127.15685115080288,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 82,
+      "LAT": 35.900619610990056,
+      "LNG": 127.15691806104448,
+      "TYPE": "INTERMEDIATE",
+      "matched": null
+    },
+    {
+      "NODE_ID": 83,
+      "LAT": 35.89917939,
+      "LNG": 127.1560683,
+      "TYPE": "STOP",
+      "STOP_ID": 312101622,
+      "matched": null
+    },
+    {
+      "NODE_ID": 84,
+      "LAT": 35.89898121843354,
+      "LNG": 127.15625018030617,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058037100,
+        "sub": 4,
+        "distance": 73.31359584944929
+      }
+    },
+    {
+      "NODE_ID": 85,
+      "LAT": 35.897294826858655,
+      "LNG": 127.15644332384232,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058037100,
+        "sub": 4,
+        "distance": 73.31359584944929
+      }
+    },
+    {
+      "NODE_ID": 86,
+      "LAT": 35.89558284012743,
+      "LNG": 127.15666603077788,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058056800,
+        "sub": 3,
+        "distance": 27.068207658626957
+      }
+    },
+    {
+      "NODE_ID": 87,
+      "LAT": 35.893896839740684,
+      "LNG": 127.15623424344928,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058056800,
+        "sub": 3,
+        "distance": 27.068207658626957
+      }
+    },
+    {
+      "NODE_ID": 88,
+      "LAT": 35.89223700587538,
+      "LNG": 127.15583012738098,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058056700,
+        "sub": 3,
+        "distance": 16.180262253117817
+      }
+    },
+    {
+      "NODE_ID": 89,
+      "LAT": 35.89049407066174,
+      "LNG": 127.15605952033248,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058056600,
+        "sub": 1,
+        "distance": 54.8595970030574
+      }
+    },
+    {
+      "NODE_ID": 90,
+      "LAT": 35.88886314,
+      "LNG": 127.15617155,
+      "TYPE": "STOP",
+      "STOP_ID": 312101562,
+      "matched": {
+        "id": 3058049800,
+        "sub": 2,
+        "distance": 62.08271710191759
+      }
+    },
+    {
+      "NODE_ID": 91,
+      "LAT": 35.88871934176269,
+      "LNG": 127.15634412783432,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049800,
+        "sub": 2,
+        "distance": 44.452379351858795
+      }
+    },
+    {
+      "NODE_ID": 92,
+      "LAT": 35.88704699037111,
+      "LNG": 127.15651236436172,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049700,
+        "sub": 1,
+        "distance": 35.39715979060702
+      }
+    },
+    {
+      "NODE_ID": 93,
+      "LAT": 35.885310542129474,
+      "LNG": 127.15630864375494,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058052600,
+        "sub": 4,
+        "distance": 27.316126811655504
+      }
+    },
+    {
+      "NODE_ID": 94,
+      "LAT": 35.88433656,
+      "LNG": 127.15601684,
+      "TYPE": "STOP",
+      "STOP_ID": 312101532,
+      "matched": {
+        "id": 3058049800,
+        "sub": 0,
+        "distance": 61.442290834190466
+      }
+    },
+    {
+      "NODE_ID": 95,
+      "LAT": 35.88356582459587,
+      "LNG": 127.15609722290351,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049800,
+        "sub": 0,
+        "distance": 61.442290834190466
+      }
+    },
+    {
+      "NODE_ID": 96,
+      "LAT": 35.88182023190168,
+      "LNG": 127.15589074368397,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049800,
+        "sub": 0,
+        "distance": 61.442290834190466
+      }
+    },
+    {
+      "NODE_ID": 97,
+      "LAT": 35.88140249,
+      "LNG": 127.15566101,
+      "TYPE": "STOP",
+      "STOP_ID": 312101507,
+      "matched": {
+        "id": 3058049800,
+        "sub": 0,
+        "distance": 61.442290834190466
+      }
+    },
+    {
+      "NODE_ID": 98,
+      "LAT": 35.88008102439654,
+      "LNG": 127.15578849887082,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 3,
+        "distance": 83.58609392546055
+      }
+    },
+    {
+      "NODE_ID": 99,
+      "LAT": 35.87843608433622,
+      "LNG": 127.15630475909806,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 100,
+      "LAT": 35.87675570602558,
+      "LNG": 127.15706411923321,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 101,
+      "LAT": 35.87612216,
+      "LNG": 127.15715693,
+      "TYPE": "STOP",
+      "STOP_ID": 312101461,
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 102,
+      "LAT": 35.87512120665302,
+      "LNG": 127.15697678915357,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 103,
+      "LAT": 35.87343651261853,
+      "LNG": 127.15672183149225,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 104,
+      "LAT": 35.87192404589812,
+      "LNG": 127.15772126983104,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 105,
+      "LAT": 35.87126792,
+      "LNG": 127.15812863,
+      "TYPE": "STOP",
+      "STOP_ID": 306101406,
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 106,
+      "LAT": 35.87049347706883,
+      "LNG": 127.15887319053103,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 107,
+      "LAT": 35.86889475289757,
+      "LNG": 127.15968729356686,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 108,
+      "LAT": 35.867997,
+      "LNG": 127.160048,
+      "TYPE": "STOP",
+      "STOP_ID": 306101375,
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 109,
+      "LAT": 35.86725806195458,
+      "LNG": 127.1603231066385,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 110,
+      "LAT": 35.86564054,
+      "LNG": 127.16027593,
+      "TYPE": "STOP",
+      "STOP_ID": 306101335,
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 111,
+      "LAT": 35.86549626052143,
+      "LNG": 127.16030828324762,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 112,
+      "LAT": 35.863766057061206,
+      "LNG": 127.16019105196236,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 113,
+      "LAT": 35.86262591,
+      "LNG": 127.15972862,
+      "TYPE": "STOP",
+      "STOP_ID": 306101293,
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 114,
+      "LAT": 35.86209403750035,
+      "LNG": 127.15962064739186,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 115,
+      "LAT": 35.86039236886717,
+      "LNG": 127.15901273551376,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 116,
+      "LAT": 35.858764,
+      "LNG": 127.158203,
+      "TYPE": "STOP",
+      "STOP_ID": 306101252,
+      "matched": {
+        "id": 3058049500,
+        "sub": 2,
+        "distance": 70.01441048917091
+      }
+    },
+    {
+      "NODE_ID": 117,
+      "LAT": 35.858772086353035,
+      "LNG": 127.15829406101545,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058071500,
+        "sub": 2,
+        "distance": 45.52761911802541
+      }
+    },
+    {
+      "NODE_ID": 118,
+      "LAT": 35.857272192758344,
+      "LNG": 127.15719454101273,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058071500,
+        "sub": 2,
+        "distance": 45.52761911802541
+      }
+    },
+    {
+      "NODE_ID": 119,
+      "LAT": 35.8557353444048,
+      "LNG": 127.15711598343955,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058013700,
+        "sub": 10,
+        "distance": 78.14749592552127
+      }
+    },
+    {
+      "NODE_ID": 120,
+      "LAT": 35.85455441,
+      "LNG": 127.15760015,
+      "TYPE": "STOP",
+      "STOP_ID": 306101193,
+      "matched": {
+        "id": 3058013700,
+        "sub": 10,
+        "distance": 78.14749592552127
+      }
+    },
+    {
+      "NODE_ID": 121,
+      "LAT": 35.854137704369656,
+      "LNG": 127.15792296461298,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058013700,
+        "sub": 10,
+        "distance": 78.14749592552127
+      }
+    },
+    {
+      "NODE_ID": 122,
+      "LAT": 35.85250309641945,
+      "LNG": 127.15873672797618,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058013700,
+        "sub": 10,
+        "distance": 78.14749592552127
+      }
+    },
+    {
+      "NODE_ID": 123,
+      "LAT": 35.850877562381534,
+      "LNG": 127.15954817098756,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058013900,
+        "sub": 3,
+        "distance": 16.7330892522141
+      }
+    },
+    {
+      "NODE_ID": 124,
+      "LAT": 35.84933268614306,
+      "LNG": 127.16042074112158,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058013900,
+        "sub": 3,
+        "distance": 16.7330892522141
+      }
+    },
+    {
+      "NODE_ID": 125,
+      "LAT": 35.8488499,
+      "LNG": 127.1588352,
+      "TYPE": "STOP",
+      "STOP_ID": 306101110,
+      "matched": {
+        "id": 3058013900,
+        "sub": 2,
+        "distance": 11.116104548375803
+      }
+    },
+    {
+      "NODE_ID": 126,
+      "LAT": 35.848693180441394,
+      "LNG": 127.15849833600919,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058013900,
+        "sub": 2,
+        "distance": 30.868249360142585
+      }
+    },
+    {
+      "NODE_ID": 127,
+      "LAT": 35.8479974667749,
+      "LNG": 127.15650028942923,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058014000,
+        "sub": 3,
+        "distance": 75.02756212918854
+      }
+    },
+    {
+      "NODE_ID": 128,
+      "LAT": 35.847489,
+      "LNG": 127.155193,
+      "TYPE": "STOP",
+      "STOP_ID": 306101092,
+      "matched": {
+        "id": 3058014000,
+        "sub": 2,
+        "distance": 33.73943299966601
+      }
+    },
+    {
+      "NODE_ID": 129,
+      "LAT": 35.847287931649035,
+      "LNG": 127.15446128479907,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058013900,
+        "sub": 1,
+        "distance": 78.34186222874716
+      }
+    },
+    {
+      "NODE_ID": 130,
+      "LAT": 35.846603231262904,
+      "LNG": 127.15251628288823,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058016400,
+        "sub": 2,
+        "distance": 16.407670436356533
+      }
+    },
+    {
+      "NODE_ID": 131,
+      "LAT": 35.84548171,
+      "LNG": 127.15287844,
+      "TYPE": "STOP",
+      "STOP_ID": 306101080,
+      "matched": {
+        "id": 3058016400,
+        "sub": 2,
+        "distance": 16.407670436356533
+      }
+    },
+    {
+      "NODE_ID": 132,
+      "LAT": 35.84493040487634,
+      "LNG": 127.15322425940279,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058016400,
+        "sub": 2,
+        "distance": 16.407670436356533
+      }
+    },
+    {
+      "NODE_ID": 133,
+      "LAT": 35.84375114608653,
+      "LNG": 127.15298400853597,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058016400,
+        "sub": 1,
+        "distance": 63.716111089149145
+      }
+    },
+    {
+      "NODE_ID": 134,
+      "LAT": 35.8426526,
+      "LNG": 127.15200998,
+      "TYPE": "STOP",
+      "STOP_ID": 306101048,
+      "matched": {
+        "id": 3058016400,
+        "sub": 1,
+        "distance": 63.716111089149145
+      }
+    },
+    {
+      "NODE_ID": 135,
+      "LAT": 35.842287051051855,
+      "LNG": 127.15189829140184,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058016400,
+        "sub": 1,
+        "distance": 63.716111089149145
+      }
+    },
+    {
+      "NODE_ID": 136,
+      "LAT": 35.84059814848536,
+      "LNG": 127.15151215086703,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058016400,
+        "sub": 1,
+        "distance": 63.716111089149145
+      }
+    },
+    {
+      "NODE_ID": 137,
+      "LAT": 35.83886959476247,
+      "LNG": 127.15110151190115,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058016400,
+        "sub": 1,
+        "distance": 63.716111089149145
+      }
+    },
+    {
+      "NODE_ID": 138,
+      "LAT": 35.83782996,
+      "LNG": 127.15075133,
+      "TYPE": "STOP",
+      "STOP_ID": 306100992,
+      "matched": {
+        "id": 3058016400,
+        "sub": 1,
+        "distance": 63.716111089149145
+      }
+    },
+    {
+      "NODE_ID": 139,
+      "LAT": 35.837115789783184,
+      "LNG": 127.15060942049206,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058014900,
+        "sub": 4,
+        "distance": 92.44949896675726
+      }
+    },
+    {
+      "NODE_ID": 140,
+      "LAT": 35.83584064536977,
+      "LNG": 127.14960132762151,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058014900,
+        "sub": 3,
+        "distance": 49.82803393512789
+      }
+    },
+    {
+      "NODE_ID": 141,
+      "LAT": 35.83506423,
+      "LNG": 127.14759274,
+      "TYPE": "STOP",
+      "STOP_ID": 306100943,
+      "matched": {
+        "id": 3058014900,
+        "sub": 2,
+        "distance": 49.19115018556842
+      }
+    },
+    {
+      "NODE_ID": 142,
+      "LAT": 35.83499887288503,
+      "LNG": 127.14770599240025,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058015000,
+        "sub": 2,
+        "distance": 50.81702572898221
+      }
+    },
+    {
+      "NODE_ID": 143,
+      "LAT": 35.83386666092522,
+      "LNG": 127.14606480812566,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058015000,
+        "sub": 1,
+        "distance": 90.86097894142418
+      }
+    },
+    {
+      "NODE_ID": 144,
+      "LAT": 35.83301705,
+      "LNG": 127.14490334,
+      "TYPE": "STOP",
+      "STOP_ID": 306100898,
+      "matched": {
+        "id": 3058015100,
+        "sub": 1,
+        "distance": 66.85561712388038
+      }
+    },
+    {
+      "NODE_ID": 145,
+      "LAT": 35.832559301084785,
+      "LNG": 127.14452502183524,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058015100,
+        "sub": 1,
+        "distance": 8.53236544484951
+      }
+    },
+    {
+      "NODE_ID": 146,
+      "LAT": 35.83128451427855,
+      "LNG": 127.14302353361263,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058015100,
+        "sub": 1,
+        "distance": 8.53236544484951
+      }
+    },
+    {
+      "NODE_ID": 147,
+      "LAT": 35.830038061587324,
+      "LNG": 127.14175813231577,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058019200,
+        "sub": 2,
+        "distance": 17.108266243803804
+      }
+    },
+    {
+      "NODE_ID": 148,
+      "LAT": 35.82894399,
+      "LNG": 127.14283256,
+      "TYPE": "STOP",
+      "STOP_ID": 306100827,
+      "matched": {
+        "id": 3058019200,
+        "sub": 2,
+        "distance": 17.108266243803804
+      }
+    },
+    {
+      "NODE_ID": 149,
+      "LAT": 35.828767584317326,
+      "LNG": 127.1433284669829,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058019200,
+        "sub": 2,
+        "distance": 17.108266243803804
+      }
+    },
+    {
+      "NODE_ID": 150,
+      "LAT": 35.8275198806141,
+      "LNG": 127.1448796305574,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058004600,
+        "sub": 1,
+        "distance": 51.68705007216073
+      }
+    },
+    {
+      "NODE_ID": 151,
+      "LAT": 35.82624109035579,
+      "LNG": 127.14632668205523,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058004600,
+        "sub": 1,
+        "distance": 51.68705007216073
+      }
+    },
+    {
+      "NODE_ID": 152,
+      "LAT": 35.82578923,
+      "LNG": 127.1465455,
+      "TYPE": "STOP",
+      "STOP_ID": 306100781,
+      "matched": {
+        "id": 3058004600,
+        "sub": 1,
+        "distance": 51.68705007216073
+      }
+    },
+    {
+      "NODE_ID": 153,
+      "LAT": 35.82497209870441,
+      "LNG": 127.14775329681946,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058004600,
+        "sub": 1,
+        "distance": 51.68705007216073
+      }
+    },
+    {
+      "NODE_ID": 154,
+      "LAT": 35.82368999560534,
+      "LNG": 127.14921189127934,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058004600,
+        "sub": 1,
+        "distance": 51.68705007216073
+      }
+    },
+    {
+      "NODE_ID": 155,
+      "LAT": 35.82307474,
+      "LNG": 127.14967928,
+      "TYPE": "STOP",
+      "STOP_ID": 306100731,
+      "matched": {
+        "id": 3058004500,
+        "sub": 1,
+        "distance": 72.82136645360401
+      }
+    },
+    {
+      "NODE_ID": 156,
+      "LAT": 35.822408742976144,
+      "LNG": 127.15068859628433,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058019600,
+        "sub": 0,
+        "distance": 27.072167483156516
+      }
+    },
+    {
+      "NODE_ID": 157,
+      "LAT": 35.82096,
+      "LNG": 127.15228,
+      "TYPE": "STOP",
+      "STOP_ID": 305100703,
+      "matched": {
+        "id": 3058004600,
+        "sub": 0,
+        "distance": 39.9677709252387
+      }
+    },
+    {
+      "NODE_ID": 158,
+      "LAT": 35.82109327304518,
+      "LNG": 127.15220135242348,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058019400,
+        "sub": 1,
+        "distance": 53.670965528133536
+      }
+    },
+    {
+      "NODE_ID": 159,
+      "LAT": 35.82011281915377,
+      "LNG": 127.15179047041815,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058020300,
+        "sub": 2,
+        "distance": 38.12683386562214
+      }
+    },
+    {
+      "NODE_ID": 160,
+      "LAT": 35.81983521,
+      "LNG": 127.15058311,
+      "TYPE": "STOP",
+      "STOP_ID": 305100681,
+      "matched": {
+        "id": 3058020300,
+        "sub": 2,
+        "distance": 75.33086792539589
+      }
+    },
+    {
+      "NODE_ID": 161,
+      "LAT": 35.81950787600872,
+      "LNG": 127.14986963197317,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058020400,
+        "sub": 1,
+        "distance": 57.28173884925621
+      }
+    },
+    {
+      "NODE_ID": 162,
+      "LAT": 35.81902526943993,
+      "LNG": 127.1478253098578,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058020400,
+        "sub": 1,
+        "distance": 57.28173884925621
+      }
+    },
+    {
+      "NODE_ID": 163,
+      "LAT": 35.81788899363248,
+      "LNG": 127.14705312686826,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058020600,
+        "sub": 1,
+        "distance": 67.56735801826181
+      }
+    },
+    {
+      "NODE_ID": 164,
+      "LAT": 35.817028,
+      "LNG": 127.147313,
+      "TYPE": "STOP",
+      "STOP_ID": 305100645,
+      "matched": {
+        "id": 3058020600,
+        "sub": 1,
+        "distance": 67.56735801826181
+      }
+    },
+    {
+      "NODE_ID": 165,
+      "LAT": 35.81620284414711,
+      "LNG": 127.14768539742285,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058020600,
+        "sub": 1,
+        "distance": 67.56735801826181
+      }
+    },
+    {
+      "NODE_ID": 166,
+      "LAT": 35.81594824,
+      "LNG": 127.14699101,
+      "TYPE": "STOP",
+      "STOP_ID": 305100628,
+      "matched": {
+        "id": 3058020600,
+        "sub": 1,
+        "distance": 67.56735801826181
+      }
+    },
+    {
+      "NODE_ID": 167,
+      "LAT": 35.815640618631406,
+      "LNG": 127.14613523197627,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058020600,
+        "sub": 1,
+        "distance": 67.56735801826181
+      }
+    },
+    {
+      "NODE_ID": 168,
+      "LAT": 35.815513729687076,
+      "LNG": 127.14408872849364,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058020600,
+        "sub": 1,
+        "distance": 67.56735801826181
+      }
+    },
+    {
+      "NODE_ID": 169,
+      "LAT": 35.81515762,
+      "LNG": 127.14274571,
+      "TYPE": "STOP",
+      "STOP_ID": 305100611,
+      "matched": {
+        "id": 3058020600,
+        "sub": 1,
+        "distance": 67.56735801826181
+      }
+    },
+    {
+      "NODE_ID": 170,
+      "LAT": 35.81481607126346,
+      "LNG": 127.14215831072617,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058021300,
+        "sub": 2,
+        "distance": 38.932632256387116
+      }
+    },
+    {
+      "NODE_ID": 171,
+      "LAT": 35.81392343854881,
+      "LNG": 127.14024578857553,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058021300,
+        "sub": 2,
+        "distance": 38.932632256387116
+      }
+    },
+    {
+      "NODE_ID": 172,
+      "LAT": 35.81225757,
+      "LNG": 127.13903665,
+      "TYPE": "STOP",
+      "STOP_ID": 305100568,
+      "matched": {
+        "id": 3058021000,
+        "sub": 11,
+        "distance": 56.194308191047575
+      }
+    },
+    {
+      "NODE_ID": 173,
+      "LAT": 35.81246674323784,
+      "LNG": 127.13922281556326,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058021000,
+        "sub": 11,
+        "distance": 28.05065983062654
+      }
+    },
+    {
+      "NODE_ID": 174,
+      "LAT": 35.81083053323106,
+      "LNG": 127.13851223130212,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026300,
+        "sub": 3,
+        "distance": 17.762911939703244
+      }
+    },
+    {
+      "NODE_ID": 175,
+      "LAT": 35.80945494029877,
+      "LNG": 127.1372594520671,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026300,
+        "sub": 2,
+        "distance": 11.65752263394374
+      }
+    },
+    {
+      "NODE_ID": 176,
+      "LAT": 35.808837,
+      "LNG": 127.135618,
+      "TYPE": "STOP",
+      "STOP_ID": 305100538,
+      "matched": {
+        "id": 3058026300,
+        "sub": 2,
+        "distance": 11.65752263394374
+      }
+    },
+    {
+      "NODE_ID": 177,
+      "LAT": 35.808738024580165,
+      "LNG": 127.13529626008747,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026300,
+        "sub": 0,
+        "distance": 5.5136458199962215
+      }
+    },
+    {
+      "NODE_ID": 178,
+      "LAT": 35.80803509370077,
+      "LNG": 127.13331753016294,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026300,
+        "sub": 0,
+        "distance": 5.5136458199962215
+      }
+    },
+    {
+      "NODE_ID": 179,
+      "LAT": 35.807373088236275,
+      "LNG": 127.13127927241032,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026300,
+        "sub": 0,
+        "distance": 5.5136458199962215
+      }
+    },
+    {
+      "NODE_ID": 180,
+      "LAT": 35.807223,
+      "LNG": 127.130662,
+      "TYPE": "STOP",
+      "STOP_ID": 305100525,
+      "matched": {
+        "id": 3058026300,
+        "sub": 0,
+        "distance": 5.5136458199962215
+      }
+    },
+    {
+      "NODE_ID": 181,
+      "LAT": 35.80678762404328,
+      "LNG": 127.12927245136127,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026500,
+        "sub": 3,
+        "distance": 3.7322535494066402
+      }
+    },
+    {
+      "NODE_ID": 182,
+      "LAT": 35.80616712216641,
+      "LNG": 127.12724187520004,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026500,
+        "sub": 3,
+        "distance": 3.7322535494066402
+      }
+    },
+    {
+      "NODE_ID": 183,
+      "LAT": 35.805948,
+      "LNG": 127.125855,
+      "TYPE": "STOP",
+      "STOP_ID": 305100509,
+      "matched": {
+        "id": 3058026500,
+        "sub": 1,
+        "distance": 45.22972223163204
+      }
+    },
+    {
+      "NODE_ID": 184,
+      "LAT": 35.80587173771851,
+      "LNG": 127.12509050167708,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026500,
+        "sub": 1,
+        "distance": 24.241708918261914
+      }
+    },
+    {
+      "NODE_ID": 185,
+      "LAT": 35.80602348596285,
+      "LNG": 127.12295249861872,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058029200,
+        "sub": 0,
+        "distance": 14.594525451551885
+      }
+    },
+    {
+      "NODE_ID": 186,
+      "LAT": 35.806287,
+      "LNG": 127.120957,
+      "TYPE": "STOP",
+      "STOP_ID": 305100514,
+      "matched": {
+        "id": 3058029200,
+        "sub": 0,
+        "distance": 14.594525451551885
+      }
+    },
+    {
+      "NODE_ID": 187,
+      "LAT": 35.8062672708087,
+      "LNG": 127.12076976347642,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058029200,
+        "sub": 0,
+        "distance": 14.594525451551885
+      }
+    },
+    {
+      "NODE_ID": 188,
+      "LAT": 35.80652562863871,
+      "LNG": 127.11862313530467,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058029200,
+        "sub": 0,
+        "distance": 14.594525451551885
+      }
+    },
+    {
+      "NODE_ID": 189,
+      "LAT": 35.80670585,
+      "LNG": 127.1175812,
+      "TYPE": "STOP",
+      "STOP_ID": 305100520,
+      "matched": {
+        "id": 3058040500,
+        "sub": 0,
+        "distance": 64.99011031649313
+      }
+    },
+    {
+      "NODE_ID": 190,
+      "LAT": 35.80704110745231,
+      "LNG": 127.11671184557896,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026900,
+        "sub": 2,
+        "distance": 33.518995028131556
+      }
+    },
+    {
+      "NODE_ID": 191,
+      "LAT": 35.80869303353752,
+      "LNG": 127.11589565681896,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026900,
+        "sub": 2,
+        "distance": 33.518995028131556
+      }
+    },
+    {
+      "NODE_ID": 192,
+      "LAT": 35.81032159838852,
+      "LNG": 127.11506449206519,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058026900,
+        "sub": 2,
+        "distance": 33.518995028131556
+      }
+    },
+    {
+      "NODE_ID": 193,
+      "LAT": 35.81107333,
+      "LNG": 127.11475989,
+      "TYPE": "STOP",
+      "STOP_ID": 305100553,
+      "matched": {
+        "id": 3058026900,
+        "sub": 2,
+        "distance": 33.518995028131556
+      }
+    },
+    {
+      "NODE_ID": 194,
+      "LAT": 35.81199172501351,
+      "LNG": 127.11424122848537,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058040500,
+        "sub": 1,
+        "distance": 11.10362473818139
+      }
+    },
+    {
+      "NODE_ID": 195,
+      "LAT": 35.81288005,
+      "LNG": 127.11388786,
+      "TYPE": "STOP",
+      "STOP_ID": 305100576,
+      "matched": {
+        "id": 3058040500,
+        "sub": 1,
+        "distance": 11.10362473818139
+      }
+    },
+    {
+      "NODE_ID": 196,
+      "LAT": 35.813495908775096,
+      "LNG": 127.11331162117344,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058040600,
+        "sub": 2,
+        "distance": 12.692665073859459
+      }
+    },
+    {
+      "NODE_ID": 197,
+      "LAT": 35.813704953902445,
+      "LNG": 127.11124300912195,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058025700,
+        "sub": 0,
+        "distance": 3.4037846848021376
+      }
+    },
+    {
+      "NODE_ID": 198,
+      "LAT": 35.81370045852694,
+      "LNG": 127.1090582697891,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058025700,
+        "sub": 0,
+        "distance": 3.4037846848021376
+      }
+    },
+    {
+      "NODE_ID": 199,
+      "LAT": 35.81381547,
+      "LNG": 127.1080203,
+      "TYPE": "STOP",
+      "STOP_ID": 305100592,
+      "matched": {
+        "id": 3058025700,
+        "sub": 0,
+        "distance": 3.4037846848021376
+      }
+    },
+    {
+      "NODE_ID": 200,
+      "LAT": 35.81369557708242,
+      "LNG": 127.10682917065103,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058030700,
+        "sub": 0,
+        "distance": 65.97961435826332
+      }
+    },
+    {
+      "NODE_ID": 201,
+      "LAT": 35.813697496330064,
+      "LNG": 127.10465552383712,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058030700,
+        "sub": 0,
+        "distance": 65.97961435826332
+      }
+    },
+    {
+      "NODE_ID": 202,
+      "LAT": 35.813757,
+      "LNG": 127.103754,
+      "TYPE": "STOP",
+      "STOP_ID": 305102001,
+      "matched": {
+        "id": 3058040100,
+        "sub": 0,
+        "distance": 38.09465592376332
+      }
+    },
+    {
+      "NODE_ID": 203,
+      "LAT": 35.81370371541835,
+      "LNG": 127.10242642976397,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058040100,
+        "sub": 0,
+        "distance": 38.09465592376332
+      }
+    },
+    {
+      "NODE_ID": 204,
+      "LAT": 35.81371010220889,
+      "LNG": 127.10025278757874,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058040100,
+        "sub": 0,
+        "distance": 38.09465592376332
+      }
+    },
+    {
+      "NODE_ID": 205,
+      "LAT": 35.81379234,
+      "LNG": 127.09796491,
+      "TYPE": "STOP",
+      "STOP_ID": 305100591,
+      "matched": {
+        "id": 3058040100,
+        "sub": 0,
+        "distance": 38.09465592376332
+      }
+    },
+    {
+      "NODE_ID": 206,
+      "LAT": 35.81371717494453,
+      "LNG": 127.09802369689828,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058040100,
+        "sub": 0,
+        "distance": 38.09465592376332
+      }
+    },
+    {
+      "NODE_ID": 207,
+      "LAT": 35.81372421249243,
+      "LNG": 127.09580569622122,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058011100,
+        "sub": 1,
+        "distance": 16.44618336252307
+      }
+    },
+    {
+      "NODE_ID": 208,
+      "LAT": 35.81447399172927,
+      "LNG": 127.0947127100852,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058011100,
+        "sub": 1,
+        "distance": 16.44618336252307
+      }
+    },
+    {
+      "NODE_ID": 209,
+      "LAT": 35.816115,
+      "LNG": 127.094854,
+      "TYPE": "STOP",
+      "STOP_ID": 305100630,
+      "matched": {
+        "id": 3058011100,
+        "sub": 1,
+        "distance": 16.44618336252307
+      }
+    },
+    {
+      "NODE_ID": 210,
+      "LAT": 35.816271806726895,
+      "LNG": 127.09471577929175,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058011200,
+        "sub": 3,
+        "distance": 10.986019675554665
+      }
+    },
+    {
+      "NODE_ID": 211,
+      "LAT": 35.81786289234755,
+      "LNG": 127.09442383737806,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058011200,
+        "sub": 3,
+        "distance": 10.986019675554665
+      }
+    },
+    {
+      "NODE_ID": 212,
+      "LAT": 35.81862,
+      "LNG": 127.092247,
+      "TYPE": "STOP",
+      "STOP_ID": 305100651,
+      "matched": {
+        "id": 3058024300,
+        "sub": 2,
+        "distance": 16.01859210588222
+      }
+    },
+    {
+      "NODE_ID": 213,
+      "LAT": 35.818435834789945,
+      "LNG": 127.0924324763049,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058024300,
+        "sub": 2,
+        "distance": 12.448791488128506
+      }
+    },
+    {
+      "NODE_ID": 214,
+      "LAT": 35.81939522708593,
+      "LNG": 127.09059580122147,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058024300,
+        "sub": 2,
+        "distance": 12.448791488128506
+      }
+    },
+    {
+      "NODE_ID": 215,
+      "LAT": 35.820338800847665,
+      "LNG": 127.08875995778862,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058024300,
+        "sub": 3,
+        "distance": 88.54655875079064
+      }
+    },
+    {
+      "NODE_ID": 216,
+      "LAT": 35.8212778834034,
+      "LNG": 127.08693814301317,
+      "TYPE": "INTERMEDIATE",
+      "matched": {
+        "id": 3058023000,
+        "sub": 0,
+        "distance": 37.366890430748526
+      }
+    }
+  ]
+}
