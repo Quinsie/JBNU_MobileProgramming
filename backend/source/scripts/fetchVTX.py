@@ -6,7 +6,7 @@ import json
 import time
 import requests
 
-URL = "http://www.jeonjuits.go.kr/bis/selectBisRouteVtxList.do" # 노선 궤적 추출 API
+URL = "http://www.jeonjuits.go.kr/bis/selectBisRouteVtxList.do"  # 노선 궤적 추출 API
 SUBLIST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "subList"))
 PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw", "staticInfo", "vtx"))
 
@@ -14,7 +14,7 @@ def fetch_vtx():
     os.makedirs(PATH, exist_ok=True)
 
     for filename in os.listdir(SUBLIST_DIR):
-        if not filename.endswith(".json"): # Exception
+        if not filename.endswith(".json"):
             continue
 
         filepath = os.path.join(SUBLIST_DIR, filename)
@@ -33,14 +33,18 @@ def fetch_vtx():
                 res.raise_for_status()
                 result = res.json()
 
+                # 🔽 IDX 순번 부여
+                for i, pt in enumerate(result.get("resultList", [])):
+                    pt["IDX"] = i + 1
+
                 save_path = os.path.join(PATH, f"{stdid}.json")
                 with open(save_path, "w", encoding="utf-8") as out:
                     json.dump(result, out, ensure_ascii=False, indent=2)
 
-                print(f"{stdid} 저장 완료")
+                print(f"[OK] {stdid} 저장 및 인덱싱 완료")
 
             except Exception as e:
-                print(f"저장 실패: STDID {stdid} | {e}")
+                print(f"[FAIL] STDID {stdid} | {e}")
 
             time.sleep(0.3)
 
