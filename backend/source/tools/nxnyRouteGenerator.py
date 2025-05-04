@@ -1,4 +1,4 @@
-# backend/source/tools/nxnyCalculator_route.py
+# backend/source/tools/nxnyRouteGenerator.py
 # route_node들을 기상청 nx_ny 기준으로 그룹핑
 
 import os
