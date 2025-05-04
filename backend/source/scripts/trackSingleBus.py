@@ -37,17 +37,22 @@ def get_closest_route_node(lat, lng, ord, node_list, ord_pair_map, prev_node_id)
         return None
 
     candidates = [n for n in node_list if n["NODE_ID"] in node_ids and (prev_node_id is None or n["NODE_ID"] >= prev_node_id)]
-    
+
     closest = None
     min_dist = float("inf")
+
     for node in candidates:
         dist = haversine_distance(lat, lng, node["LAT"], node["LNG"])
         if dist < min_dist:
             min_dist = dist
             closest = node
-            closest["distance"] = dist
 
-    return closest if closest and min_dist <= 200 else None
+    if closest and min_dist <= 200:
+        closest = closest.copy()  # 원본 보호
+        closest["distance"] = min_dist
+        return closest
+
+    return None
 
 def track_bus(stdid, start_time_str):
     log("trackSingleBus", f"{stdid} 버스 {start_time_str} 출발분 추적 시작")
