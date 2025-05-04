@@ -17,21 +17,25 @@ sys.path.append(BASE_DIR)
 from source.utils.getDayType import getDayType
 from source.utils.logger import log
 
-# arrival_time 기준 시간대 그룹핑
-def get_time_group(arrival_time):
-    minutes = arrival_time.hour * 60 + arrival_time.minute
-    if 330 <= minutes < 420:  # 05:30~07:00
+# departure_time 기준 시간대 그룹핑
+def get_time_group(departure_time):
+    minutes = departure_time.hour * 60 + departure_time.minute
+    if 330 <= minutes < 420:     # 05:30~07:00
         return 0
-    elif 420 <= minutes < 600:  # 07:00~10:00
+    elif 420 <= minutes < 540:   # 07:00~09:00
         return 1
-    elif 600 <= minutes < 840:  # 10:00~14:00
+    elif 540 <= minutes < 720:   # 09:00~11:30
         return 2
-    elif 840 <= minutes < 1020:  # 14:00~17:00
+    elif 690 <= minutes < 840:   # 11:30~14:00
         return 3
-    elif 1020 <= minutes < 1200:  # 17:00~20:00
+    elif 840 <= minutes < 1020:  # 14:00~17:00
         return 4
-    else:  # 20:00~00:00
+    elif 1020 <= minutes < 1140: # 17:00~19:00
         return 5
+    elif 1140 <= minutes < 1260: # 19:00~21:00
+        return 6
+    else:                        # 21:00~00:00
+        return 7
 
 # multiprocessing용 함수
 def process_std_folder(stdid_folder, args):
@@ -77,7 +81,8 @@ def process_std_folder(stdid_folder, args):
             delta_elapsed = actual_elapsed - baseline_elapsed
 
             # 시간대 그룹 분류
-            departure_time_group = get_time_group(arrival_time)
+            departure_time = datetime.strptime(hhmm, '%H%M')
+            departure_time_group = get_time_group(departure_time)
 
             # weather 매칭
             arrival_hhmm = arrival_time.hour * 100 + arrival_time.minute
@@ -113,7 +118,6 @@ def process_std_folder(stdid_folder, args):
                     }
 
             # 출발시간 처리
-            departure_time = datetime.strptime(hhmm, '%H%M')
             departure_seconds = departure_time.hour * 3600 + departure_time.minute * 60
             departure_time_sin = np.sin(2 * np.pi * departure_seconds / 86400)
             departure_time_cos = np.cos(2 * np.pi * departure_seconds / 86400)
