@@ -119,6 +119,7 @@ def track_bus(stdid, start_time_str):
                         if 1 not in reached_ords:
                             reached_ords.add(1)
                             stop_reached_logs.append({"ord": 1, "time": f"{datetime.now().strftime('%Y-%m-%d')} {start_time_str}:00", "note": "ORD 1 출발시간 고정 삽입"})
+                            log("trackSingleBus", f"{stdid}_{tracked_plate} ORD 1 출발시간({start_time_str})으로 삽입")
 
                         if bus["CURRENT_NODE_ORD"] == 3 and 2 not in reached_ords:
                             now = datetime.now()
@@ -126,6 +127,7 @@ def track_bus(stdid, start_time_str):
                             mid_dt = start_dt + (now - start_dt) / 2
                             reached_ords.add(2)
                             stop_reached_logs.append({"ord": 2, "time": mid_dt.strftime("%Y-%m-%d %H:%M:%S"), "note": "ORD 2 중간값 보간 삽입"})
+                            log("trackSingleBus", f"{stdid}_{tracked_plate} ORD 2 중간값 보간 삽입")
                         break
 
             if not target_bus:
@@ -133,8 +135,10 @@ def track_bus(stdid, start_time_str):
                 if reached_end_minus1 and time.time() - last_movement > 30:
                     now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     stop_reached_logs.append({"ord": end_ord, "time": now_time, "note": "종점-1 도달 이후 버스 추적 끊김 → 종점 도달로 간주"})
+                    log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 추적 끊김)")
                     break
                 if time.time() - last_movement > 10 * 60:
+                    log("trackSingleBus", f"{stdid} 타임아웃: 10분 이상 인식 못함")
                     break
                 time.sleep(5)
                 continue
@@ -156,6 +160,7 @@ def track_bus(stdid, start_time_str):
                 reached_ords.add(ord)
                 stop_reached_logs.append({"ord": ord, "time": now_time})
                 last_movement = time.time()
+                log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord} 도착: {now_time}")
 
                 if ord == end_ord_minus1:
                     reached_end_minus1 = True
@@ -168,9 +173,11 @@ def track_bus(stdid, start_time_str):
             })
 
             if ord_stay_start and time.time() - ord_stay_start > 10 * 60:
+                log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord}에서 10분 이상 머무름 → 타임아웃 종료")
                 break
 
             if ord == end_ord:
+                log("trackSingleBus", f"{stdid} 종점 도달")
                 break
 
             if reached_end_minus1 and end_ord not in reached_ords:
@@ -179,6 +186,7 @@ def track_bus(stdid, start_time_str):
                     dist_to_end = haversine_distance(lat, lng, end_stop["LAT"], end_stop["LNG"])
                     if dist_to_end <= 100:
                         stop_reached_logs.append({"ord": end_ord, "time": now_time, "note": "종점 근접 거리 기반 도달 판정"})
+                        log("trackSingleBus", f"{stdid}_{tracked_plate} 종점 근접 거리 도달 ({dist_to_end:.3f}m), ORD {end_ord} 도착")
                         break
 
             time.sleep(10)
