@@ -125,7 +125,12 @@ def process_std_folder(stdid_folder_args):
             continue
     return recovered
 
-def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday_str):
+def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
+    stdid_folders = os.listdir(realtime_raw_dir)
+    with Pool(cpu_count()) as pool:
+        results = pool.map(process_std_folder, [(stdid, REALTIME_BUS_DIR, YESTERDAY_STR) for stdid in stdid_folders])
+
+        # 1. baseline 보완 (빈 경우에만)
     for stdid_hhmm, stops in baseline_table.items():
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
@@ -133,15 +138,14 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir, yesterday
             if ord_str not in eta_table[stdid_hhmm]:
                 eta_table[stdid_hhmm][ord_str] = time_val
 
-    stdid_folders = os.listdir(realtime_raw_dir)
-    with Pool(cpu_count()) as pool:
-        results = pool.map(process_std_folder, [(stdid, REALTIME_BUS_DIR, YESTERDAY_STR) for stdid in stdid_folders])
-
+    # 2. raw도 보완 (1, 2 다 없을 때만)
     for partial_table in results:
         for stdid_hhmm, stops in partial_table.items():
             if stdid_hhmm not in eta_table:
                 eta_table[stdid_hhmm] = {}
-            eta_table[stdid_hhmm].update(stops)
+            for ord_str, time_val in stops.items():
+                if ord_str not in eta_table[stdid_hhmm]:
+                    eta_table[stdid_hhmm][ord_str] = time_val
 
     return eta_table
 
