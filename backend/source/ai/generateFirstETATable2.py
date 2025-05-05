@@ -1,4 +1,4 @@
-# backend/source/ai/generateFirstETATable.py
+# backend/source/ai/generateFirstETATable2.py
 
 import os
 import sys
@@ -43,7 +43,7 @@ INPUT_DIM = 6
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
-    'weekday': (3, 2),
+    'weekday_timegroup': (24, 4),  # ✅ 수정
 }
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -52,17 +52,17 @@ class ETA_MLP(torch.nn.Module):
         super(ETA_MLP, self).__init__()
         self.route_emb = torch.nn.Embedding(*EMBEDDING_DIMS['route_id'])
         self.node_emb = torch.nn.Embedding(*EMBEDDING_DIMS['node_id'])
-        self.weekday_emb = torch.nn.Embedding(*EMBEDDING_DIMS['weekday'])
+        self.weekday_timegroup_emb = torch.nn.Embedding(*EMBEDDING_DIMS['weekday_timegroup'])  # ✅ 수정
 
-        self.fc1 = torch.nn.Linear(INPUT_DIM + 8 + 16 + 2, 128)
+        self.fc1 = torch.nn.Linear(INPUT_DIM + 8 + 16 + 4, 128)  # ✅ 수정
         self.fc2 = torch.nn.Linear(128, 64)
         self.fc3 = torch.nn.Linear(64, 1)
         self.relu = torch.nn.ReLU()
 
-    def forward(self, route_id, node_id, weekday, dense_feats):
+    def forward(self, route_id, node_id, weekday_timegroup, dense_feats):  # ✅ 수정
         route_emb = self.route_emb(route_id)
         node_emb = self.node_emb(node_id)
-        weekday_emb = self.weekday_emb(weekday)
+        weekday_emb = self.weekday_timegroup_emb(weekday_timegroup)  # ✅ 수정
         x = torch.cat([dense_feats, route_emb, node_emb, weekday_emb], dim=1)
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
@@ -178,20 +178,31 @@ def main():
     df = pd.read_parquet(PARQUET_PATH)
     forecasts_list = load_forecast_candidates(TODAY)
 
+    weekday_timegroups = [f"{d}_{t}" for d in ['weekday', 'saturday', 'holiday'] for t in range(8)]
+
+    weekday_timegroup_encoder = LabelEncoder()
+    route_encoder = LabelEncoder()
+    node_encoder = LabelEncoder()
+
+    weekday_timegroup_encoder.fit(weekday_timegroups)
+    route_encoder.fit(list(stdid_number.values()))
+    node_encoder.fit(df['node_id'].unique())
+
     # 요일 인코딩
     day_type = getDayType(TARGET_DATE)
-    weekday_encoder = LabelEncoder()
-    weekday_encoder.fit(['weekday', 'saturday', 'holiday'])
-    weekday_encoded_value = weekday_encoder.transform([day_type])[0]
+
+    weekday_timegroup_list = []
+    for idx, row in df.iterrows():
+        departure_group = int(row['departure_time_group'])
+        combo = f"{day_type}_{departure_group}"
+        encoded = weekday_timegroup_encoder.transform([combo])[0]
+        weekday_timegroup_list.append(encoded)
+
+    weekday_timegroup_tensor = torch.tensor(weekday_timegroup_list, dtype=torch.long).to(DEVICE)
 
     X_dense_rows = []
     route_id_encoded_list = []
     node_id_encoded_list = []
-
-    route_encoder = LabelEncoder()
-    route_encoder.fit(list(stdid_number.values()))
-    node_encoder = LabelEncoder()
-    node_encoder.fit(df['node_id'].unique())
 
     for idx, row in df.iterrows():
         departure_hhmm = int(row['departure_hhmm'])
@@ -220,14 +231,13 @@ def main():
     X_dense = torch.tensor(X_dense_rows, dtype=torch.float32).to(DEVICE)
     route_id_tensor = torch.tensor(route_id_encoded_list, dtype=torch.long).to(DEVICE)
     node_id_tensor = torch.tensor(node_id_encoded_list, dtype=torch.long).to(DEVICE)
-    weekday_tensor = torch.tensor([weekday_encoded_value] * len(df), dtype=torch.long).to(DEVICE)
 
     model = ETA_MLP().to(DEVICE)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
     model.eval()
 
     with torch.no_grad():
-        pred_delta = model(route_id_tensor, node_id_tensor, weekday_tensor, X_dense).cpu().numpy()
+        pred_delta = model(route_id_tensor, node_id_tensor, weekday_timegroup_tensor, X_dense).cpu().numpy()
 
     with open(BASELINE_PATH, 'r') as f:
         baseline_table = json.load(f)

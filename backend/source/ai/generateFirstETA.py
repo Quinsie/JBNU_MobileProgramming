@@ -13,7 +13,7 @@ RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-DATE_TAG = "20250423"
+DATE_TAG = "20250505"
 eta_table = {}  # {"STDID_HHMM": {ord: arrival_time}}
 
 def parse_arrival_time(timestr):
