@@ -101,6 +101,7 @@ def train():
         print(f"전날 모델 없음. 새로운 모델로 학습 시작.")
 
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    # for g in optimizer.param_groups: g['lr'] = 0.0005  # lr 초기화
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
     criterion = nn.MSELoss()
 
