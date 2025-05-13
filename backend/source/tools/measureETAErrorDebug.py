@@ -24,6 +24,13 @@ err_list = []
 # 오차 수집
 for stdid in eta_table:
     for record in eta_table[stdid]:
+        # 문자열로 저장되어 있으면 json.loads로 변환
+        if isinstance(record, str):
+            try:
+                record = json.loads(record)
+            except json.JSONDecodeError:
+                continue
+
         eta = record.get("ETA")
         real = record.get("REAL")
         if eta is None or real is None:
