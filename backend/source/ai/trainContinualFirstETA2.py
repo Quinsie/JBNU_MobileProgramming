@@ -44,6 +44,9 @@ class ETADataset(Dataset):
                                'PTY', 'RN1', 'T1H']].values
         self.targets = df['delta_elapsed'].values
 
+    def __len__(self):
+        return len(self.route_id)
+
     def __getitem__(self, idx):
         return (
             torch.tensor(self.route_id[idx], dtype=torch.long),
