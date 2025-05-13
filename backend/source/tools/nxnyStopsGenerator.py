@@ -27,16 +27,15 @@ for filename in os.listdir(STOP_DIR):
         stop_data = json.load(f)
 
     for stop in stop_data.get("resultList", []):
-        stop_id = stop.get("STOP_ID")
         stop_ord = stop.get("STOP_ORD")
         lat = stop.get("LAT")
         lng = stop.get("LNG")
 
-        if None in (stop_id, stop_ord, lat, lng):
+        if None in (stop_ord, lat, lng):
             continue
 
         nx, ny = convert_to_grid(lat, lng)
-        key = f"{stop_id}_{stop_ord - 1}"  # ORD는 0부터 시작
+        key = f"{stdid}_{stop_ord - 1}"  # ORD는 0부터 시작
         nx_ny_stops[key] = f"{nx}_{ny}"
 
 # 저장
