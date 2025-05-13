@@ -6,14 +6,17 @@ import json
 import torch
 import time
 import pandas as pd
+import multiprocessing
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
+
 from sklearn.preprocessing import LabelEncoder
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
 from source.utils.getDayType import getDayType
+multiprocessing.set_start_method("spawn", force=True)
 
 # 날짜 설정
 # TODAY = datetime.now()
