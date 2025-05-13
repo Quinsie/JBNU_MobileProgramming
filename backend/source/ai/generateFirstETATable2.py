@@ -124,16 +124,16 @@ def get_forecast_values(forecasts_list, forecast_timestamp, nx_ny):
     # 5. 다 실패 → 기본값
     return {'PTY': 0, 'PCP': 0.0, 'TMP': 20.0}
 
-def process_std_folder(stdid_folder_args):
-    stdid_folder, REALTIME_BUS_DIR, YESTERDAY_STR = stdid_folder_args
-    folder_path = os.path.join(REALTIME_BUS_DIR, stdid_folder)
+def process_std_folder(args):
+    stdid_folder, realtime_bus_dir, yesterday_str = args
+    folder_path = os.path.join(realtime_bus_dir, stdid_folder)
     recovered = {}
 
     if not os.path.isdir(folder_path):
         return recovered
 
     for file in os.listdir(folder_path):
-        if not file.startswith(YESTERDAY_STR):
+        if not file.startswith(yesterday_str):
             continue
         file_path = os.path.join(folder_path, file)
         try:
@@ -150,7 +150,8 @@ def process_std_folder(stdid_folder_args):
 def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
     stdid_folders = os.listdir(realtime_raw_dir)
     with Pool(cpu_count()) as pool:
-        results = pool.map(process_std_folder, [(stdid, REALTIME_BUS_DIR, YESTERDAY_STR) for stdid in stdid_folders])
+        args_list = [(stdid, REALTIME_BUS_DIR, YESTERDAY_STR) for stdid in stdid_folders]
+        results = pool.map(process_std_folder, args_list)
 
         # 1. baseline 보완 (빈 경우에만)
     for stdid_hhmm, stops in baseline_table.items():
@@ -274,7 +275,7 @@ def main():
             eta_table[stdid_hhmm] = {}
         eta_table[stdid_hhmm][stop_ord] = eta_time_str
 
-    eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR, YESTERDAY_STR)
+    eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR)
 
     os.makedirs(os.path.dirname(SAVE_JSON_PATH), exist_ok=True)
     with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
