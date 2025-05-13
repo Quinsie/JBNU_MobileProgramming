@@ -163,7 +163,7 @@ def encode_row(args):
     nx_ny = nx_ny_lookup.get(f"{stdid[0]}_{stop_ord}") if stdid else None
     forecast = get_forecast_values(forecasts_list, forecast_timestamp, nx_ny)
     return (
-        [row['departure_time_sin'], row['departure_time_cos'], row['departure_time_group'], forecast['PTY'], forecast['RN1'], forecast['T1H']],
+        [row['departure_time_sin'], row['departure_time_cos'], row['departure_time_group'], forecast['PTY'], forecast['PCP'], forecast['TMP']],
         route_id_map[row['route_id']],
         node_id_map[row['node_id']],
         weekday_map[day_type],
