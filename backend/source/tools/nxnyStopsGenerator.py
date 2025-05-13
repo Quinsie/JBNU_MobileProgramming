@@ -35,7 +35,7 @@ for filename in os.listdir(STOP_DIR):
             continue
 
         nx, ny = convert_to_grid(lat, lng)
-        key = f"{stdid}_{stop_ord - 1}"  # ORD는 0부터 시작
+        key = f"{stdid}_{stop_ord}"
         nx_ny_stops[key] = f"{nx}_{ny}"
 
 # 저장
