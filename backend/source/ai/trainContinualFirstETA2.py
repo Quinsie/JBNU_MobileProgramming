@@ -91,7 +91,7 @@ def train():
     model = ETA_MLP().to(DEVICE)
 
     # 전날 모델 경로
-    DAY_BEFORE_MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.pth")
+    DAY_BEFORE_MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_2.pth")
 
     # 전날 모델이 존재하면 불러오기
     if os.path.exists(DAY_BEFORE_MODEL_PATH):
