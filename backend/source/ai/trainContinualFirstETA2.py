@@ -16,7 +16,7 @@ sys.path.append(BASE_DIR)
 
 # 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 25)
+TODAY = datetime(2025, 5, 8)
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 
@@ -27,7 +27,7 @@ INPUT_DIM = 6  # Dense로 들어갈 feature 개수
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
-    'weekday_timegroup': (24, 4),  # ✅ 수정됨
+    'weekday_timegroup': (24, 4),  # 수정됨
 }
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 EPOCHS = 600
@@ -39,7 +39,7 @@ class ETADataset(Dataset):
     def __init__(self, df):
         self.route_id = df['route_id_encoded'].values
         self.node_id = df['node_id_encoded'].values
-        self.weekday_timegroup = df['weekday_timegroup_encoded'].values  # ✅ 수정
+        self.weekday_timegroup = df['weekday_timegroup_encoded'].values  # 수정
         self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group',
                                'PTY', 'RN1', 'T1H']].values
         self.targets = df['delta_elapsed'].values
@@ -48,7 +48,7 @@ class ETADataset(Dataset):
         return (
             torch.tensor(self.route_id[idx], dtype=torch.long),
             torch.tensor(self.node_id[idx], dtype=torch.long),
-            torch.tensor(self.weekday_timegroup[idx], dtype=torch.long),  # ✅ 수정
+            torch.tensor(self.weekday_timegroup[idx], dtype=torch.long),  # 수정
             torch.tensor(self.dense_feats[idx], dtype=torch.float32),
             torch.tensor(self.targets[idx], dtype=torch.float32)
         )
@@ -59,17 +59,17 @@ class ETA_MLP(nn.Module):
         super(ETA_MLP, self).__init__()
         self.route_emb = nn.Embedding(*EMBEDDING_DIMS['route_id'])
         self.node_emb = nn.Embedding(*EMBEDDING_DIMS['node_id'])
-        self.weekday_timegroup_emb = nn.Embedding(*EMBEDDING_DIMS['weekday_timegroup'])  # ✅ 수정
+        self.weekday_timegroup_emb = nn.Embedding(*EMBEDDING_DIMS['weekday_timegroup'])  # 수정
 
-        self.fc1 = nn.Linear(INPUT_DIM + 8 + 16 + 4, 128)  # ✅ 수정
+        self.fc1 = nn.Linear(INPUT_DIM + 8 + 16 + 4, 128)  # 수정
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, 1)
         self.relu = nn.ReLU()
 
-    def forward(self, route_id, node_id, weekday_timegroup, dense_feats):  # ✅ 수정
+    def forward(self, route_id, node_id, weekday_timegroup, dense_feats):  # 수정
         route_emb = self.route_emb(route_id)
         node_emb = self.node_emb(node_id)
-        weekday_emb = self.weekday_timegroup_emb(weekday_timegroup)  # ✅ 수정
+        weekday_emb = self.weekday_timegroup_emb(weekday_timegroup)  # 수정
 
         x = torch.cat([dense_feats, route_emb, node_emb, weekday_emb], dim=1)
         x = self.relu(self.fc1(x))
@@ -105,15 +105,15 @@ def train():
         model.train()
         total_loss = 0
 
-        for route_id, node_id, weekday_timegroup, dense_feats, targets in dataloader:  # ✅ 수정
+        for route_id, node_id, weekday_timegroup, dense_feats, targets in dataloader:  # 수정
             route_id = route_id.to(DEVICE)
             node_id = node_id.to(DEVICE)
-            weekday_timegroup = weekday_timegroup.to(DEVICE)  # ✅ 수정
+            weekday_timegroup = weekday_timegroup.to(DEVICE)  # 수정
             dense_feats = dense_feats.to(DEVICE)
             targets = targets.to(DEVICE)
 
             optimizer.zero_grad()
-            outputs = model(route_id, node_id, weekday_timegroup, dense_feats)  # ✅ 수정
+            outputs = model(route_id, node_id, weekday_timegroup, dense_feats)  # 수정
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()

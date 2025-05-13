@@ -17,7 +17,7 @@ from source.utils.getDayType import getDayType
 
 # 날짜 설정
 # TODAY = datetime.now()
-TODAY = datetime(2025, 4, 26)  # 지금 날짜
+TODAY = datetime(2025, 5, 7)  # 지금 날짜
 YESTERDAY_DATE = TODAY - timedelta(days=1)  # 학습용 어제 날짜
 TARGET_DATE = TODAY  # 추론 목표 날짜
 
@@ -43,7 +43,7 @@ INPUT_DIM = 6
 EMBEDDING_DIMS = {
     'route_id': (500, 8),
     'node_id': (3200, 16),
-    'weekday_timegroup': (24, 4),  # ✅ 수정
+    'weekday_timegroup': (24, 4),  # 수정
 }
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -52,17 +52,17 @@ class ETA_MLP(torch.nn.Module):
         super(ETA_MLP, self).__init__()
         self.route_emb = torch.nn.Embedding(*EMBEDDING_DIMS['route_id'])
         self.node_emb = torch.nn.Embedding(*EMBEDDING_DIMS['node_id'])
-        self.weekday_timegroup_emb = torch.nn.Embedding(*EMBEDDING_DIMS['weekday_timegroup'])  # ✅ 수정
+        self.weekday_timegroup_emb = torch.nn.Embedding(*EMBEDDING_DIMS['weekday_timegroup'])  # 수정
 
-        self.fc1 = torch.nn.Linear(INPUT_DIM + 8 + 16 + 4, 128)  # ✅ 수정
+        self.fc1 = torch.nn.Linear(INPUT_DIM + 8 + 16 + 4, 128)  # 수정
         self.fc2 = torch.nn.Linear(128, 64)
         self.fc3 = torch.nn.Linear(64, 1)
         self.relu = torch.nn.ReLU()
 
-    def forward(self, route_id, node_id, weekday_timegroup, dense_feats):  # ✅ 수정
+    def forward(self, route_id, node_id, weekday_timegroup, dense_feats):  # 수정
         route_emb = self.route_emb(route_id)
         node_emb = self.node_emb(node_id)
-        weekday_emb = self.weekday_timegroup_emb(weekday_timegroup)  # ✅ 수정
+        weekday_emb = self.weekday_timegroup_emb(weekday_timegroup)  # 수정
         x = torch.cat([dense_feats, route_emb, node_emb, weekday_emb], dim=1)
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
