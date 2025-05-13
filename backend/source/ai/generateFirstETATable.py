@@ -18,6 +18,7 @@ from source.utils.getDayType import getDayType
 multiprocessing.set_start_method("spawn", force=True)
 
 # 날짜 설정
+# TODAY = datetime.now()
 TODAY = datetime(2025, 5, 7)
 YESTERDAY_DATE = TODAY - timedelta(days=1)
 TARGET_DATE = TODAY
@@ -25,10 +26,10 @@ TARGET_DATE = TODAY
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 TARGET_STR = TARGET_DATE.strftime("%Y%m%d")
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_2.parquet")
-MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_2.pth")
-BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_2.json")
-SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}_2.json")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
+BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
+SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 LOOKUP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_lookup.json")
@@ -152,7 +153,7 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
     return eta_table
 
 def encode_row(row_tuple):
-    row, forecasts_list, day_type, route_id_map, node_id_map, weekday_map = row_tuple
+    row, forecasts_list, weekday_val, route_id_map, node_id_map = row_tuple
     departure_hhmm = int(row['departure_hhmm'])
     dep_hour = departure_hhmm // 100
     dep_min = departure_hhmm % 100
@@ -165,25 +166,30 @@ def encode_row(row_tuple):
         [row['departure_time_sin'], row['departure_time_cos'], row['departure_time_group'], forecast['PTY'], forecast['RN1'], forecast['T1H']],
         route_id_map[row['route_id']],
         node_id_map[row['node_id']],
-        weekday_map[day_type],
+        weekday_val,
         row['route_id'], stop_ord, departure_hhmm, row['baseline_elapsed']
     )
 
 def main():
     start_time = time.time()
-    print(f"ETA Table 생성 시작... (target={TARGET_STR})")
+    print(f"ETA Table 개성 시작... (target={TARGET_STR})")
     df = pd.read_parquet(PARQUET_PATH)
     forecasts_list = load_forecast_candidates(TODAY)
 
     day_type = getDayType(TARGET_DATE)
     weekday_encoder = LabelEncoder().fit(['weekday', 'saturday', 'holiday'])
-    weekday_map = {k: weekday_encoder.transform([k])[0] for k in weekday_encoder.classes_}
+    weekday_val = weekday_encoder.transform([day_type])[0]
     route_encoder = LabelEncoder().fit(list(stdid_number.values()))
     node_encoder = LabelEncoder().fit(df['node_id'].unique())
+
     route_id_map = {k: route_encoder.transform([k])[0] for k in route_encoder.classes_}
     node_id_map = {k: node_encoder.transform([k])[0] for k in node_encoder.classes_}
 
-    row_args = [(row, forecasts_list, day_type, route_id_map, node_id_map, weekday_map) for _, row in df.iterrows()]
+    row_args = [
+        (row, forecasts_list, weekday_val, route_id_map, node_id_map)
+        for _, row in df.iterrows()
+    ]
+
     with Pool(cpu_count()) as pool:
         results = pool.map(encode_row, row_args)
 
@@ -227,8 +233,8 @@ def main():
     with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
         json.dump(eta_table, f, indent=2, ensure_ascii=False)
 
-    print(f"ETA Table 생성 완료: {SAVE_JSON_PATH}")
-    print("총 소요시간: ", time.time() - start_time, "sec")
+    print(f"ETA Table 개성 완료: {SAVE_JSON_PATH}")
+    print("총 소용시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
     main()
