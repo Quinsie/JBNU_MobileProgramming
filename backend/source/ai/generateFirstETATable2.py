@@ -1,3 +1,5 @@
+# backend/source/ai/generateFirstETATable2.py
+
 import os
 import sys
 import json
@@ -7,7 +9,6 @@ import pandas as pd
 import multiprocessing
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
-
 from sklearn.preprocessing import LabelEncoder
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -17,7 +18,6 @@ from source.utils.getDayType import getDayType
 multiprocessing.set_start_method("spawn", force=True)
 
 # 날짜 설정
-# TODAY = datetime.now()
 TODAY = datetime(2025, 5, 7)
 YESTERDAY_DATE = TODAY - timedelta(days=1)
 TARGET_DATE = TODAY
@@ -32,11 +32,10 @@ SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 LOOKUP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_lookup.json")
-
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
+
 with open(STDID_NUMBER_PATH, 'r') as f:
     stdid_number = json.load(f)
-
 with open(LOOKUP_PATH, 'r') as f:
     nx_ny_lookup = json.load(f)
 
@@ -83,48 +82,32 @@ def load_forecast_candidates(base_today):
 def get_forecast_values(forecasts_list, forecast_timestamp, nx_ny):
     def is_valid(val):
         return val not in [None, {}, "null"]
-
-    def extract_hour(ts):
-        return int(ts[-4:-2])
-
+    def extract_hour(ts): return int(ts[-4:-2])
     target_hour = extract_hour(forecast_timestamp)
-    timestamp_candidates = [
-        forecast_timestamp[:-4] + f"{hour:02d}00"
-        for hour in range(target_hour, target_hour - 4, -1)
-        if hour >= 0
-    ]
-
+    timestamp_candidates = [forecast_timestamp[:-4] + f"{hour:02d}00" for hour in range(target_hour, target_hour - 4, -1) if hour >= 0]
     for forecast in forecasts_list:
         forecast_data = forecast["data"]
         for ts in timestamp_candidates:
-            if ts not in forecast_data:
-                continue
+            if ts not in forecast_data: continue
             if is_valid(forecast_data[ts].get(nx_ny)):
                 return forecast_data[ts][nx_ny]
-            try:
-                x, y = map(int, nx_ny.split("_"))
-            except:
-                continue
+            try: x, y = map(int, nx_ny.split("_"))
+            except: continue
             for dx in [-1, 0, 1]:
                 for dy in [-1, 0, 1]:
-                    if dx == 0 and dy == 0:
-                        continue
+                    if dx == 0 and dy == 0: continue
                     alt_key = f"{x + dx}_{y + dy}"
                     if is_valid(forecast_data[ts].get(alt_key)):
                         return forecast_data[ts][alt_key]
-
     return {'PTY': 0, 'PCP': 0.0, 'TMP': 20.0}
 
 def process_std_folder(args):
     stdid_folder, realtime_bus_dir, yesterday_str = args
-    print(f"[PID {os.getpid()}] 처리 시작: {stdid_folder}")
     folder_path = os.path.join(realtime_bus_dir, stdid_folder)
     recovered = {}
-    if not os.path.isdir(folder_path):
-        return recovered
+    if not os.path.isdir(folder_path): return recovered
     for file in os.listdir(folder_path):
-        if not file.startswith(yesterday_str):
-            continue
+        if not file.startswith(yesterday_str): continue
         file_path = os.path.join(folder_path, file)
         try:
             with open(file_path, 'r') as f:
@@ -133,8 +116,7 @@ def process_std_folder(args):
                 ord_num = str(log['ord'])
                 time_str = log['time'][-8:]
                 recovered.setdefault(f"{stdid_folder}_{file.split('_')[-1].split('.')[0]}", {})[ord_num] = time_str
-        except:
-            continue
+        except: continue
     return recovered
 
 def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
@@ -157,7 +139,8 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
                     eta_table[stdid_hhmm][ord_str] = time_val
     return eta_table
 
-def encode_single_row(row, forecasts_list, day_type):
+def encode_single_row(args):
+    row, forecasts_list, day_type = args
     departure_hhmm = int(row['departure_hhmm'])
     dep_hour = departure_hhmm // 100
     dep_min = departure_hhmm % 100
@@ -195,10 +178,7 @@ def main():
     day_type = getDayType(TARGET_DATE)
 
     with Pool(cpu_count()) as pool:
-        encoded_dicts = pool.starmap(
-            encode_single_row,
-            [(row, forecasts_list, day_type) for _, row in df.iterrows()]
-        )
+        encoded_dicts = pool.map(encode_single_row, [(row, forecasts_list, day_type) for _, row in df.iterrows()])
 
     X_dense_rows = []
     route_id_encoded_list = []
@@ -244,12 +224,10 @@ def main():
         dep_time = datetime(TARGET_DATE.year, TARGET_DATE.month, TARGET_DATE.day, dep_hour, dep_min, 0)
         dep_seconds = dep_hour * 3600 + dep_min * 60
         baseline_elapsed -= dep_seconds
-        if baseline_elapsed < 0:
-            baseline_elapsed = 0
+        if baseline_elapsed < 0: baseline_elapsed = 0
         delta = pred_delta[idx]
         final_elapsed = baseline_elapsed + delta
-        if final_elapsed < 0:
-            final_elapsed = 0
+        if final_elapsed < 0: final_elapsed = 0
         eta_time = dep_time + timedelta(seconds=int(final_elapsed))
         eta_time_str = eta_time.strftime("%H:%M:%S")
         if stdid_hhmm not in eta_table:
@@ -262,7 +240,7 @@ def main():
         json.dump(eta_table, f, indent=2, ensure_ascii=False)
 
     print(f"ETA Table 생성 완료: {SAVE_JSON_PATH}")
-    print("총 소요시간: ", time.time() - start_time, "sec")
+    print("총 소용시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
     main()
