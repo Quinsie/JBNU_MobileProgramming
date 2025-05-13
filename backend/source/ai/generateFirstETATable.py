@@ -108,7 +108,7 @@ def get_forecast_values(forecasts_list, forecast_timestamp, nx_ny):
                     alt_key = f"{x + dx}_{y + dy}"
                     if is_valid(forecast_data[ts].get(alt_key)):
                         return forecast_data[ts][alt_key]
-    return {'PTY': 0, 'RN1': 0.0, 'T1H': 20.0}
+    return {'PTY': 0, 'PCP': 0.0, 'TMP': 20.0}
 
 def process_std_folder(args):
     stdid_folder, realtime_bus_dir, yesterday_str = args
@@ -152,8 +152,8 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
                     eta_table[stdid_hhmm][ord_str] = time_val
     return eta_table
 
-def encode_row(row_tuple):
-    row, forecasts_list, weekday_val, route_id_map, node_id_map = row_tuple
+def encode_row(args):
+    row, forecasts_list, day_type, route_id_map, node_id_map, weekday_map = args
     departure_hhmm = int(row['departure_hhmm'])
     dep_hour = departure_hhmm // 100
     dep_min = departure_hhmm % 100
@@ -166,27 +166,27 @@ def encode_row(row_tuple):
         [row['departure_time_sin'], row['departure_time_cos'], row['departure_time_group'], forecast['PTY'], forecast['RN1'], forecast['T1H']],
         route_id_map[row['route_id']],
         node_id_map[row['node_id']],
-        weekday_val,
+        weekday_map[day_type],
         row['route_id'], stop_ord, departure_hhmm, row['baseline_elapsed']
     )
 
 def main():
     start_time = time.time()
-    print(f"ETA Table 개성 시작... (target={TARGET_STR})")
+    print(f"ETA Table 생성 시작... (target={TARGET_STR})")
     df = pd.read_parquet(PARQUET_PATH)
     forecasts_list = load_forecast_candidates(TODAY)
-
     day_type = getDayType(TARGET_DATE)
-    weekday_encoder = LabelEncoder().fit(['weekday', 'saturday', 'holiday'])
-    weekday_val = weekday_encoder.transform([day_type])[0]
+
     route_encoder = LabelEncoder().fit(list(stdid_number.values()))
     node_encoder = LabelEncoder().fit(df['node_id'].unique())
+    weekday_encoder = LabelEncoder().fit(['weekday', 'saturday', 'holiday'])
 
     route_id_map = {k: route_encoder.transform([k])[0] for k in route_encoder.classes_}
     node_id_map = {k: node_encoder.transform([k])[0] for k in node_encoder.classes_}
+    weekday_map = {k: weekday_encoder.transform([k])[0] for k in weekday_encoder.classes_}
 
     row_args = [
-        (row, forecasts_list, weekday_val, route_id_map, node_id_map)
+        (row, forecasts_list, day_type, route_id_map, node_id_map, weekday_map)
         for _, row in df.iterrows()
     ]
 
@@ -233,8 +233,8 @@ def main():
     with open(SAVE_JSON_PATH, 'w', encoding='utf-8') as f:
         json.dump(eta_table, f, indent=2, ensure_ascii=False)
 
-    print(f"ETA Table 개성 완료: {SAVE_JSON_PATH}")
-    print("총 소용시간: ", time.time() - start_time, "sec")
+    print(f"ETA Table 생성 완료: {SAVE_JSON_PATH}")
+    print("총 소요시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
     main()
