@@ -126,6 +126,7 @@ def get_forecast_values(forecasts_list, forecast_timestamp, nx_ny):
 
 def process_std_folder(args):
     stdid_folder, realtime_bus_dir, yesterday_str = args
+    print(f"[PID {os.getpid()}] 처리 시작: {stdid_folder}")
     folder_path = os.path.join(realtime_bus_dir, stdid_folder)
     recovered = {}
 
