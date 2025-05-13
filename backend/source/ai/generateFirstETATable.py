@@ -19,6 +19,7 @@ from source.utils.getDayType import getDayType
 multiprocessing.set_start_method("spawn", force=True)
 
 # 날짜 설정
+# TODAY = datetime.now()
 TODAY = datetime(2025, 5, 7)
 YESTERDAY_DATE = TODAY - timedelta(days=1)
 TARGET_DATE = TODAY
