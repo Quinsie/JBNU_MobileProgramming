@@ -9,13 +9,12 @@ import pandas as pd
 import multiprocessing
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
-
 from sklearn.preprocessing import LabelEncoder
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
-
 from source.utils.getDayType import getDayType
+
 multiprocessing.set_start_method("spawn", force=True)
 
 # 날짜 설정
@@ -26,10 +25,10 @@ TARGET_DATE = TODAY
 YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
 TARGET_STR = TARGET_DATE.strftime("%Y%m%d")
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
-MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
-BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}.json")
-SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}.json")
+PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}_2.parquet")
+MODEL_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}_2.pth")
+BASELINE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{(YESTERDAY_DATE - timedelta(days=1)).strftime('%Y%m%d')}_2.json")
+SAVE_JSON_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", f"{YESTERDAY_STR}_2.json")
 REALTIME_BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 LOOKUP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_lookup.json")
@@ -37,7 +36,6 @@ STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.js
 
 with open(STDID_NUMBER_PATH, 'r') as f:
     stdid_number = json.load(f)
-
 with open(LOOKUP_PATH, 'r') as f:
     nx_ny_lookup = json.load(f)
 
@@ -81,9 +79,7 @@ def load_forecast_candidates(base_today):
                 candidates.append({"date": file_date, "data": data})
     return candidates
 
-forecast_candidates_cache = load_forecast_candidates(TODAY)
-
-def get_forecast_values(forecast_timestamp, nx_ny):
+def get_forecast_values(forecasts_list, forecast_timestamp, nx_ny):
     def is_valid(val):
         return val not in [None, {}, "null"]
 
@@ -91,13 +87,9 @@ def get_forecast_values(forecast_timestamp, nx_ny):
         return int(ts[-4:-2])
 
     target_hour = extract_hour(forecast_timestamp)
-    timestamp_candidates = [
-        forecast_timestamp[:-4] + f"{hour:02d}00"
-        for hour in range(target_hour, target_hour - 4, -1)
-        if hour >= 0
-    ]
+    timestamp_candidates = [forecast_timestamp[:-4] + f"{hour:02d}00" for hour in range(target_hour, target_hour - 4, -1) if hour >= 0]
 
-    for forecast in forecast_candidates_cache:
+    for forecast in forecasts_list:
         forecast_data = forecast["data"]
         for ts in timestamp_candidates:
             if ts not in forecast_data:
@@ -115,10 +107,11 @@ def get_forecast_values(forecast_timestamp, nx_ny):
                     alt_key = f"{x + dx}_{y + dy}"
                     if is_valid(forecast_data[ts].get(alt_key)):
                         return forecast_data[ts][alt_key]
-    return {'PTY': 0, 'PCP': 0.0, 'TMP': 20.0}
+    return {'PTY': 0, 'RN1': 0.0, 'T1H': 20.0}
 
 def process_std_folder(args):
     stdid_folder, realtime_bus_dir, yesterday_str = args
+    print(f"[PID {os.getpid()}] 처리 시작: {stdid_folder}")
     folder_path = os.path.join(realtime_bus_dir, stdid_folder)
     recovered = {}
     if not os.path.isdir(folder_path):
@@ -158,62 +151,61 @@ def postprocess_eta_table(eta_table, baseline_table, realtime_raw_dir):
                     eta_table[stdid_hhmm][ord_str] = time_val
     return eta_table
 
+def encode_row(row_tuple):
+    row, forecasts_list, day_type, route_id_map, node_id_map, weekday_map = row_tuple
+    departure_hhmm = int(row['departure_hhmm'])
+    dep_hour = departure_hhmm // 100
+    dep_min = departure_hhmm % 100
+    forecast_timestamp = f"{TARGET_DATE.strftime('%Y%m%d')}_{dep_hour:02d}00"
+    stdid = [k for k, v in stdid_number.items() if v == row['route_id']]
+    stop_ord = str(int(row['stop_ord']))
+    nx_ny = nx_ny_lookup.get(f"{stdid[0]}_{stop_ord}") if stdid else None
+    forecast = get_forecast_values(forecasts_list, forecast_timestamp, nx_ny)
+    return (
+        [row['departure_time_sin'], row['departure_time_cos'], row['departure_time_group'], forecast['PTY'], forecast['RN1'], forecast['T1H']],
+        route_id_map[row['route_id']],
+        node_id_map[row['node_id']],
+        weekday_map[day_type],
+        row['route_id'], stop_ord, departure_hhmm, row['baseline_elapsed']
+    )
+
 def main():
     start_time = time.time()
     print(f"ETA Table 생성 시작... (target={TARGET_STR})")
-
     df = pd.read_parquet(PARQUET_PATH)
-
-    weekday_encoder = LabelEncoder()
-    weekday_encoder.fit(['weekday', 'saturday', 'holiday'])
-    route_encoder = LabelEncoder()
-    route_encoder.fit(list(stdid_number.values()))
-    node_encoder = LabelEncoder()
-    node_encoder.fit(df['node_id'].unique())
+    forecasts_list = load_forecast_candidates(TODAY)
 
     day_type = getDayType(TARGET_DATE)
-    weekday_encoded_value = weekday_encoder.transform([day_type])[0]
+    weekday_encoder = LabelEncoder().fit(['weekday', 'saturday', 'holiday'])
+    weekday_map = {k: weekday_encoder.transform([k])[0] for k in weekday_encoder.classes_}
+    route_encoder = LabelEncoder().fit(list(stdid_number.values()))
+    node_encoder = LabelEncoder().fit(df['node_id'].unique())
+    route_id_map = {k: route_encoder.transform([k])[0] for k in route_encoder.classes_}
+    node_id_map = {k: node_encoder.transform([k])[0] for k in node_encoder.classes_}
 
-    X_dense_rows = []
-    route_id_encoded_list = []
-    node_id_encoded_list = []
-    eta_meta = []
+    row_args = [(row, forecasts_list, day_type, route_id_map, node_id_map, weekday_map) for _, row in df.iterrows()]
+    with Pool(cpu_count()) as pool:
+        results = pool.map(encode_row, row_args)
 
-    for idx, row in df.iterrows():
-        departure_hhmm = int(row['departure_hhmm'])
-        dep_hour = departure_hhmm // 100
-        dep_min = departure_hhmm % 100
-        forecast_timestamp = f"{TARGET_DATE.strftime('%Y%m%d')}_{dep_hour:02d}00"
-        stdid = [k for k, v in stdid_number.items() if v == row['route_id']]
-        stop_ord = str(int(row['stop_ord']))
-        nx_ny = nx_ny_lookup.get(f"{stdid[0]}_{stop_ord}") if stdid else None
-        forecast = get_forecast_values(forecast_timestamp, nx_ny)
-
-        X_dense_rows.append([
-            row['departure_time_sin'], row['departure_time_cos'], row['departure_time_group'],
-            forecast['PTY'], forecast['PCP'], forecast['TMP']
-        ])
-        route_id_encoded_list.append(route_encoder.transform([row['route_id']])[0])
-        node_id_encoded_list.append(node_encoder.transform([row['node_id']])[0])
-        eta_meta.append((row['route_id'], stop_ord, departure_hhmm, row['baseline_elapsed']))
-
-    weekday_tensor = torch.tensor([weekday_encoded_value] * len(df), dtype=torch.long).to(DEVICE)
-    X_dense = torch.tensor(X_dense_rows, dtype=torch.float32).to(DEVICE)
-    route_id_tensor = torch.tensor(route_id_encoded_list, dtype=torch.long).to(DEVICE)
-    node_id_tensor = torch.tensor(node_id_encoded_list, dtype=torch.long).to(DEVICE)
+    X_dense_rows, route_id_list, node_id_list, weekday_list, meta = zip(*[(r[0], r[1], r[2], r[3], r[4:]) for r in results])
 
     model = ETA_MLP().to(DEVICE)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
     model.eval()
 
     with torch.no_grad():
-        pred_delta = model(route_id_tensor, node_id_tensor, weekday_tensor, X_dense).cpu().numpy()
+        pred = model(
+            torch.tensor(route_id_list, dtype=torch.long).to(DEVICE),
+            torch.tensor(node_id_list, dtype=torch.long).to(DEVICE),
+            torch.tensor(weekday_list, dtype=torch.long).to(DEVICE),
+            torch.tensor(X_dense_rows, dtype=torch.float32).to(DEVICE)
+        ).cpu().numpy()
 
     with open(BASELINE_PATH, 'r') as f:
         baseline_table = json.load(f)
 
     eta_table = {}
-    for idx, (route_id, stop_ord, departure_hhmm, baseline_elapsed) in enumerate(eta_meta):
+    for idx, (route_id, stop_ord, departure_hhmm, baseline_elapsed) in enumerate(meta):
         stdid_candidates = [stdid for stdid, rname in stdid_number.items() if rname == route_id]
         if not stdid_candidates:
             continue
@@ -223,18 +215,11 @@ def main():
         dep_min = departure_hhmm % 100
         dep_time = datetime(TARGET_DATE.year, TARGET_DATE.month, TARGET_DATE.day, dep_hour, dep_min, 0)
         dep_seconds = dep_hour * 3600 + dep_min * 60
-        baseline_elapsed -= dep_seconds
-        if baseline_elapsed < 0:
-            baseline_elapsed = 0
-        delta = pred_delta[idx]
-        final_elapsed = baseline_elapsed + delta
-        if final_elapsed < 0:
-            final_elapsed = 0
-        eta_time = dep_time + timedelta(seconds=int(final_elapsed))
-        eta_time_str = eta_time.strftime("%H:%M:%S")
+        elapsed = max(0, baseline_elapsed - dep_seconds + pred[idx])
+        eta_time = dep_time + timedelta(seconds=int(elapsed))
         if stdid_hhmm not in eta_table:
             eta_table[stdid_hhmm] = {}
-        eta_table[stdid_hhmm][stop_ord] = eta_time_str
+        eta_table[stdid_hhmm][stop_ord] = eta_time.strftime("%H:%M:%S")
 
     eta_table = postprocess_eta_table(eta_table, baseline_table, REALTIME_BUS_DIR)
 
@@ -243,7 +228,7 @@ def main():
         json.dump(eta_table, f, indent=2, ensure_ascii=False)
 
     print(f"ETA Table 생성 완료: {SAVE_JSON_PATH}")
-    print("총 소용시간: ", time.time() - start_time, "sec")
+    print("총 소요시간: ", time.time() - start_time, "sec")
 
 if __name__ == "__main__":
     main()
