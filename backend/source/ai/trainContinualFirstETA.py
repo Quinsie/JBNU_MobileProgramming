@@ -124,7 +124,7 @@ def train():
             total_loss += loss.item() * route_id.size(0)
 
         scheduler.step()
-        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}")
+        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}, LR: {scheduler.get_last_lr()[0]:.6f}")
 
     os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
     torch.save(model.state_dict(), MODEL_SAVE_PATH)
