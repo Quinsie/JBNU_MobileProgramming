@@ -95,7 +95,7 @@ def fill_all_missing():
         return
 
     date = entries[0]["datetime"].strftime("%Y%m%d")
-    log("fillNullWeather", f"어제 날짜 {date} 총 {len(entries)}개 파일 처리")
+    log("fillNullWeather", f"총 {len(entries)}개 파일 처리")
 
     for i, entry in enumerate(entries):
         current_data = entry["data"]
