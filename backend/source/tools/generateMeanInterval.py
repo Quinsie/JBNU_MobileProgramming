@@ -34,8 +34,8 @@ else:
 
 # 누적 구조 초기화
 interval_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))  # stop_id → group → [sum, num]
-weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))  # stop_id → wd
-timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))  # stop_id → tg
+weekday_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))  # stop_id → str(weekday)
+timegroup_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))  # stop_id → str(timegroup)
 total_sum = defaultdict(lambda: [0.0, 0])
 
 # 계산 시작
@@ -68,12 +68,12 @@ for stop_id, route_list in stop_index.items():
 
                     if group.startswith("wd_tg_"):
                         _, _, wd, tg = group.split("_")
-                        wd = int(wd)
-                        tg = int(tg)
-                        weekday_sum[stop_id][wd][0] += diff
-                        weekday_sum[stop_id][wd][1] += 1
-                        timegroup_sum[stop_id][tg][0] += diff
-                        timegroup_sum[stop_id][tg][1] += 1
+                        weekday_key = str(wd)
+                        timegroup_key = str(tg)
+                        weekday_sum[stop_id][weekday_key][0] += diff
+                        weekday_sum[stop_id][weekday_key][1] += 1
+                        timegroup_sum[stop_id][timegroup_key][0] += diff
+                        timegroup_sum[stop_id][timegroup_key][1] += 1
                         total_sum[stop_id][0] += diff
                         total_sum[stop_id][1] += 1
 
@@ -91,14 +91,14 @@ for stop_id in interval_sum:
             mean_interval[stop_id][group] = {"mean": s / n, "num": n}
 
 for stop_id in weekday_sum:
-    for wd, (s, n) in weekday_sum[stop_id].items():
+    for wd_key, (s, n) in weekday_sum[stop_id].items():
         if n > 0:
-            mean_interval[stop_id][f"weekday_{wd}"] = {"mean": s / n, "num": n}
+            mean_interval[stop_id][f"weekday_{wd_key}"] = {"mean": s / n, "num": n}
 
 for stop_id in timegroup_sum:
-    for tg, (s, n) in timegroup_sum[stop_id].items():
+    for tg_key, (s, n) in timegroup_sum[stop_id].items():
         if n > 0:
-            mean_interval[stop_id][f"timegroup_{tg}"] = {"mean": s / n, "num": n}
+            mean_interval[stop_id][f"timegroup_{tg_key}"] = {"mean": s / n, "num": n}
 
 for stop_id, (s, n) in total_sum.items():
     if n > 0:

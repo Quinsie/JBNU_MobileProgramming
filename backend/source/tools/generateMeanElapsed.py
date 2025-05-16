@@ -51,8 +51,8 @@ def process_file(args):
     time_str = filename.replace(".json", "").split("_")[-1]  # HHMM
     departure_time = datetime.strptime(f"{TARGET_DATE}_{time_str}", "%Y%m%d_%H%M")
 
-    wd = get_weekday_type(departure_time)
-    tg = get_time_group(departure_time) + 1
+    wd = str(get_weekday_type(departure_time))
+    tg = str(get_time_group(departure_time) + 1)
     group = f"wd_tg_{wd}_{tg}"
 
     with open(file_path, "r", encoding="utf-8") as f:
