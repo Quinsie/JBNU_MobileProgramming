@@ -33,9 +33,9 @@ else:
     prev_data = {}
 
 # 누적 구조 초기화
-interval_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))  # stop_id → group → [sum, num]
-weekday_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))  # stop_id → str(weekday)
-timegroup_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))  # stop_id → str(timegroup)
+interval_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+weekday_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+timegroup_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
 total_sum = defaultdict(lambda: [0.0, 0])
 
 # 계산 시작
@@ -68,20 +68,32 @@ for stop_id, route_list in stop_index.items():
 
                     if group.startswith("wd_tg_"):
                         _, _, wd, tg = group.split("_")
-                        weekday_key = str(wd)
-                        timegroup_key = str(tg)
-                        weekday_sum[stop_id][weekday_key][0] += diff
-                        weekday_sum[stop_id][weekday_key][1] += 1
-                        timegroup_sum[stop_id][timegroup_key][0] += diff
-                        timegroup_sum[stop_id][timegroup_key][1] += 1
+                        weekday_sum[stop_id][wd][0] += diff
+                        weekday_sum[stop_id][wd][1] += 1
+                        timegroup_sum[stop_id][tg][0] += diff
+                        timegroup_sum[stop_id][tg][1] += 1
                         total_sum[stop_id][0] += diff
                         total_sum[stop_id][1] += 1
 
 # append 모드 누적 반영
 for stop_id in prev_data:
     for group, val in prev_data[stop_id].items():
-        interval_sum[stop_id][group][0] += val["mean"] * val["num"]
-        interval_sum[stop_id][group][1] += val["num"]
+        s = val["mean"] * val["num"]
+        n = val["num"]
+        interval_sum[stop_id][group][0] += s
+        interval_sum[stop_id][group][1] += n
+
+        if group.startswith("wd_tg_"):
+            try:
+                _, _, wd, tg = group.split("_")
+            except:
+                continue
+            weekday_sum[stop_id][wd][0] += s
+            weekday_sum[stop_id][wd][1] += n
+            timegroup_sum[stop_id][tg][0] += s
+            timegroup_sum[stop_id][tg][1] += n
+            total_sum[stop_id][0] += s
+            total_sum[stop_id][1] += n
 
 # 결과 정리
 mean_interval = defaultdict(dict)

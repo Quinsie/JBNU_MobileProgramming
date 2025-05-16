@@ -99,23 +99,49 @@ if __name__ == "__main__":
         for result in pool.imap_unordered(process_file, tasks, chunksize=50):
             all_results.extend(result)
 
-    group_sum = defaultdict(lambda: [0.0, 0])  # (stdid, ord, group) -> [sum, count]
-    weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))  # [stdid][ord][wd]
-    timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))  # [stdid][ord][tg]
+    group_sum = defaultdict(lambda: [0.0, 0])
+    weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
+    timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
     total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
 
     for (stdid, ord_val, group, wd, tg), elapsed in all_results:
         group_sum[(stdid, ord_val, group)][0] += elapsed
         group_sum[(stdid, ord_val, group)][1] += 1
-
         weekday_sum[stdid][ord_val][wd][0] += elapsed
         weekday_sum[stdid][ord_val][wd][1] += 1
-
         timegroup_sum[stdid][ord_val][tg][0] += elapsed
         timegroup_sum[stdid][ord_val][tg][1] += 1
-
         total_sum[stdid][ord_val][0] += elapsed
         total_sum[stdid][ord_val][1] += 1
+
+    # append 모드 누적
+    if MODE == "append":
+        prev_date = (datetime.strptime(TARGET_DATE, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
+        prev_path = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{prev_date}.json")
+        if os.path.exists(prev_path):
+            with open(prev_path, "r", encoding="utf-8") as f:
+                prev_data = json.load(f)
+            for stdid, ord_dict in prev_data.items():
+                for ord_str, group_dict in ord_dict.items():
+                    ord_val = int(ord_str)
+                    for group_key, val in group_dict.items():
+                        if not group_key.startswith("wd_tg_"):
+                            continue
+                        s, n = val["mean"] * val["num"], val["num"]
+                        group_sum[(stdid, ord_val, group_key)][0] += s
+                        group_sum[(stdid, ord_val, group_key)][1] += n
+
+                        try:
+                            _, _, wd, tg = group_key.split("_")
+                        except:
+                            continue
+
+                        weekday_sum[stdid][ord_val][wd][0] += s
+                        weekday_sum[stdid][ord_val][wd][1] += n
+                        timegroup_sum[stdid][ord_val][tg][0] += s
+                        timegroup_sum[stdid][ord_val][tg][1] += n
+                        total_sum[stdid][ord_val][0] += s
+                        total_sum[stdid][ord_val][1] += n
 
     mean_elapsed = defaultdict(lambda: defaultdict(dict))
 
