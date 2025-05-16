@@ -75,6 +75,29 @@ for stop_id in interval_sum:
         if n > 0:
             mean_interval[stop_id][group] = {"mean": s / n, "num": n}
 
+# weekday_* 계산
+for stop_id in mean_interval:
+    weekday_sum = {"1": [0.0, 0], "2": [0.0, 0], "3": [0.0, 0]}
+    for group in mean_interval[stop_id]:
+        if group.startswith("wd_tg_"):
+            parts = group.split("_")
+            wd = parts[2]  # weekday number
+            s = mean_interval[stop_id][group]["mean"] * mean_interval[stop_id][group]["num"]
+            n = mean_interval[stop_id][group]["num"]
+            weekday_sum[wd][0] += s
+            weekday_sum[wd][1] += n
+    for wd, (s, n) in weekday_sum.items():
+        if n > 0:
+            mean_interval[stop_id][f"weekday_{wd}"] = {"mean": s / n, "num": n}
+
+    # total
+    total_s, total_n = 0.0, 0
+    for wd in ["1", "2", "3"]:
+        total_s += weekday_sum[wd][0]
+        total_n += weekday_sum[wd][1]
+    if total_n > 0:
+        mean_interval[stop_id]["total"] = {"mean": total_s / total_n, "num": total_n}
+
 with open(SAVE_PATH, "w", encoding="utf-8") as f:
     json.dump(mean_interval, f, ensure_ascii=False, indent=2)
 
