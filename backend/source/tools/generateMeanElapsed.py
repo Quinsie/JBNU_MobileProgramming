@@ -19,7 +19,7 @@ SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{TA
 os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
 from source.utils.getDayType import getDayType
 
-# 시간대 그룹핑 (8단계)
+# 시간대 그룹 (8단계)
 def get_time_group(departure_time):
     minutes = departure_time.hour * 60 + departure_time.minute
     if 330 <= minutes < 420: return 1
