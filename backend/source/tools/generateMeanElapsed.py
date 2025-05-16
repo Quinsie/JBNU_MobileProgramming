@@ -107,10 +107,10 @@ if __name__ == "__main__":
     for (stdid, ord_val, group, wd, tg), elapsed in all_results:
         group_sum[(stdid, ord_val, group)][0] += elapsed
         group_sum[(stdid, ord_val, group)][1] += 1
-        weekday_sum[stdid][ord_val][wd][0] += elapsed
-        weekday_sum[stdid][ord_val][wd][1] += 1
-        timegroup_sum[stdid][ord_val][tg][0] += elapsed
-        timegroup_sum[stdid][ord_val][tg][1] += 1
+        weekday_sum[stdid][ord_val][str(wd)][0] += elapsed
+        weekday_sum[stdid][ord_val][str(wd)][1] += 1
+        timegroup_sum[stdid][ord_val][str(tg)][0] += elapsed
+        timegroup_sum[stdid][ord_val][str(tg)][1] += 1
         total_sum[stdid][ord_val][0] += elapsed
         total_sum[stdid][ord_val][1] += 1
 
@@ -136,10 +136,10 @@ if __name__ == "__main__":
                         except:
                             continue
 
-                        weekday_sum[stdid][ord_val][wd][0] += s
-                        weekday_sum[stdid][ord_val][wd][1] += n
-                        timegroup_sum[stdid][ord_val][tg][0] += s
-                        timegroup_sum[stdid][ord_val][tg][1] += n
+                        weekday_sum[stdid][ord_val][str(wd)][0] += s
+                        weekday_sum[stdid][ord_val][str(wd)][1] += n
+                        timegroup_sum[stdid][ord_val][str(tg)][0] += s
+                        timegroup_sum[stdid][ord_val][str(tg)][1] += n
                         total_sum[stdid][ord_val][0] += s
                         total_sum[stdid][ord_val][1] += n
 
