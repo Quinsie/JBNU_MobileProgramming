@@ -25,7 +25,6 @@ with open(ELAPSED_PATH, "r", encoding="utf-8") as f:
 with open(STOP_INDEX_PATH, "r", encoding="utf-8") as f:
     stop_index = json.load(f)
 
-# 전일 mean_interval 누적용
 if MODE == "append" and os.path.exists(PREV_PATH):
     with open(PREV_PATH, "r", encoding="utf-8") as f:
         prev_data = json.load(f)
@@ -34,11 +33,8 @@ else:
 
 # 누적 구조 초기화
 interval_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-weekday_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-timegroup_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-total_sum = defaultdict(lambda: [0.0, 0])
 
-# 계산 시작
+# wd_tg_* 기반 interval 생성
 for stop_id, route_list in stop_index.items():
     for entry in route_list:
         stdid = entry.get("stdid")
@@ -54,68 +50,75 @@ for stop_id, route_list in stop_index.items():
         if ord_str not in mean_elapsed[stdid] or ord_prev_str not in mean_elapsed[stdid]:
             continue
 
-        for group in mean_elapsed[stdid][ord_str]:
+        groups = mean_elapsed[stdid][ord_str].keys()
+        for group in groups:
+            if not group.startswith("wd_tg_"):
+                continue
             if group not in mean_elapsed[stdid][ord_prev_str]:
                 continue
+
             v1 = mean_elapsed[stdid][ord_str][group]
             v0 = mean_elapsed[stdid][ord_prev_str][group]
-
             if v1["num"] > 0 and v0["num"] > 0:
                 diff = v1["mean"] - v0["mean"]
                 if diff >= 0:
                     interval_sum[stop_id][group][0] += diff
                     interval_sum[stop_id][group][1] += 1
 
-                    if group.startswith("wd_tg_"):
-                        _, _, wd, tg = group.split("_")
-                        weekday_sum[stop_id][wd][0] += diff
-                        weekday_sum[stop_id][wd][1] += 1
-                        timegroup_sum[stop_id][tg][0] += diff
-                        timegroup_sum[stop_id][tg][1] += 1
-                        total_sum[stop_id][0] += diff
-                        total_sum[stop_id][1] += 1
-
-# append 모드 누적 반영
+# append 누적
 for stop_id in prev_data:
     for group, val in prev_data[stop_id].items():
-        s = val["mean"] * val["num"]
-        n = val["num"]
-        interval_sum[stop_id][group][0] += s
-        interval_sum[stop_id][group][1] += n
+        if not group.startswith("wd_tg_"):
+            continue
+        interval_sum[stop_id][group][0] += val["mean"] * val["num"]
+        interval_sum[stop_id][group][1] += val["num"]
 
-        if group.startswith("wd_tg_"):
-            try:
-                _, _, wd, tg = group.split("_")
-            except:
-                continue
-            weekday_sum[stop_id][wd][0] += s
-            weekday_sum[stop_id][wd][1] += n
-            timegroup_sum[stop_id][tg][0] += s
-            timegroup_sum[stop_id][tg][1] += n
-            total_sum[stop_id][0] += s
-            total_sum[stop_id][1] += n
-
-# 결과 정리
+# 기본 평균 기록
 mean_interval = defaultdict(dict)
 for stop_id in interval_sum:
     for group, (s, n) in interval_sum[stop_id].items():
         if n > 0:
             mean_interval[stop_id][group] = {"mean": s / n, "num": n}
 
-for stop_id in weekday_sum:
-    for wd_key, (s, n) in weekday_sum[stop_id].items():
-        if n > 0:
-            mean_interval[stop_id][f"weekday_{wd_key}"] = {"mean": s / n, "num": n}
+# weekday 누적
+for stop_id in mean_interval:
+    weekday_ids = {k.split("_")[2] for k in mean_interval[stop_id] if k.startswith("wd_tg_")}
+    for wid in weekday_ids:
+        sum_s, sum_n = 0.0, 0
+        for tg in range(1, 9):
+            k = f"wd_tg_{wid}_{tg}"
+            if k in mean_interval[stop_id]:
+                v = mean_interval[stop_id][k]
+                sum_s += v["mean"] * v["num"]
+                sum_n += v["num"]
+        if sum_n > 0:
+            mean_interval[stop_id][f"weekday_{wid}"] = {"mean": sum_s / sum_n, "num": sum_n}
 
-for stop_id in timegroup_sum:
-    for tg_key, (s, n) in timegroup_sum[stop_id].items():
-        if n > 0:
-            mean_interval[stop_id][f"timegroup_{tg_key}"] = {"mean": s / n, "num": n}
+# timegroup 누적
+for stop_id in mean_interval:
+    timegroup_ids = {k.split("_")[3] for k in mean_interval[stop_id] if k.startswith("wd_tg_")}
+    for tg in timegroup_ids:
+        sum_s, sum_n = 0.0, 0
+        for wid in range(1, 4):
+            k = f"wd_tg_{wid}_{tg}"
+            if k in mean_interval[stop_id]:
+                v = mean_interval[stop_id][k]
+                sum_s += v["mean"] * v["num"]
+                sum_n += v["num"]
+        if sum_n > 0:
+            mean_interval[stop_id][f"timegroup_{tg}"] = {"mean": sum_s / sum_n, "num": sum_n}
 
-for stop_id, (s, n) in total_sum.items():
-    if n > 0:
-        mean_interval[stop_id]["total"] = {"mean": s / n, "num": n}
+# total 누적
+for stop_id in mean_interval:
+    sum_s, sum_n = 0.0, 0
+    for k, v in mean_interval[stop_id].items():
+        if k.startswith("wd_tg_"):
+            sum_s += v["mean"] * v["num"]
+            sum_n += v["num"]
+    if sum_n > 0:
+        mean_interval[stop_id]["total"] = {"mean": sum_s / sum_n, "num": sum_n}
 
+# 저장
 with open(SAVE_PATH, "w", encoding="utf-8") as f:
     json.dump(mean_interval, f, ensure_ascii=False, indent=2)
 

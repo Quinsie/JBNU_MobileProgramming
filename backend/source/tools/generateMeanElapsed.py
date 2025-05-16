@@ -16,6 +16,7 @@ MODE = "init"  # "init" or "append"
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{TARGET_DATE}.json")
+PREV_PATH = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", (datetime.strptime(TARGET_DATE, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d") + ".json")
 os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
 from source.utils.getDayType import getDayType
 
@@ -48,7 +49,7 @@ def get_weekday_type(departure_time):
 def process_file(args):
     stdid, file_path = args
     filename = os.path.basename(file_path)
-    time_str = filename.replace(".json", "").split("_")[-1]  # HHMM
+    time_str = filename.replace(".json", "").split("_")[-1]
     departure_time = datetime.strptime(f"{TARGET_DATE}_{time_str}", "%Y%m%d_%H%M")
 
     wd = str(get_weekday_type(departure_time))
@@ -58,8 +59,8 @@ def process_file(args):
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     logs = data.get("stop_reached_logs", [])
-
     result = []
+
     if not logs or len(logs) < 2:
         return result
 
@@ -77,11 +78,11 @@ def process_file(args):
         except:
             continue
         elapsed = (arr_time - base_time).total_seconds()
-        result.append(((stdid, int(ord_val), group, wd, tg), elapsed))
+        result.append(((stdid, int(ord_val), group), elapsed))
 
     return result
 
-# 메인
+# 메인 실행
 if __name__ == "__main__":
     tasks = []
     for stdid in os.listdir(RAW_DIR):
@@ -94,74 +95,79 @@ if __name__ == "__main__":
             fpath = os.path.join(std_path, fname)
             tasks.append((stdid, fpath))
 
+    # 병렬처리
     all_results = []
     with Pool() as pool:
         for result in pool.imap_unordered(process_file, tasks, chunksize=50):
             all_results.extend(result)
 
     group_sum = defaultdict(lambda: [0.0, 0])
-    weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
-    timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
-    total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
 
-    for (stdid, ord_val, group, wd, tg), elapsed in all_results:
-        group_sum[(stdid, ord_val, group)][0] += elapsed
-        group_sum[(stdid, ord_val, group)][1] += 1
-        weekday_sum[stdid][ord_val][str(wd)][0] += elapsed
-        weekday_sum[stdid][ord_val][str(wd)][1] += 1
-        timegroup_sum[stdid][ord_val][str(tg)][0] += elapsed
-        timegroup_sum[stdid][ord_val][str(tg)][1] += 1
-        total_sum[stdid][ord_val][0] += elapsed
-        total_sum[stdid][ord_val][1] += 1
+    for key, elapsed in all_results:
+        group_sum[key][0] += elapsed
+        group_sum[key][1] += 1
 
-    # append 모드 누적
-    if MODE == "append":
-        prev_date = (datetime.strptime(TARGET_DATE, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
-        prev_path = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{prev_date}.json")
-        if os.path.exists(prev_path):
-            with open(prev_path, "r", encoding="utf-8") as f:
-                prev_data = json.load(f)
-            for stdid, ord_dict in prev_data.items():
-                for ord_str, group_dict in ord_dict.items():
-                    ord_val = int(ord_str)
-                    for group_key, val in group_dict.items():
-                        if not group_key.startswith("wd_tg_"):
-                            continue
-                        s, n = val["mean"] * val["num"], val["num"]
-                        group_sum[(stdid, ord_val, group_key)][0] += s
-                        group_sum[(stdid, ord_val, group_key)][1] += n
+    # append 모드라면 이전날 group_sum 누적
+    if MODE == "append" and os.path.exists(PREV_PATH):
+        with open(PREV_PATH, "r", encoding="utf-8") as f:
+            prev_data = json.load(f)
+        for stdid, ord_dict in prev_data.items():
+            for ord_val_str, group_dict in ord_dict.items():
+                ord_val = int(ord_val_str)
+                for group_key, val in group_dict.items():
+                    if not group_key.startswith("wd_tg_"):
+                        continue
+                    key = (stdid, ord_val, group_key)
+                    group_sum[key][0] += val["mean"] * val["num"]
+                    group_sum[key][1] += val["num"]
 
-                        try:
-                            _, _, wd, tg = group_key.split("_")
-                        except:
-                            continue
-
-                        weekday_sum[stdid][ord_val][str(wd)][0] += s
-                        weekday_sum[stdid][ord_val][str(wd)][1] += n
-                        timegroup_sum[stdid][ord_val][str(tg)][0] += s
-                        timegroup_sum[stdid][ord_val][str(tg)][1] += n
-                        total_sum[stdid][ord_val][0] += s
-                        total_sum[stdid][ord_val][1] += n
-
+    # 평균 계산
     mean_elapsed = defaultdict(lambda: defaultdict(dict))
-
     for (stdid, ord_val, group), (s, n) in group_sum.items():
         mean_elapsed[stdid][ord_val][group] = {"mean": s / n, "num": n}
 
-    for stdid in weekday_sum:
-        for ord_val in weekday_sum[stdid]:
-            for wd, (s, n) in weekday_sum[stdid][ord_val].items():
-                mean_elapsed[stdid][ord_val][f"weekday_{wd}"] = {"mean": s / n, "num": n}
+    # weekday 누적
+    for stdid in mean_elapsed:
+        for ord_val in mean_elapsed[stdid]:
+            wd_ids = {k.split("_")[2] for k in mean_elapsed[stdid][ord_val] if k.startswith("wd_tg_")}
+            for wd in wd_ids:
+                sum_s, sum_n = 0.0, 0
+                for tg in range(1, 9):
+                    k = f"wd_tg_{wd}_{tg}"
+                    if k in mean_elapsed[stdid][ord_val]:
+                        entry = mean_elapsed[stdid][ord_val][k]
+                        sum_s += entry["mean"] * entry["num"]
+                        sum_n += entry["num"]
+                if sum_n > 0:
+                    mean_elapsed[stdid][ord_val][f"weekday_{wd}"] = {"mean": sum_s / sum_n, "num": sum_n}
 
-    for stdid in timegroup_sum:
-        for ord_val in timegroup_sum[stdid]:
-            for tg, (s, n) in timegroup_sum[stdid][ord_val].items():
-                mean_elapsed[stdid][ord_val][f"timegroup_{tg}"] = {"mean": s / n, "num": n}
+    # timegroup 누적
+    for stdid in mean_elapsed:
+        for ord_val in mean_elapsed[stdid]:
+            tg_ids = {k.split("_")[3] for k in mean_elapsed[stdid][ord_val] if k.startswith("wd_tg_")}
+            for tg in tg_ids:
+                sum_s, sum_n = 0.0, 0
+                for wd in range(1, 4):
+                    k = f"wd_tg_{wd}_{tg}"
+                    if k in mean_elapsed[stdid][ord_val]:
+                        entry = mean_elapsed[stdid][ord_val][k]
+                        sum_s += entry["mean"] * entry["num"]
+                        sum_n += entry["num"]
+                if sum_n > 0:
+                    mean_elapsed[stdid][ord_val][f"timegroup_{tg}"] = {"mean": sum_s / sum_n, "num": sum_n}
 
-    for stdid in total_sum:
-        for ord_val, (s, n) in total_sum[stdid].items():
-            mean_elapsed[stdid][ord_val]["total"] = {"mean": s / n, "num": n}
+    # total 누적
+    for stdid in mean_elapsed:
+        for ord_val in mean_elapsed[stdid]:
+            sum_s, sum_n = 0.0, 0
+            for k, v in mean_elapsed[stdid][ord_val].items():
+                if k.startswith("wd_tg_"):
+                    sum_s += v["mean"] * v["num"]
+                    sum_n += v["num"]
+            if sum_n > 0:
+                mean_elapsed[stdid][ord_val]["total"] = {"mean": sum_s / sum_n, "num": sum_n}
 
+    # 저장
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(mean_elapsed, f, ensure_ascii=False, indent=2)
 
