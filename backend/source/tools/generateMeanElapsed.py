@@ -103,37 +103,38 @@ if __name__ == "__main__":
         group_sum[key][1] += 1
 
     mean_elapsed = defaultdict(lambda: defaultdict(dict))
-    weekday_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-    timegroup_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-    total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+    weekday_sum_map = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+    timegroup_sum_map = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+    total_sum_map = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
 
     for (stdid, ord_val, group), (s, n) in group_sum.items():
         mean = s / n
         mean_elapsed[stdid][ord_val][group] = {"mean": mean, "num": n}
 
-        parts = group.split("_")
-        wd = parts[2]
-        tg = parts[3]
+        if group.startswith("wd_tg_"):
+            _, _, wd, tg = group.split("_")
+            weekday_key = f"weekday_{wd}"
+            timegroup_key = f"timegroup_{tg}"
 
-        weekday_sum[stdid][ord_val][0] += s
-        weekday_sum[stdid][ord_val][1] += n
+            weekday_sum_map[stdid][ord_val][0] += s
+            weekday_sum_map[stdid][ord_val][1] += n
 
-        timegroup_sum[stdid][ord_val][0] += s
-        timegroup_sum[stdid][ord_val][1] += n
+            timegroup_sum_map[stdid][ord_val][0] += s
+            timegroup_sum_map[stdid][ord_val][1] += n
 
-        total_sum[stdid][ord_val][0] += s
-        total_sum[stdid][ord_val][1] += n
+            total_sum_map[stdid][ord_val][0] += s
+            total_sum_map[stdid][ord_val][1] += n
 
     for stdid in mean_elapsed:
         for ord_val in mean_elapsed[stdid]:
-            if ord_val in weekday_sum[stdid]:
-                s, n = weekday_sum[stdid][ord_val]
+            if ord_val in weekday_sum_map[stdid]:
+                s, n = weekday_sum_map[stdid][ord_val]
                 mean_elapsed[stdid][ord_val][f"weekday_{wd}"] = {"mean": s / n, "num": n}
-            if ord_val in timegroup_sum[stdid]:
-                s, n = timegroup_sum[stdid][ord_val]
+            if ord_val in timegroup_sum_map[stdid]:
+                s, n = timegroup_sum_map[stdid][ord_val]
                 mean_elapsed[stdid][ord_val][f"timegroup_{tg}"] = {"mean": s / n, "num": n}
-            if ord_val in total_sum[stdid]:
-                s, n = total_sum[stdid][ord_val]
+            if ord_val in total_sum_map[stdid]:
+                s, n = total_sum_map[stdid][ord_val]
                 mean_elapsed[stdid][ord_val]["total"] = {"mean": s / n, "num": n}
 
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
