@@ -24,21 +24,21 @@ from source.utils.getDayType import getDayType
 def get_time_group(departure_time):
     minutes = departure_time.hour * 60 + departure_time.minute
     if 330 <= minutes < 420:
-        return 0
-    elif 420 <= minutes < 540:
         return 1
-    elif 540 <= minutes < 690:
+    elif 420 <= minutes < 540:
         return 2
-    elif 690 <= minutes < 840:
+    elif 540 <= minutes < 690:
         return 3
-    elif 840 <= minutes < 1020:
+    elif 690 <= minutes < 840:
         return 4
-    elif 1020 <= minutes < 1140:
+    elif 840 <= minutes < 1020:
         return 5
-    elif 1140 <= minutes < 1260:
+    elif 1020 <= minutes < 1140:
         return 6
-    else:
+    elif 1140 <= minutes < 1260:
         return 7
+    else:
+        return 8
 
 # 요일 그룹핑: 1(평일), 2(토), 3(공휴일)
 def get_weekday_type(departure_time):
