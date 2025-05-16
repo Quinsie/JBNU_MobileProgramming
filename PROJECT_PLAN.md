@@ -458,7 +458,6 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
    + 추가할 수 있는 feature
    > ORD_ratio: 노선 상 상대 위치 판단 (전체 노선 흐름 중 어느 부분에 있는지)
    > mean_elapsed_at_stop: 정류장 단위의 통계 기반 baseline
-   > stop_sequence_length: 정류장 수가 많은 긴 노선 vs 짧은 노선 구분용
 
    + 너무 고차원의 임베딩은 학습이 불안정하고 과적합 위험이 있을 수 있다.
    + 반면 너무 저차원의 임베딩은 표현력이 떨어진다. 적당히 높아야 모델이 복잡한 관계를 학습할 수 있다.
@@ -477,3 +476,158 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
    + mean_elapsed_at_stop은 매일 누적 합 느낌으로 계산하면, 훨씬 적은 비용으로 계산하고, 학습 및 추론에 참조할 산술평균값을 얻어낼 수 있다.
    + stop_sequence_length또한 모델이 인식할 수 없기 때문에, ORD_ratio와 묶어서 같이 예산해서 사용하는 방법을 생각해본다.
    + 혹은 stop_squence_length를 bucket화해서 embedding처리하는 방안도 생각해본다.
+
+---
+### 2025-05-14
+#### 진행 상황
+ - 모델을 완전히 갈아엎으며, X에 들어가는 feature들을 정확하게 재정의한다.
+ - 기본적으로 모델은 "멍청하다". 내가 각 feature의 의미를 알려주는게 아닌 이상 절대로 알아차리지 못한다.
+ - 따라서 모델에게 각 feature의 의미를 정말 하나하나 다 알려줘야 하며, 의미가 엮이는 것이 있다면 concat해서 처리해야한다.
+
+ - 우선 현재까지 뽑은 X feature들이다.
+  > route_id: 노선 고유 ID
+  > node_id: 정류장 고유 ID
+  > weekday: 평일/토요일/일요일 + 공휴일
+  > departure time sin/cos: 버스 출발 시각의 주기적 표현
+  > departure time group: 시간대 그룹
+  > PTY, RN1, T1H: 날씨 예보 (학습은 관측)
+  > ORD_ratio: 노선 내 현재 상대적 위치
+  > ORD: 절대 순서 정류장 번호
+  > mean elapsed at stop: 해당 정류장 평균 소요시간 (각 stdid별, raw기반)
+  > LAT/LNG: 정류장 좌표(위/경도)
+ - feature engineering이 최우선이다. 당장은 X, y, loss를 제대로 잡는데 집중해야한다.
+ - x feature 잡고 나면, 일단 데이터가 정상인지. outlier는 없는지먼저 한번 검사해보자. 당장은 신뢰하고있지만 빗나가는 경우도 생각해야한다.
+
+ - 1차 ETA 모델 최종 Feature Set 정리
+  + [Route Related] route_id -> bus_number, direction, branch_num으로 분리.
+   * 기존 route_id는 라벨링-임베딩을 적용했는데, 이 경우 STDID를 라벨링-임베딩하는거랑 똑같은 맥락이 된다. (모든 노선 본/분선이 독립적)
+   * 그냥 의미없는짓이었음. 따라서 3개로 분리해서 각각에게 의미부여를 한다.
+   * 하지만, 각각을 독립적으로 임베딩할 경우 전혀 관련없는것들 사이에 벡터가 생길 수도 있다.
+   * 예시로, 110번 상행 본선과 5001번 하행 본선이 branch_num이 1로 같다는 이유로 비슷한 벡터가 생길 가능성이 있다.
+   * 따라서 bus_number > direction > branch_num 순으로 위계적 종속 구조를 만들어 모델에 명시적으로 반영한다.
+   * direction, branch_num은 각각 상위 요소를 조건으로 한 조건부 임베딩 구조로 설계한다.
+   * 이를 통해 같은 노선 내 상/하행끼리는 약한 연관성, 같은 방향은 강한 연관성을 띠며 다른 노선과는 완전한 분리를 할 수 있다.
+   * 결론: categorical -> embedding -> MLP 가공 후 사용.
+   * dims: bus number = 8, direction = 4, branch num = 4
+  + [Order Related] ORD, ORD_ratio, mean_elapsed
+   * 기존 모델은 현재 정류장의 순서를 이해하지 못했다. 따라서 ratio를 추가해서, "진행률 개념"을 습득할 수 있게 한다.
+   * 하지만 단순 float를 넣는다고 모델이 이걸 진행률이라고 인식할 수 없다. 멍청하다.
+   * 따라서 mini MLP로 가공하여, progress 개념을 확실히 명시해준다.
+   * ORD는 상위개념으로 확장하지 않고, STDID 개념에 종속시킨다. 이래도 route_id를 분리한 상위개념에서 비슷한 벡터를 형성한다.
+   * 그리고 추론에 있어서 도움을 주기 위해, 해당 ORD에 대한 현재까지 평균 도착시간을 입력한다.
+   * 해당 개념은 전체, 요일별, 요일+시간대별로 3중으로 입력한다.
+   * 위 3대 개념을 MLP화한다.
+   * dims: ord = 8, mean = 16 // 의미는 같지만 기능이 달라서 분리해야한다.
+  + [Location Related] node_id, mean_interval
+   * 특정 정류장을 기준으로 근처에 버스가 오래 걸리는 구간을 feature로 넣어줄 수 있다.
+   * 따라서 mean interval 도입, 얘도 3종류로 나눈다.
+   * node id는 임베딩, 그리고 mean interval은 3종 mlp를 한 뒤, 그 결과와 임베딩된 node id를 다시 mlp한다.
+   * dims: node_id = 16, mean = 8, node_context = 24 -> 16
+  + [Time Related] weekday, departure_timegroup, weekday_timegroup, departure_time_sin/cos
+   * weekday, timegroup, weekday_timegroup 3종류로 나눈다. 요일 / 시간대그룹별 / 요일+시간대그룹별로 나누고자 하는 목적.
+   * 시간의 연속성을 부여하기 위해 sin/cos로 바꾼 departure time도 넣는다.
+   * 전부 임베딩, 각 4 / 8 / 12 / 2.
+   * dims: concat = 26 -> 16
+   * time group을 강조하고싶다면 따로 분리해도 된다.
+  + [Weather Related] PTY, RN1, T1H
+   * PTY dims: 4, concat = 6 -> 8
+  + [Self Predicted] prev_pred_elapsed
+   * 전날 자신이 추론한 결과, 즉 ETA TABLE에서 값을 그대로 가져온다. 이건 학습용도이고, 추론시에는 사용하지 않는 feature다.
+   * embedding mlp dims 1 -> 4
+#### 노트
+ - embedding dim = min(50, int(category^0.25))
+
+---
+### 2025-05-15
+#### 진행 상황
+ - 1차 모델 최종 구성
+    1. 최초 학습 시작 구간
+     + 5월 5일
+     > mean_elapsed_*, mean_interval_* 관련한 평균 28종 생성을 위해 데이터 사용
+     > 해당 날짜에 대해선 별도의 학습/추론 없을 예정
+     + 5월 6일
+     > 최초 학습 시작. (replay only)
+     > self-correction 생략
+     > mean은 5월 5일 기준으로만 사용
+     > 요일이 weekday, saturday인 timegroup 0~7의 임의의 데이터 1개씩을 미래에서 추출해서 사용.
+     + 5월 7일 이후~
+     > full loop 시작.
+     >  > 전날 추론한 ETA Table과 실제 운행을 기록한 raw간에 차이로 self-correction 학습 수행
+     >  > 전날 실제 운행기록만으로 replay 학습 수행
+     >  > 학습이 종료된 후, 전날까지 데이터만으로 mean을 재계산
+     >  > 재계산된 mean과 미래 정보를 바탕으로 당일~ ETA Table을 추론
+    
+    2. X features 구조
+     + Route related
+     > bus number, direction, branch num으로 구성
+     > 각 요소들에 대해 categorical 분류 후 embedding, MLP 적용.
+     > 요소들에 대해선 계층적 종속성을 반영. bus number > direction > branch num으로 종속된다는걸 모델에 알려줘야 함.
+     > dims: 8 + 4 + 4로 16차원 구성
+     + Order related
+     > ORD_ratio, mean_elapsed로 구성
+     > ORD_ratio 단독 mini MLP 구성
+     > mean_elapsed_* 3종에 대해서 계층적 종속성을 반영한 MLP 적용. (total > weekday > weekday_timegroup)
+     > dims: ord_ratio = 8, mean_elapsed = 16
+     + Location
+     > node_id, mean_interval로 구성
+     > mean_interval_* 3종에 대해서 계층적 종속성을 반영한 MLP 적용
+     > 이후 node_id를 임베딩한 결과와 다시 fused MLP를 적용
+     > dims: node_id = 16, mean_interval = 8, concat 후 MLP로 16차원 구성성
+     + Time
+     > weekday, timegroup, weekday timegroup, departure time sin/cos로 구성
+     > 각각에 대해 embedding 적용, 각 4 / 8 / 12 / 2 dims로 구성
+     > concat 후 MLP: 16차원 구성
+     + Weather
+     > PTY, RN1, T1H로 구성
+     > PTY는 embedding (dims: 4), 나머지 둘은 float로 구성
+     > dims: concat 후 MLP 적용 = 8
+     + Self Info
+     > prev_pred_elapsed
+     > self-correction시에만 사용. 즉, replay 학습과 추론시에는 사용하지 않는다.
+     - 각각의 모든 경우에 대해 0~1 scale로 정규화를 진행할 예정.
+    
+    3. Target y 및 Loss 구성
+     + y = real_elapsed
+     > 마찬가지로, y 또한 min-max 정규화를 통해 출발부터 현재 정류장까지의 누적 시간을 표현할 예정
+     + Loss: heteroscedastic regression
+     > loss = ((y - pred_mean)**2 * exp(-pred_log_var) + pred_log_var).mean()
+     > ETA 예측과 동시에 불확실성(신뢰구간)에 대한 정보를 내포함
+     + 추가 :: 순서 제약 Loss
+     > 같은 trip 내 ORD_i < ORD_j인 경우에, pred_i < pred_j가 되도록, ReLU(pred_i - pred_j) 기반 penalty 추가
+    
+    4. Train Parameters
+     + Batch Size: 512
+     + Epoch: 15
+     + Learning Rate: 0.001
+     + Optimizer: Adam
+    
+    5. 기타 방어장치
+     + mean fallback: wd_tg 없으면 -> weekday 없으면 -> total 사용 순
+     + ETA 순서 역행 방지: 순서 제약 Loss로 해결, 추론 후 검증과 postprocess로 적용
+     + self-correction 안정화: ETA 생성 당시의 feature를 사용하여 모델이 스스로 잘못된 추론을 했다는 점을 인지하도록 훈련.
+  
+ - 위 정리를 기반으로 1차 모델을 만들기 시작.
+ - 우선 mean 28종을 2개 각각 만드는 코드를 짜야 한다.
+  + 아이디어: 각 stdid_ord별 값을 추출하는데, 해당 필드를 mean, stop_id와 num으로 구성한다. stdid_ord에는 앞 3가지와 별도로 weekday, timegroup 정보도 포함해야 한다.
+   * stop_id는 mean_interval_* 활용 시 사용 가능.
+   * num은 이후에 mean 재계산 시 중복 계산을 막기 위한 장치. 즉, 현재 저장된 mean에 num을 곱하여 sum으로 만든 뒤, 해당 값에 새로운 raw를 더하고 num도 1 증가. 이후 num으로 다시 나눠주면 mean이 된다.
+   * 즉, 우리는 그냥 각 ORD에 대한 mean을 구하는게 가장 힘들다. 이게 I/O를 가장 많이 일으키는 구간이기 때문.
+   * 따라서 각 ORD에 대한 mean만 구하면, 나머지는 금방 수행할 수 있다.
+   * 각 ORD에 대한 mean을 구한 뒤, weekday_timegroup별로 합쳐서 mean을 구한다. 여기서부터는 별도의 파일로 분리한다.
+   * 계산 방법은 최초 mean을 구하는 방식과 똑같이 한다. 각 mean에 num을 곱하여 sum으로 만든 뒤, 필요한 모든 sum을 더하고 같이 num도 더한다. 그 이후 num으로 나눠주면 새로운 mean이 된다.
+   * weekday_timegroup에 대한 mean을 구했다면, 다시 weekday에 대한 mean도 똑같은 방법으로 구한다.
+   * 마찬가지로 total도 구할 수 있다. 여기까지 하면 mean_elapsed_time 28종을 완성할 수 있다.
+   * 다시, mean_interval을 구해야한다. 여기는 살짝 다른 방법으로 구현해야한다.
+   * 최초 ORD별 mean을 구해둔 파일과, 모든 stop_id가 있는 파일을 같이 열어둔다. 이후 stop_id를 하나씩 순회한다.
+   * 모든 stop_id에 대해, 각각의 ord별 mean이 저장된곳을 순회한다. (즉, O(n^2)) 여기서 자신과 같은 stop_id를 가진 ord가 있다면, 해당 mean과 이전 ord의 mean간의 차이를 가져온다.
+   * 만약 이 n^2를 고칠 수 있는 최적의 방법이 있으면 아주 아주 좋다!!
+   * 이 때, num도 같이 가져오며 새로운 정보를 가져올 때마다의 mean 계산은 위의 방법과 동일하게 수행한다.
+   * 어...근데 생각해보다보니, 이러면 각 정류장들에 대해 28종 interval이 생기게 되는데? 연산량이 너무 많아지는건 아닐까? 갑자기 걱정이 된다.
+   * 정류장이 2573개. 각각에 대해 28종 interval이 생성.. 조금 어지러운데?
+   * 보다 보니, n^2을 획기적으로 해결할 수 있는 방법을 찾았다. 기존 갖고 있던 파일중에 stop_to_routes라는 폴더가 있었다.
+   * 안에는 각 정류장별로 지나가는 특정 노선의 정보를 담게 만든 파일이다. 단, 안에는 stdid밖에 없다. 따라서 이 정보를 조금 수정할 필요가 있어보인다. 내부에 route_id, ord를 포함시키면 즉시 접근이 가능하다고 본다.
+   * 해당 기능을 수행하는 코드는 buildStopIndex.py이다. 이걸 조금 수정하면 내가 원하는 결과를 얻을 수 있을 것. (각 정류장ID별 json 파일 내부에 : 지나가는 버스에 대한 정보를 담고 있음.)
+   * 하지만 2573개 정류장 각각에 대해 28종 interval을 생성하는 문제는 한번 생각해볼 필요가 있어보인다. 크게 상관이 없나 싶긴 하지만...
+   * 암튼 하게 된다면, 모든 정류장 각각에 대해 weekday_timegroup별 mean을 만들 수 있다. 이걸 다시 weekday별로, 다시 total로 만들 수 있다. 위와 똑같은 논리로.
+ - 여기까지 된다면, 1차 학습을 위한 모델을 짜야 한다. 이와 같이 전처리 코드도 짜야 한다.
+ - 이후 추론을 하게 되는데, 음... 약간 이 과정에서 기존에 하던 postprocess에 관한 생각을 조금 해봐야 할듯 싶다. 기존과 방향이 완전히 달라진 탓에, 기존 방법을 유지할 수 없을 것으로 보인다.
