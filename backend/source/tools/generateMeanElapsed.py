@@ -1,19 +1,22 @@
 # backend/source/tools/generateMeanElapsed.py
 
 import os
+import sys
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
 from multiprocessing import Pool
 
 # 날짜 설정 (YYYYMMDD)
-TARGET_DATE = "20250516"
+TARGET_DATE = "20250505"
+MODE = "init"  # "init" or "append"
 
 # 경로 설정
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{TARGET_DATE}.json")
 os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
+from source.utils.getDayType import getDayType
 
 # 시간대 그룹핑 (8단계)
 def get_time_group(departure_time):
@@ -37,15 +40,10 @@ def get_time_group(departure_time):
 
 # 요일 그룹핑: 1(평일), 2(토), 3(공휴일)
 def get_weekday_type(departure_time):
-    weekday = departure_time.weekday()
-    if weekday < 5:
-        return 1
-    elif weekday == 5:
-        return 2
-    else:
-        return 3
+    day_type = getDayType(departure_time)  # 'weekday' | 'saturday' | 'holiday'
+    return {'weekday': 1, 'saturday': 2, 'holiday': 3}[day_type]
 
-# 파일 1개 처리 (결과: List[((stdid, ord, group), elapsed)])
+# 파일 1개 처리
 def process_file(args):
     stdid, file_path = args
     filename = os.path.basename(file_path)
@@ -76,13 +74,12 @@ def process_file(args):
         except:
             continue
         elapsed = (arr_time - base_time).total_seconds()
-        result.append(((stdid, ord_val, group), elapsed))
+        result.append(((stdid, int(ord_val), group), elapsed))
 
     return result
 
 # 메인
 if __name__ == "__main__":
-    # 전체 파일 수집
     tasks = []
     for stdid in os.listdir(RAW_DIR):
         std_path = os.path.join(RAW_DIR, stdid)
@@ -94,19 +91,34 @@ if __name__ == "__main__":
             fpath = os.path.join(std_path, fname)
             tasks.append((stdid, fpath))
 
-    # 병렬 처리: 모든 결과 리스트로 받음
     all_results = []
     with Pool() as pool:
         for result in pool.imap_unordered(process_file, tasks, chunksize=50):
             all_results.extend(result)
 
-    # 평균 누적
     group_sum = defaultdict(lambda: [0.0, 0])  # (stdid, ord, group) -> [sum, count]
     for key, elapsed in all_results:
         group_sum[key][0] += elapsed
         group_sum[key][1] += 1
 
-    # wd_tg_* → weekday_* / total
+    # 기존 mean 로드 (if append)
+    if MODE == "append":
+        prev_date = (datetime.strptime(TARGET_DATE, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
+        prev_path = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{prev_date}.json")
+        if os.path.exists(prev_path):
+            with open(prev_path, "r", encoding="utf-8") as f:
+                prev_data = json.load(f)
+            for stdid, ord_dict in prev_data.items():
+                for ord_val, group_dict in ord_dict.items():
+                    ord_val = int(ord_val)
+                    for group_key, val in group_dict.items():
+                        if not group_key.startswith("wd_tg_"):
+                            continue
+                        key = (stdid, ord_val, group_key)
+                        group_sum[key][0] += val["mean"] * val["num"]
+                        group_sum[key][1] += val["num"]
+
+    # wd_tg_* 누적 평균
     mean_elapsed = defaultdict(lambda: defaultdict(dict))
     weekday_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
     total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
@@ -122,19 +134,17 @@ if __name__ == "__main__":
         total_sum[stdid][ord_val][0] += s
         total_sum[stdid][ord_val][1] += n
 
-    # weekday_1~3 저장
     for stdid in weekday_sum:
         for ord_val in weekday_sum[stdid]:
             s, n = weekday_sum[stdid][ord_val]
-            mean_elapsed[stdid][ord_val][f"weekday_{group.split('_')[2]}"] = {"mean": s / n, "num": n}
+            weekday_key = f"weekday_{1}" if n > 0 else "weekday_0"  # 기본값 방지용
+            mean_elapsed[stdid][ord_val][weekday_key] = {"mean": s / n, "num": n}
 
-    # total 저장
     for stdid in total_sum:
         for ord_val in total_sum[stdid]:
             s, n = total_sum[stdid][ord_val]
             mean_elapsed[stdid][ord_val]["total"] = {"mean": s / n, "num": n}
 
-    # 저장
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(mean_elapsed, f, ensure_ascii=False, indent=2)
 
