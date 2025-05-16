@@ -8,8 +8,8 @@ from collections import defaultdict
 from multiprocessing import Pool
 
 # 날짜 설정 (YYYYMMDD)
-TARGET_DATE = "20250506"
-MODE = "append"  # "init" or "append"
+TARGET_DATE = "20250505"
+MODE = "init"  # "init" or "append"
 
 # 경로 설정
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
@@ -137,8 +137,17 @@ if __name__ == "__main__":
     for stdid in weekday_sum:
         for ord_val in weekday_sum[stdid]:
             s, n = weekday_sum[stdid][ord_val]
-            weekday_key = f"weekday_{1}" if n > 0 else "weekday_0"  # 기본값 방지용
-            mean_elapsed[stdid][ord_val][weekday_key] = {"mean": s / n, "num": n}
+            weekday_groups = [k for k in mean_elapsed[stdid][ord_val] if k.startswith("wd_tg_")]
+            weekday_ids = {k.split("_")[2] for k in weekday_groups}
+            for wid in weekday_ids:
+                sum_s, sum_n = 0.0, 0
+                for tg in range(1, 9):
+                    key = f"wd_tg_{wid}_{tg}"
+                    if key in mean_elapsed[stdid][ord_val]:
+                        sum_s += mean_elapsed[stdid][ord_val][key]["mean"] * mean_elapsed[stdid][ord_val][key]["num"]
+                        sum_n += mean_elapsed[stdid][ord_val][key]["num"]
+                if sum_n > 0:
+                    mean_elapsed[stdid][ord_val][f"weekday_{wid}"] = {"mean": sum_s / sum_n, "num": sum_n}
 
     for stdid in total_sum:
         for ord_val in total_sum[stdid]:
