@@ -9,8 +9,8 @@ from multiprocessing import Pool
 
 # 날짜 설정 (YYYYMMDD)
 # TARGET_DATE = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
-TARGET_DATE = "20250506"
-MODE = "append"  # "init" or "append"
+TARGET_DATE = "20250505"
+MODE = "init"  # "init" or "append"
 
 # 경로 설정
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
@@ -51,7 +51,9 @@ def process_file(args):
     time_str = filename.replace(".json", "").split("_")[-1]  # HHMM
     departure_time = datetime.strptime(f"{TARGET_DATE}_{time_str}", "%Y%m%d_%H%M")
 
-    group = f"wd_tg_{get_weekday_type(departure_time)}_{get_time_group(departure_time) + 1}"
+    wd = get_weekday_type(departure_time)
+    tg = get_time_group(departure_time) + 1
+    group = f"wd_tg_{wd}_{tg}"
 
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -75,7 +77,7 @@ def process_file(args):
         except:
             continue
         elapsed = (arr_time - base_time).total_seconds()
-        result.append(((stdid, int(ord_val), group), elapsed))
+        result.append(((stdid, int(ord_val), group, wd, tg), elapsed))
 
     return result
 
@@ -98,44 +100,41 @@ if __name__ == "__main__":
             all_results.extend(result)
 
     group_sum = defaultdict(lambda: [0.0, 0])  # (stdid, ord, group) -> [sum, count]
-    for key, elapsed in all_results:
-        group_sum[key][0] += elapsed
-        group_sum[key][1] += 1
+    weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))  # [stdid][ord][wd]
+    timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))  # [stdid][ord][tg]
+    total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+
+    for (stdid, ord_val, group, wd, tg), elapsed in all_results:
+        group_sum[(stdid, ord_val, group)][0] += elapsed
+        group_sum[(stdid, ord_val, group)][1] += 1
+
+        weekday_sum[stdid][ord_val][wd][0] += elapsed
+        weekday_sum[stdid][ord_val][wd][1] += 1
+
+        timegroup_sum[stdid][ord_val][tg][0] += elapsed
+        timegroup_sum[stdid][ord_val][tg][1] += 1
+
+        total_sum[stdid][ord_val][0] += elapsed
+        total_sum[stdid][ord_val][1] += 1
 
     mean_elapsed = defaultdict(lambda: defaultdict(dict))
-    weekday_sum_map = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-    timegroup_sum_map = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-    total_sum_map = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
 
     for (stdid, ord_val, group), (s, n) in group_sum.items():
-        mean = s / n
-        mean_elapsed[stdid][ord_val][group] = {"mean": mean, "num": n}
+        mean_elapsed[stdid][ord_val][group] = {"mean": s / n, "num": n}
 
-        if group.startswith("wd_tg_"):
-            _, _, wd, tg = group.split("_")
-            weekday_key = f"weekday_{wd}"
-            timegroup_key = f"timegroup_{tg}"
-
-            weekday_sum_map[stdid][ord_val][0] += s
-            weekday_sum_map[stdid][ord_val][1] += n
-
-            timegroup_sum_map[stdid][ord_val][0] += s
-            timegroup_sum_map[stdid][ord_val][1] += n
-
-            total_sum_map[stdid][ord_val][0] += s
-            total_sum_map[stdid][ord_val][1] += n
-
-    for stdid in mean_elapsed:
-        for ord_val in mean_elapsed[stdid]:
-            if ord_val in weekday_sum_map[stdid]:
-                s, n = weekday_sum_map[stdid][ord_val]
+    for stdid in weekday_sum:
+        for ord_val in weekday_sum[stdid]:
+            for wd, (s, n) in weekday_sum[stdid][ord_val].items():
                 mean_elapsed[stdid][ord_val][f"weekday_{wd}"] = {"mean": s / n, "num": n}
-            if ord_val in timegroup_sum_map[stdid]:
-                s, n = timegroup_sum_map[stdid][ord_val]
+
+    for stdid in timegroup_sum:
+        for ord_val in timegroup_sum[stdid]:
+            for tg, (s, n) in timegroup_sum[stdid][ord_val].items():
                 mean_elapsed[stdid][ord_val][f"timegroup_{tg}"] = {"mean": s / n, "num": n}
-            if ord_val in total_sum_map[stdid]:
-                s, n = total_sum_map[stdid][ord_val]
-                mean_elapsed[stdid][ord_val]["total"] = {"mean": s / n, "num": n}
+
+    for stdid in total_sum:
+        for ord_val, (s, n) in total_sum[stdid].items():
+            mean_elapsed[stdid][ord_val]["total"] = {"mean": s / n, "num": n}
 
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(mean_elapsed, f, ensure_ascii=False, indent=2)
