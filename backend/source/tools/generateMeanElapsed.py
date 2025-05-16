@@ -8,8 +8,8 @@ from collections import defaultdict
 from multiprocessing import Pool
 
 # 날짜 설정 (YYYYMMDD)
-TARGET_DATE = "20250505"
-MODE = "init"  # "init" or "append"
+TARGET_DATE = "20250506"
+MODE = "append"  # "init" or "append"
 
 # 경로 설정
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
