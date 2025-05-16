@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 # 날짜 설정
+# TARGET_DATE = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
 TARGET_DATE = "20250505"
 MODE = "init"  # or "append"
 
@@ -75,26 +76,31 @@ for stop_id in interval_sum:
         if n > 0:
             mean_interval[stop_id][group] = {"mean": s / n, "num": n}
 
-# weekday_* 계산
+# weekday_*, timegroup_*, total 계산
 for stop_id in mean_interval:
     weekday_sum = {"1": [0.0, 0], "2": [0.0, 0], "3": [0.0, 0]}
+    timegroup_sum = {str(i): [0.0, 0] for i in range(1, 9)}
+
     for group in mean_interval[stop_id]:
         if group.startswith("wd_tg_"):
-            parts = group.split("_")
-            wd = parts[2]  # weekday number
+            _, _, wd, tg = group.split("_")
             s = mean_interval[stop_id][group]["mean"] * mean_interval[stop_id][group]["num"]
             n = mean_interval[stop_id][group]["num"]
             weekday_sum[wd][0] += s
             weekday_sum[wd][1] += n
+            timegroup_sum[tg][0] += s
+            timegroup_sum[tg][1] += n
+
     for wd, (s, n) in weekday_sum.items():
         if n > 0:
             mean_interval[stop_id][f"weekday_{wd}"] = {"mean": s / n, "num": n}
 
-    # total
-    total_s, total_n = 0.0, 0
-    for wd in ["1", "2", "3"]:
-        total_s += weekday_sum[wd][0]
-        total_n += weekday_sum[wd][1]
+    for tg, (s, n) in timegroup_sum.items():
+        if n > 0:
+            mean_interval[stop_id][f"timegroup_{tg}"] = {"mean": s / n, "num": n}
+
+    total_s = sum(weekday_sum[wd][0] for wd in weekday_sum)
+    total_n = sum(weekday_sum[wd][1] for wd in weekday_sum)
     if total_n > 0:
         mean_interval[stop_id]["total"] = {"mean": total_s / total_n, "num": total_n}
 

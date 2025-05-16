@@ -631,3 +631,12 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
    * 암튼 하게 된다면, 모든 정류장 각각에 대해 weekday_timegroup별 mean을 만들 수 있다. 이걸 다시 weekday별로, 다시 total로 만들 수 있다. 위와 똑같은 논리로.
  - 여기까지 된다면, 1차 학습을 위한 모델을 짜야 한다. 이와 같이 전처리 코드도 짜야 한다.
  - 이후 추론을 하게 되는데, 음... 약간 이 과정에서 기존에 하던 postprocess에 관한 생각을 조금 해봐야 할듯 싶다. 기존과 방향이 완전히 달라진 탓에, 기존 방법을 유지할 수 없을 것으로 보인다.
+
+---
+### 2025-05-16
+#### 진행 상황
+ - mean_interval, mean_elapsed 완성.
+ - 해당 두 파일은 날짜별로 생성되며, elapsed는 stdid별 ord에 대한 28종 mean을, interval은 stop_id당 28종 mean을 구한다.
+ - 해당 파일을 만들기 위해 기존 buildStopIndex.py 파일을 수정했다. (stop id당 stdid, ord를 포함하도록)
+ - 경우에 따라 만약 모델이 답도 없을 정도로 추론을 못 한다면... 진짜 그냥 mean값으로 1차 모델로서 활용해야할지도 모른다.
+ - mean_interval, mean_elapsed를 36종으로 확장했다. 기존 중위계층에 weekday만 있었던걸 timegroup을 독립적으로 추가해줬다.
