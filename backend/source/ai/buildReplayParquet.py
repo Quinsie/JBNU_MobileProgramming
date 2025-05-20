@@ -133,6 +133,9 @@ def process_single_file(args):
         if f"weekday_{weekday}" not in me_dict:
             print("⚠️ weekday key 누락됨", stdid, ord, me_dict.keys())
 
+        if str(ord) not in mean_elapsed.get(stdid, {}):
+            print("🚨 평균에 없는 ord 접근 시도", stdid, ord)
+
         stop_id = ord_lookup.get((stdid, ord), None)
         if not stop_id:
             return []
