@@ -11,7 +11,7 @@ class FirstETAModel(nn.Module):
         # ===== Embedding Tables =====
         self.bus_emb = nn.Embedding(200, 8)         # bus_number
         self.dir_raw_emb = nn.Embedding(2, 4)        # direction raw
-        self.branch_raw_emb = nn.Embedding(6, 4)    # branch_num raw
+        self.branch_raw_emb = nn.Embedding(9, 4)    # branch_num raw
 
         self.node_emb = nn.Embedding(3000, 8)         # node_id
 
@@ -19,7 +19,7 @@ class FirstETAModel(nn.Module):
 
         self.weekday_index_emb = nn.Embedding(3, 4)
         self.timegroup_index_emb = nn.Embedding(8, 8)
-        self.wd_tg_index_emb = nn.Embedding(24, 12)
+        self.wd_tg_index_emb = nn.Embedding(32, 12)
 
         self.weekday_emb = self.weekday_index_emb
         self.timegroup_emb = self.timegroup_index_emb
@@ -125,7 +125,7 @@ class FirstETAModel(nn.Module):
             prev_eta = self.prev_pred_mlp(x['prev_pred_elapsed'])  # (B, 16)
             full_input = torch.cat([route_context, node_context, time_context, weather_context, prev_eta], dim=1)  # (B, 88)
             h = self.final_mlp_review(full_input)
-            
+
         pred_mean = self.head_mean(h)
         pred_log_var = self.head_logvar(h)
         return pred_mean, pred_log_var
