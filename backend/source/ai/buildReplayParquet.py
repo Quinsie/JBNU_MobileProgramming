@@ -106,7 +106,7 @@ def process_single_file(args):
 
     base_time = datetime.strptime(logs[0]['time'], "%Y-%m-%d %H:%M:%S")
     day_type = getDayType(base_time)
-    weekday = {"weekday": 0, "saturday": 1, "holiday": 2}[day_type]
+    weekday = {"weekday": 1, "saturday": 2, "holiday": 3}[day_type]
     timegroup = get_time_group(base_time)
     wd_tg = weekday * 8 + (timegroup - 1)
     max_ord = max([r['ord'] for r in logs])
