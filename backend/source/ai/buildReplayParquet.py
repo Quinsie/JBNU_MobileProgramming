@@ -130,9 +130,6 @@ def process_single_file(args):
         else:
             me_wd_tg = me_total
 
-        if f"weekday_{weekday}" not in me_dict:
-            print("⚠️ weekday key 누락됨", stdid, ord, me_dict.keys())
-
         stop_id = ord_lookup.get((stdid, ord), None)
         if not stop_id:
             return []
