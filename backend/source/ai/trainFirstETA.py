@@ -1,28 +1,23 @@
 # backend/source/ai/trainFirstETA.py
 
 import os
-import sys
 import time
 import torch
+import argparse
 import pandas as pd
 import torch.nn as nn
 from collections import defaultdict
 from datetime import datetime, timedelta
 from torch.utils.data import DataLoader, TensorDataset
 
-# === 날짜 설정 ===
-# DATE = 
-DATE = datetime.now().strftime("%Y%m%d")
-YESTERDAY = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
-
 # === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 MODEL_DIR = os.path.join(BASE_DIR, "data", "model", "firstETA")
-MODEL_SAVE_PATH_1 = os.path.join(MODEL_DIR, "self_review", f"{DATE}.pth")
-MODEL_SAVE_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{DATE}.pth")
-SELF_REVIEW_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review", f"{DATE}.parquet")
-REPLAY_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay", f"{DATE}.parquet")
-YESTERDAY_MODEL_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{YESTERDAY}.pth")
+ODEL_SAVE_PATH_1 = None
+MODEL_SAVE_PATH_2 = None
+SELF_REVIEW_PATH = None
+REPLAY_PATH = None
+YESTERDAY_MODEL_PATH_2 = None
 from source.ai.FirstETAModel import FirstETAModel
 
 # === 하이퍼파라미터 ===
@@ -125,9 +120,20 @@ def train_model(phase: str):
 
 # === main 함수 진입점 ===
 if __name__ == "__main__":
-    if len(sys.argv) != 2 or sys.argv[1] not in ["self_review", "replay"]:
-        print("Usage: python trainFirstETA.py [self_review|replay]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", required=True, choices=["self_review", "replay"], help="학습 단계: self_review 또는 replay")
+    parser.add_argument("--date", required=True, help="학습 날짜 (YYYYMMDD)")
+    args = parser.parse_args()
+
+    DATE = args.date
+    YESTERDAY = (datetime.strptime(DATE, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
+    
+    MODEL_SAVE_PATH_1 = os.path.join(MODEL_DIR, "self_review", f"{DATE}.pth")
+    MODEL_SAVE_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{DATE}.pth")
+    SELF_REVIEW_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review", f"{DATE}.parquet")
+    REPLAY_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay", f"{DATE}.parquet")
+    YESTERDAY_MODEL_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{YESTERDAY}.pth")
+
     now = time.time()
-    train_model(sys.argv[1])
+    train_model(args.mode)
     print("총 학습 시간: ", time.time() - now, "sec")
