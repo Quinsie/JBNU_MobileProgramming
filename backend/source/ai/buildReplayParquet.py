@@ -187,6 +187,7 @@ def process_single_file(args):
 # === 메인 전처리 함수 ===
 def build_replay_parquet(target_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
+    previous_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
 
     with open(STOP_TO_ROUTES_PATH, encoding='utf-8') as f:
         stop_to_routes = json.load(f)
@@ -195,9 +196,9 @@ def build_replay_parquet(target_date):
     with open(NX_NY_STOP_PATH, encoding='utf-8') as f:
         nx_ny_stops = json.load(f)
 
-    with open(os.path.join(MEAN_ELAPSED_DIR, f"{target_date - timedelta(days=1)}.json"), encoding='utf-8') as f: # mean은 하루 전
+    with open(os.path.join(MEAN_ELAPSED_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
         mean_elapsed = json.load(f)
-    with open(os.path.join(MEAN_INTERVAL_DIR, f"{target_date - timedelta(days=1)}.json"), encoding='utf-8') as f: # mean은 하루 전전
+    with open(os.path.join(MEAN_INTERVAL_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전전
         mean_interval = json.load(f)
 
     weather_all = {}
