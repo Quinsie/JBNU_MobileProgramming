@@ -44,6 +44,9 @@ def train_model(phase: str):
 
     print(f"[INFO] Loading {phase} dataset: {parquet_path}")
     df = pd.read_parquet(parquet_path)  # parquet 파일 읽기
+    
+    # 🔥 ord 컬럼을 미리 GPU에 tensor로 올려둠 (indexing 시 오류 방지)
+    ord_tensor = torch.tensor(df["ord"].values, dtype=torch.float32).to(device)
 
     # === 모델 정의 및 전날 모델 불러오기 ===
     model = FirstETAModel().to(device)
@@ -123,10 +126,10 @@ def train_model(phase: str):
 
                     # 1. ord 기준으로 정렬된 index 리스트 얻기
                     sorted_indices = sorted(indices, key=lambda idx: df["ord"].iloc[idx])
-                    sorted_indices = torch.tensor(sorted_indices, dtype=torch.long, device=device)
+                    sorted_indices_tensor = torch.tensor(sorted_indices, dtype=torch.long, device=device)
 
                     # 2. 정렬된 ord와 예측값 가져오기
-                    ords = torch.tensor(df["ord"].values[sorted_indices], dtype=torch.float32).to(device)
+                    ords = ord_tensor[sorted_indices_tensor]
                     preds = pred_mean[sorted_indices].squeeze()
 
                     # 3. 순서대로 loss 계산 (단, 같은 ord는 무시)
