@@ -67,8 +67,18 @@ def train_model(phase: str):
     x_dict = {}
     for col in x_cols:
         key = col.replace("x_", "")
-        dtype = torch.long if df[col].dtype in ["int64", "int32"] else torch.float32
-        x_dict[key] = torch.tensor(df[col].values, dtype=dtype).to(device)
+        
+        # torch dtype 지정
+        if df[col].dtype in ["int64", "int32"]:
+            tensor = torch.tensor(df[col].values, dtype=torch.long)
+        else:
+            tensor = torch.tensor(df[col].values, dtype=torch.float32)
+        
+        # [B] → [B, 1] 변환
+        if tensor.dim() == 1:
+            tensor = tensor.unsqueeze(1)
+
+        x_dict[key] = tensor.to(device)
 
     y = torch.tensor(df[y_col].values, dtype=torch.float32).unsqueeze(1).to(device)
 
