@@ -3,122 +3,131 @@
 import os
 import sys
 import time
-import pandas as pd
-from datetime import datetime, timedelta
-
 import torch
+import pandas as pd
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
+from collections import defaultdict
+from datetime import datetime, timedelta
+from torch.utils.data import DataLoader, TensorDataset
 
+# === 날짜 설정 ===
+# DATE = 
+DATE = datetime.now().strftime("%Y%m%d")
+YESTERDAY = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
+
+# === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.append(BASE_DIR)
+MODEL_DIR = os.path.join(BASE_DIR, "data", "model", "firstETA")
+MODEL_SAVE_PATH_1 = os.path.join(MODEL_DIR, "self_review", f"{DATE}.pth")
+MODEL_SAVE_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{DATE}.pth")
+SELF_REVIEW_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review", f"{DATE}.parquet")
+REPLAY_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay", f"{DATE}.parquet")
+YESTERDAY_MODEL_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{YESTERDAY}.pth")
+from source.ai.FirstETAModel import FirstETAModel
 
-# 설정
-# TODAY = datetime.now()
-TODAY = datetime(2025, 5, 7)
-YESTERDAY_DATE = TODAY - timedelta(days=1)  # 4/24 기준
-YESTERDAY_STR = YESTERDAY_DATE.strftime("%Y%m%d")
+# === 하이퍼파라미터 ===
+EPOCHS = 15
+BATCH_SIZE = 512
+LR = 0.001
 
-PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", f"{YESTERDAY_STR}.parquet")
-MODEL_SAVE_PATH = os.path.join(BASE_DIR, "data", "model", f"{YESTERDAY_STR}.pth")
+# === 디바이스 설정 ===
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-INPUT_DIM = 6  # Dense로 들어갈 feature 개수
-EMBEDDING_DIMS = {
-    'route_id': (500, 8),  # 약 451개 노선 → 8차원 임베딩
-    'node_id': (3200, 16), # 약 3000개 정류장 → 16차원 임베딩
-    'weekday': (3, 2),     # weekday/saturday/holiday → 2차원 임베딩
-}
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-EPOCHS = 600
-BATCH_SIZE = 2048
-LEARNING_RATE = 0.0005
+def train_model(phase: str):
+    # === phase에 따라 학습용 parquet 경로 선택 ===
+    if phase == "self_review":
+        parquet_path = SELF_REVIEW_PATH
+        model_load_path = YESTERDAY_MODEL_PATH_2
+        model_save_path = MODEL_SAVE_PATH_1
+    elif phase == "replay":
+        parquet_path = REPLAY_PATH
+        model_load_path = MODEL_SAVE_PATH_1
+        model_save_path = MODEL_SAVE_PATH_2
+    else:
+        raise ValueError("Invalid phase. Use 'self_review' or 'replay'.")
 
-# Dataset
-class ETADataset(Dataset):
-    def __init__(self, df):
-        self.route_id = df['route_id_encoded'].values
-        self.node_id = df['node_id_encoded'].values
-        self.weekday = df['weekday_encoded'].values
-        self.dense_feats = df[['departure_time_sin', 'departure_time_cos', 'departure_time_group',
-                               'PTY', 'RN1', 'T1H']].values
-        self.targets = df['delta_elapsed'].values
+    print(f"[INFO] Loading {phase} dataset: {parquet_path}")
+    df = pd.read_parquet(parquet_path)  # parquet 파일 읽기
 
-    def __len__(self):
-        return len(self.route_id)
+    # x_로 시작하는 모든 column을 feature로 간주
+    x_cols = [col for col in df.columns if col.startswith("x_")]
+    y_col = "y"
 
-    def __getitem__(self, idx):
-        return (
-            torch.tensor(self.route_id[idx], dtype=torch.long),
-            torch.tensor(self.node_id[idx], dtype=torch.long),
-            torch.tensor(self.weekday[idx], dtype=torch.long),
-            torch.tensor(self.dense_feats[idx], dtype=torch.float32),
-            torch.tensor(self.targets[idx], dtype=torch.float32)
-        )
+    # Tensor로 변환 후 GPU로 이동
+    X = torch.tensor(df[x_cols].values, dtype=torch.float32).to(device)
+    y = torch.tensor(df[y_col].values, dtype=torch.float32).unsqueeze(1).to(device)
 
-# Model
-class ETA_MLP(nn.Module):
-    def __init__(self):
-        super(ETA_MLP, self).__init__()
-        self.route_emb = nn.Embedding(*EMBEDDING_DIMS['route_id'])
-        self.node_emb = nn.Embedding(*EMBEDDING_DIMS['node_id'])
-        self.weekday_emb = nn.Embedding(*EMBEDDING_DIMS['weekday'])
+    dataset = TensorDataset(X, y)
+    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-        self.fc1 = nn.Linear(INPUT_DIM + 8 + 16 + 2, 128)  # Dense + Embedding들
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 1)
-        self.relu = nn.ReLU()
+    # === 모델 정의 및 전날 모델 불러오기 ===
+    model = FirstETAModel().to(device)
+    if os.path.exists(model_load_path):
+        print(f"[INFO] Loading previous model from: {model_load_path}")
+        model.load_state_dict(torch.load(model_load_path, map_location=device))
+    else:
+        print(f"[INFO] No previous model found at {model_load_path}. Initializing new model.")
 
-    def forward(self, route_id, node_id, weekday, dense_feats):
-        route_emb = self.route_emb(route_id)
-        node_emb = self.node_emb(node_id)
-        weekday_emb = self.weekday_emb(weekday)
+    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    model.train()
 
-        x = torch.cat([dense_feats, route_emb, node_emb, weekday_emb], dim=1)
-        x = self.relu(self.fc1(x))
-        x = self.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x.squeeze()
-
-# 학습 함수
-def train():
-    df = pd.read_parquet(PARQUET_PATH)
-    start_time = time.time()
-
-    dataset = ETADataset(df)
-    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
-
-    model = ETA_MLP().to(DEVICE)
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
-    criterion = nn.MSELoss()
-
+    # === 학습 루프 ===
     for epoch in range(EPOCHS):
-        model.train()
         total_loss = 0
-
-        for route_id, node_id, weekday, dense_feats, targets in dataloader:
-            route_id = route_id.to(DEVICE)
-            node_id = node_id.to(DEVICE)
-            weekday = weekday.to(DEVICE)
-            dense_feats = dense_feats.to(DEVICE)
-            targets = targets.to(DEVICE)
-
+        for batch_x, batch_y in dataloader:
             optimizer.zero_grad()
-            outputs = model(route_id, node_id, weekday, dense_feats)
-            loss = criterion(outputs, targets)
+
+            # forward pass
+            pred_mean, pred_log_var = model(batch_x, phase=phase)
+
+            # 기본 heteroscedastic loss 계산
+            hetero_loss = ((batch_y - pred_mean) ** 2 * torch.exp(-pred_log_var) + pred_log_var).mean()
+            loss = hetero_loss
+
+            # self-review의 경우 residual penalty 추가
+            if phase == "self_review":
+                prev_pred = batch_x[:, -1].unsqueeze(1).detach()  # prev_pred_elapsed assumed as last column
+                penalty = nn.functional.relu(batch_y - prev_pred).mean()
+                loss = hetero_loss + 0.3 * penalty
+            
+            # ranking loss 추가 (순서 보장)
+            if "trip_group_id" in df.columns and "ord" in df.columns:
+                trip_to_indices = defaultdict(list)
+                for idx, trip in enumerate(df["trip_group_id"].values):
+                    trip_to_indices[trip].append(idx)
+                
+                ranking_loss = 0
+                count = 0
+                for indices in trip_to_indices.values():
+                    if len(indices) < 2:continue
+                    ords = torch.tensor(df["ord"].values[indices], dtype=torch.float32).to(device)
+                    preds = pred_mean[indices].squeeze()
+                    for i in range(len(indices)):
+                        for j in range(i + 1, len(indices)):
+                            if ords[i] < ords[j]:
+                                ranking_loss += nn.functional.relu(preds[i] - preds[j])
+                                count += 1            
+                if count > 0:
+                    ranking_loss = ranking_loss / count
+                    loss += 0.1 * ranking_loss
+                
             loss.backward()
             optimizer.step()
+            total_loss += loss.item()
 
-            total_loss += loss.item() * route_id.size(0)
+        # 에폭당 평균 loss와 최대 예측값 출력
+        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}, Max pred: {pred_mean.max().item():.2f}")
 
-        scheduler.step()
-        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}, LR: {scheduler.get_last_lr()[0]:.6f}, Max pred: {outputs.max().item():.2f}")
+    # === 모델 저장 ===
+    os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
+    torch.save(model.state_dict(), model_save_path)
+    print(f"[INFO] Saved model to {model_save_path}")
 
-    os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
-    torch.save(model.state_dict(), MODEL_SAVE_PATH)
-    print(f"모델 저장 완료: {MODEL_SAVE_PATH}")
-    print("총 소요시간: ", time.time() - start_time, "sec")
-
+# === main 함수 진입점 ===
 if __name__ == "__main__":
-    train()
+    if len(sys.argv) != 2 or sys.argv[1] not in ["self_review", "replay"]:
+        print("Usage: python trainFirstETA.py [self_review|replay]")
+        sys.exit(1)
+    now = time.time()
+    train_model(sys.argv[1])
+    print("총 학습 시간: ", time.time() - now, "sec")
