@@ -130,8 +130,12 @@ def process_single_file(args):
             me_wd_tg = me_total
 
         stop_id = ord_lookup.get((stdid, ord), None)
-        if not stop_id:
+        if stop_id is None:
             return []
+        try:
+            stop_id = int(stop_id)  # string이어도 int로 강제 변환
+        except ValueError:
+            return []  # 혹시라도 이상한 값 들어올 경우 방어
 
         mi_dict = mean_interval.get(stop_id, {})
         mi_total = normalize(mi_dict.get("total", {}).get("mean", -1), 0, 600)
