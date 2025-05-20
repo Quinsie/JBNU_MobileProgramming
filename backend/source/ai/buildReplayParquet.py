@@ -133,6 +133,12 @@ def process_single_file(args):
         if f"weekday_{weekday}" not in me_dict:
             print("⚠️ weekday key 누락됨", stdid, ord, me_dict.keys())
 
+        if f"timegroup_{timegroup}" not in me_dict:
+            print("⚠️ timegroup key 누락됨", stdid, ord, me_dict.keys())
+        
+        if f"wd_tg_{weekday}_{timegroup}" not in me_dict:
+            print("⚠️ wd_tg key 누락됨", stdid, ord, me_dict.keys())
+
         if str(ord) not in mean_elapsed.get(stdid, {}):
             print("🚨 평균에 없는 ord 접근 시도", stdid, ord)
 
