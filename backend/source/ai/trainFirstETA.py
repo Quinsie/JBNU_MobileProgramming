@@ -118,14 +118,22 @@ def train_model(phase: str):
                 ranking_loss = 0
                 count = 0
                 for indices in trip_to_indices.values():
-                    if len(indices) < 2:continue
-                    ords = torch.tensor(df["ord"].values[indices], dtype=torch.float32).to(device)
-                    preds = pred_mean[indices].squeeze()
-                    for i in range(len(indices)):
-                        for j in range(i + 1, len(indices)):
-                            if ords[i] < ords[j]:
-                                ranking_loss += nn.functional.relu(preds[i] - preds[j])
-                                count += 1            
+                    if len(indices) < 2:
+                        continue
+
+                    # 1. ord 기준으로 정렬된 index 리스트 얻기
+                    sorted_indices = sorted(indices, key=lambda idx: df["ord"].iloc[idx])
+
+                    # 2. 정렬된 ord와 예측값 가져오기
+                    ords = torch.tensor(df["ord"].values[sorted_indices], dtype=torch.float32).to(device)
+                    preds = pred_mean[sorted_indices].squeeze()
+
+                    # 3. 순서대로 loss 계산 (단, 같은 ord는 무시)
+                    for i in range(len(ords) - 1):
+                        if ords[i] < ords[i + 1]:  # 동률은 스킵
+                            ranking_loss += nn.functional.relu(preds[i] - preds[i + 1])
+                            count += 1     
+                            
                 if count > 0:
                     ranking_loss = ranking_loss / count
                     loss += 0.1 * ranking_loss
