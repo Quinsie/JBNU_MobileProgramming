@@ -1,6 +1,7 @@
 # backend/source/ai/trainFirstETA.py
 
 import os
+import sys
 import time
 import torch
 import argparse
@@ -11,7 +12,7 @@ from datetime import datetime, timedelta
 from torch.utils.data import DataLoader, TensorDataset
 
 # === 경로 설정 ===
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 MODEL_DIR = os.path.join(BASE_DIR, "data", "model", "firstETA")
 ODEL_SAVE_PATH_1 = None
 MODEL_SAVE_PATH_2 = None
