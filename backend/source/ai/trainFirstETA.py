@@ -123,6 +123,7 @@ def train_model(phase: str):
 
                     # 1. ord 기준으로 정렬된 index 리스트 얻기
                     sorted_indices = sorted(indices, key=lambda idx: df["ord"].iloc[idx])
+                    sorted_indices = torch.tensor(sorted_indices, dtype=torch.long, device=device)
 
                     # 2. 정렬된 ord와 예측값 가져오기
                     ords = torch.tensor(df["ord"].values[sorted_indices], dtype=torch.float32).to(device)
