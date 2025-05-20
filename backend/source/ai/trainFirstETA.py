@@ -75,7 +75,7 @@ def train_model(phase: str):
             tensor = torch.tensor(df[col].values, dtype=torch.float32)
         
         # [B] → [B, 1] 변환
-        if tensor.dim() == 1:
+        if tensor.dim() == 1 and tensor.dtype == torch.float32:
             tensor = tensor.unsqueeze(1)
 
         x_dict[key] = tensor.to(device)
