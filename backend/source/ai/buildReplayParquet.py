@@ -12,6 +12,8 @@ from multiprocessing import Pool, cpu_count
 
 # === 환경 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
+LABEL_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "label_stops.json")
 sys.path.append(BASE_DIR)
 
 from source.utils.getDayType import getDayType
@@ -87,12 +89,13 @@ def fallback_weather(target_time: datetime, nx_ny: str, weather_all: dict):
 
 # === 개별 파일 처리 함수 ===
 def process_single_file(args):
-    stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all = args
+    stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops = args
 
     rows = []
     stdid_path = os.path.join(RAW_DIR, stdid)
     route_id = stdid_number.get(stdid, "000X0")
-    bus_number = int(route_id[:-2])
+    bus_number_str = route_id[:-2]
+    bus_number = int(label_bus.get(bus_number_str, 0))  # fallback index=0
     direction = 0 if route_id[-2] == 'A' else 1
     branch = int(route_id[-1])
     hhmm = fname.replace(".json", "").split("_")[-1]
@@ -133,7 +136,8 @@ def process_single_file(args):
         if stop_id is None:
             return []
         try:
-            stop_id = int(stop_id)  # string이어도 int로 강제 변환
+            stop_id_str = str(stop_id)  # string이어도 int로 강제 변환
+            stop_id_index = int(label_stops.get(stop_id_str, 0))  # fallback index=0
         except ValueError:
             return []  # 혹시라도 이상한 값 들어올 경우 방어
 
@@ -169,7 +173,7 @@ def process_single_file(args):
             "x_mean_elapsed_weekday": me_weekday,
             "x_mean_elapsed_timegroup": me_timegroup,
             "x_mean_elapsed_wd_tg": me_wd_tg,
-            "x_node_id": stop_id,
+            "x_node_id": stop_id_index,
             "x_mean_interval_total": mi_total,
             "x_mean_interval_weekday": mi_weekday,
             "x_mean_interval_timegroup": mi_timegroup,
@@ -195,6 +199,10 @@ def build_replay_parquet(target_date):
         stdid_number = json.load(f)
     with open(NX_NY_STOP_PATH, encoding='utf-8') as f:
         nx_ny_stops = json.load(f)
+    with open(LABEL_BUS_PATH, encoding="utf-8") as f:
+        label_bus = json.load(f)
+    with open(LABEL_STOP_PATH, encoding="utf-8") as f:
+        label_stops = json.load(f)
 
     with open(os.path.join(MEAN_ELAPSED_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
         mean_elapsed = json.load(f)
@@ -223,7 +231,7 @@ def build_replay_parquet(target_date):
         for fname in os.listdir(stdid_path):
             if not fname.endswith(".json"): continue
             if not fname.startswith(target_date): continue
-            task_list.append((stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all))
+            task_list.append((stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_file, task_list)
