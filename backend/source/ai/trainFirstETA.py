@@ -44,9 +44,6 @@ def train_model(phase: str):
 
     print(f"[INFO] Loading {phase} dataset: {parquet_path}")
     df = pd.read_parquet(parquet_path)  # parquet 파일 읽기
-    
-    # 🔥 ord 컬럼을 미리 GPU에 tensor로 올려둠 (indexing 시 오류 방지)
-    ord_tensor = torch.tensor(df["ord"].values, dtype=torch.float32).to(device)
 
     # === 모델 정의 및 전날 모델 불러오기 ===
     model = FirstETAModel().to(device)
@@ -112,9 +109,9 @@ def train_model(phase: str):
                 penalty = nn.functional.relu(batch_y - prev_pred).mean()
                 loss = hetero_loss + 0.3 * penalty
 
-            # ✅ === [여기에 ranking loss를 이동] ===
+            # === [여기에 ranking loss를 이동] ===
             if "trip_group_id" in df.columns and "ord" in df.columns:
-                # 👉 각 배치 인덱스에 대한 trip_group_id를 수집
+                # 각 배치 인덱스에 대한 trip_group_id를 수집
                 trip_ids = df["trip_group_id"].values[[i.item() for i in batch_indices]]
                 ords = torch.tensor(df["ord"].values[[i.item() for i in batch_indices]], dtype=torch.float32).to(device)
                 preds = pred_mean.squeeze()
@@ -143,7 +140,6 @@ def train_model(phase: str):
                 if count > 0:
                     ranking_loss = ranking_loss / count
                     loss += 0.1 * ranking_loss
-            # ✅ === 여기까지 이동
 
             loss.backward()
             optimizer.step()
