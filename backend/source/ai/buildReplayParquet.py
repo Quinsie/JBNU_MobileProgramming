@@ -130,6 +130,9 @@ def process_single_file(args):
         else:
             me_wd_tg = me_total
 
+        if "total" not in me_dict:
+            print("⚠️ total key 누락됨", stdid, ord, me_dict.keys())
+
         if f"weekday_{weekday}" not in me_dict:
             print("⚠️ weekday key 누락됨", stdid, ord, me_dict.keys())
 
