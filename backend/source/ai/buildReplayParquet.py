@@ -200,6 +200,7 @@ def process_single_file(args):
 def build_replay_parquet(target_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
     previous_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
+    print(previous_date)
 
     with open(STOP_TO_ROUTES_PATH, encoding='utf-8') as f:
         stop_to_routes = json.load(f)
