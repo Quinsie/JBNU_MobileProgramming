@@ -45,6 +45,15 @@ def train_model(phase: str):
     print(f"[INFO] Loading {phase} dataset: {parquet_path}")
     df = pd.read_parquet(parquet_path)  # parquet 파일 읽기
 
+    # === 모델 정의 및 전날 모델 불러오기 ===
+    model = FirstETAModel().to(device)
+    if os.path.exists(model_load_path):
+        print(f"[INFO] Loading previous model from: {model_load_path}")
+        model.load_state_dict(torch.load(model_load_path, map_location=device))
+    else:
+        print(f"[INFO] No previous model found at {model_load_path}. Initializing new model.")
+    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+
     # x_로 시작하는 모든 column을 feature로 간주
     x_cols = [col for col in df.columns if col.startswith("x_")]
 
@@ -67,18 +76,8 @@ def train_model(phase: str):
     dataset = list(zip(*(list(x_dict.values()) + [y])))
     keys = list(x_dict.keys())
 
-    # === 모델 정의 및 전날 모델 불러오기 ===
-    model = FirstETAModel().to(device)
-    if os.path.exists(model_load_path):
-        print(f"[INFO] Loading previous model from: {model_load_path}")
-        model.load_state_dict(torch.load(model_load_path, map_location=device))
-    else:
-        print(f"[INFO] No previous model found at {model_load_path}. Initializing new model.")
-
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
-    model.train()
-
     # === 학습 루프 ===
+    model.train()
     for epoch in range(EPOCHS):
         total_loss = 0
         for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
@@ -96,7 +95,7 @@ def train_model(phase: str):
 
             # self-review의 경우 residual penalty 추가
             if phase == "self_review":
-                prev_pred = batch_x[:, -1].unsqueeze(1).detach()  # prev_pred_elapsed assumed as last column
+                prev_pred = batch_x["prev_pred_elapsed"].detach().unsqueeze(1)
                 penalty = nn.functional.relu(batch_y - prev_pred).mean()
                 loss = hetero_loss + 0.3 * penalty
             
