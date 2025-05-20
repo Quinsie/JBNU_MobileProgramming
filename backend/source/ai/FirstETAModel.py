@@ -10,16 +10,16 @@ class FirstETAModel(nn.Module):
 
         # ===== Embedding Tables =====
         self.bus_emb = nn.Embedding(200, 8)         # bus_number
-        self.dir_raw_emb = nn.Embedding(2, 4)        # direction raw
-        self.branch_raw_emb = nn.Embedding(9, 4)    # branch_num raw
+        self.dir_raw_emb = nn.Embedding(5, 4)        # direction raw
+        self.branch_raw_emb = nn.Embedding(10, 4)    # branch_num raw
 
         self.node_emb = nn.Embedding(3000, 8)         # node_id
 
-        self.pty_emb = nn.Embedding(5, 3)             # PTY (강수 형태)
+        self.pty_emb = nn.Embedding(10, 3)             # PTY (강수 형태)
 
-        self.weekday_index_emb = nn.Embedding(3, 4)
-        self.timegroup_index_emb = nn.Embedding(8, 8)
-        self.wd_tg_index_emb = nn.Embedding(32, 12)
+        self.weekday_index_emb = nn.Embedding(5, 4)
+        self.timegroup_index_emb = nn.Embedding(10, 8)
+        self.wd_tg_index_emb = nn.Embedding(40, 12)
 
         self.weekday_emb = self.weekday_index_emb
         self.timegroup_emb = self.timegroup_index_emb
