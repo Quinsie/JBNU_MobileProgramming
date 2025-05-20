@@ -3,20 +3,14 @@
 import os
 import sys
 import json
+import argparse
 from datetime import datetime, timedelta
 from collections import defaultdict
 from multiprocessing import Pool
 
-# 날짜 설정 (YYYYMMDD)
-# TARGET_DATE = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
-TARGET_DATE = "20250505"
-MODE = "init"  # "init" or "append"
-
 # 경로 설정
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
-SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{TARGET_DATE}.json")
-os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
 from source.utils.getDayType import getDayType
 
 # 시간대 그룹 (8단계)
@@ -75,6 +69,17 @@ def process_file(args):
 
 # 메인 실행
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--date", required=True, help="날짜 (YYYYMMDD)")
+    parser.add_argument("--mode", required=True, choices=["init", "append"], help="모드 (init 또는 append)")
+    args = parser.parse_args()
+
+    TARGET_DATE = args.date
+    MODE = args.mode
+
+    SAVE_PATH = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed", f"{TARGET_DATE}.json")
+    os.makedirs(os.path.dirname(SAVE_PATH), exist_ok=True)
+
     tasks = []
     for stdid in os.listdir(RAW_DIR):
         std_path = os.path.join(RAW_DIR, stdid)
