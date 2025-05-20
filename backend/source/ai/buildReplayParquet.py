@@ -9,7 +9,6 @@ import argparse
 import pandas as pd
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
-from tqdm import tqdm
 
 # === 환경 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))

@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import time
+import math
 import argparse
 import pandas as pd
 from datetime import datetime, timedelta
@@ -17,14 +18,36 @@ from source.utils.getDayType import getDayType
 
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 ETA_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
+MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
+MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
+STOP_TO_ROUTES_PATH = os.path.join(BASE_DIR, "data", "processed", "stop_to_routes.json")
+STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
+NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review")
 os.makedirs(SAVE_PATH, exist_ok=True)
 
 # === 보조 함수 정의 ===
+def get_time_group(departure_time):
+    minutes = departure_time.hour * 60 + departure_time.minute
+    if 330 <= minutes < 420: return 1
+    elif 420 <= minutes < 540: return 2
+    elif 540 <= minutes < 690: return 3
+    elif 690 <= minutes < 840: return 4
+    elif 840 <= minutes < 1020: return 5
+    elif 1020 <= minutes < 1140: return 6
+    elif 1140 <= minutes < 1260: return 7
+    else: return 8
+
 def normalize(value, min_val, max_val):
     return max(min((value - min_val) / (max_val - min_val), 1), 0)
 
+def time_to_sin_cos(dt):
+    minutes = dt.hour * 60 + dt.minute
+    angle = 2 * math.pi * (minutes / 1440)
+    return math.sin(angle), math.cos(angle)
+
+# === 예보 fallback 함수, 미완 (PTY TMP PCP처리 해줘야 함함)
 def fallback_forecast(target_time: datetime, nx_ny: str, forecast_all: dict):
     fallback_hours = [0, 1, 2, 3, 4, 5]
     for days_back in range(3):
@@ -57,77 +80,149 @@ def fallback_forecast(target_time: datetime, nx_ny: str, forecast_all: dict):
                             return val2
     return {"PTY": 0, "PCP": 0.0, "TMP": 20.0}  # 기본값
 
-# === 병합 처리 함수 ===
-def merge_eta_raw(args):
-    stdid, hhmm, eta_ords, target_date, forecast_all = args
-    raw_path = os.path.join(RAW_DIR, stdid, f"{target_date}_{hhmm}.json")
-    if not os.path.exists(raw_path): return []
-
-    with open(raw_path, encoding='utf-8') as f:
-        raw = json.load(f)
-    raw_logs = {str(log['ord']): log['time'] for log in raw.get("stop_reached_logs", [])}
-    if "1" not in raw_logs: return []
-
-    base_time = datetime.strptime(raw_logs["1"], "%Y-%m-%d %H:%M:%S")
+# === 병합 처리 함수 === (미완, 과거 추론 도착시간을 맨 마지막에 넣어줘야 함)
+def process_single_file(args):
+    stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, forecast_all = args
 
     rows = []
-    for ord_str, eta_time_str in eta_ords.items():
-        if ord_str not in raw_logs: continue
+    stdid_path = os.path.join(RAW_DIR, stdid)
+    route_id = stdid_number.get(stdid, "000X0")
+    bus_number = int(route_id[:-2])
+    direction = 0 if route_id[-2] == 'A' else 1
+    branch = int(route_id[-1])
+    hhmm = fname.replace(".json", "").split("_")[-1]
+    trip_group_id = f"{target_date}_{hhmm}_{stdid}"
 
-        eta_time = datetime.strptime(f"{target_date} {eta_time_str}", "%Y-%m-%d %H:%M:%S")
-        prev_pred_elapsed = (eta_time - base_time).total_seconds()
-        arr_time = datetime.strptime(raw_logs[ord_str], "%Y-%m-%d %H:%M:%S")
+    with open(os.path.join(stdid_path, fname), encoding='utf-8') as f:
+        log = json.load(f)
+    logs = log.get("stop_reached_logs", [])
+    if len(logs) < 2: return []
+
+    base_time = datetime.strptime(logs[0]['time'], "%Y-%m-%d %H:%M:%S")
+    day_type = getDayType(base_time)
+    weekday = {"weekday": 1, "saturday": 2, "holiday": 3}[day_type]
+    timegroup = get_time_group(base_time)
+    wd_tg = weekday * 8 + (timegroup - 1)
+    max_ord = max([r['ord'] for r in logs])
+
+    for record in logs[1:]:
+        ord = record['ord']
+        arr_time = datetime.strptime(record['time'], "%Y-%m-%d %H:%M:%S")
         real_elapsed = (arr_time - base_time).total_seconds()
 
-        nx_ny = "63_89"  # 기본 위치 (추후 nx_ny_stops 연결 시 수정 가능)
+        me_dict = mean_elapsed.get(stdid, {}).get(str(ord), {})
+        me_total = normalize(me_dict.get("total", {}).get("mean", -1), 0, 7200)
+        me_weekday = normalize(me_dict.get(f"weekday_{weekday}", {}).get("mean", me_total), 0, 7200)
+        me_timegroup = normalize(me_dict.get(f"timegroup_{timegroup}", {}).get("mean", me_total), 0, 7200)
+        me_wd_tg_raw = me_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if me_wd_tg_raw is not None:
+            me_wd_tg = normalize(me_wd_tg_raw, 0, 7200)
+        elif me_dict.get(f"weekday_{weekday}"):
+            me_wd_tg = me_weekday
+        elif me_dict.get(f"timegroup_{timegroup}"):
+            me_wd_tg = me_timegroup
+        else:
+            me_wd_tg = me_total
+
+        stop_id = ord_lookup.get((stdid, ord), None)
+        if not stop_id:
+            return []
+
+        mi_dict = mean_interval.get(stop_id, {})
+        mi_total = normalize(mi_dict.get("total", {}).get("mean", -1), 0, 600)
+        mi_weekday = normalize(mi_dict.get(f"weekday_{weekday}", {}).get("mean", mi_total), 0, 600)
+        mi_timegroup = normalize(mi_dict.get(f"timegroup_{timegroup}", {}).get("mean", mi_total), 0, 600)
+        mi_wd_tg_raw = mi_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if mi_wd_tg_raw is not None:
+            mi_wd_tg = normalize(mi_wd_tg_raw, 0, 600)
+        elif mi_dict.get(f"weekday_{weekday}"):
+            mi_wd_tg = mi_weekday
+        elif mi_dict.get(f"timegroup_{timegroup}"):
+            mi_wd_tg = mi_timegroup
+        else:
+            mi_wd_tg = mi_total
+
+        nx_ny = nx_ny_stops.get(f"{stdid}_{ord}", "63_89")
         weather = fallback_forecast(arr_time, nx_ny, forecast_all)
+        t_sin, t_cos = time_to_sin_cos(base_time)
 
         row = {
-            "trip_group_id": f"{target_date}_{hhmm}_{stdid}",
-            "ord": int(ord_str),
+            "trip_group_id": trip_group_id,
+            "ord": ord,
             "y": normalize(real_elapsed, 0, 7200),
-            "x_prev_pred_elapsed": normalize(prev_pred_elapsed, 0, 7200),
+            "x_bus_number": bus_number,
+            "x_direction": direction,
+            "x_branch": branch,
+            "x_weekday": weekday,
+            "x_timegroup": timegroup,
+            "x_weekday_timegroup": wd_tg,
+            "x_mean_elapsed_total": me_total,
+            "x_mean_elapsed_weekday": me_weekday,
+            "x_mean_elapsed_timegroup": me_timegroup,
+            "x_mean_elapsed_wd_tg": me_wd_tg,
+            "x_node_id": stop_id,
+            "x_mean_interval_total": mi_total,
+            "x_mean_interval_weekday": mi_weekday,
+            "x_mean_interval_timegroup": mi_timegroup,
+            "x_mean_interval_wd_tg": mi_wd_tg,
             "x_weather_PTY": weather['PTY'],
-            "x_weather_RN1": normalize(weather['PCP'], 0, 100),
-            "x_weather_T1H": normalize(weather['TMP'], -30, 50)
+            "x_weather_RN1": normalize(weather['RN1'], 0, 100),
+            "x_weather_T1H": normalize(weather['T1H'], -30, 50),
+            "x_departure_time_sin": t_sin,
+            "x_departure_time_cos": t_cos,
+            "x_ord_ratio": round(ord / max_ord, 4)
         }
         rows.append(row)
     return rows
 
 # === 메인 전처리 함수 ===
 def build_review_parquet(target_date):
-    print(f"[INFO] 시작: {target_date} self-review 전처리")
-
+    print(f"[INFO] 시작: {target_date} replay 전처리")
     previous_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
 
+    with open(STOP_TO_ROUTES_PATH, encoding='utf-8') as f:
+        stop_to_routes = json.load(f)
+    with open(STDID_NUMBER_PATH, encoding='utf-8') as f:
+        stdid_number = json.load(f)
+    with open(NX_NY_STOP_PATH, encoding='utf-8') as f:
+        nx_ny_stops = json.load(f)
+
+    with open(os.path.join(MEAN_ELAPSED_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
+        mean_elapsed = json.load(f)
+    with open(os.path.join(MEAN_INTERVAL_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
+        mean_interval = json.load(f)
+
+    # 역매핑 딕셔너리 생성 (성능 개선용)
+    ord_lookup = {}  # (stdid, ord) → stop_id
+    for stop_id, routes in stop_to_routes.items():
+        for route in routes:
+            key = (route['stdid'], route['ord'])
+            ord_lookup[key] = stop_id
+
     forecast_all = {}
-    for fname in os.listdir(FORECAST_DIR):
-        if not fname.endswith(".json"): continue
-        date = fname.replace(".json", "")
-        with open(os.path.join(FORECAST_DIR, fname), encoding='utf-8') as f:
-            forecast_all[date] = json.load(f)
-    print(f"[INFO] 총 {len(forecast_all)}개 예보 파일 로드 완료")
+    for file in os.listdir(FORECAST_DIR):
+        if file.endswith(".json"):
+            key = file.replace(".json", "")
+            with open(os.path.join(FORECAST_DIR, file), encoding='utf-8') as f:
+                forecast_all[key] = json.load(f)
 
-    eta_path = os.path.join(ETA_PATH, f"{previous_date}.json")
-    if not os.path.exists(eta_path):
-        print(f"[ERROR] ETA Table {eta_path} 없음")
-        return
-    with open(eta_path, encoding='utf-8') as f:
-        eta_table = json.load(f)
-    print(f"[INFO] ETA Table 로드 완료: {len(eta_table)}개 그룹")
-
+    # 처리 대상 파일 준비
     task_list = []
-    for key, ord_dict in eta_table.items():
-        stdid, hhmm = key.split("_")[-2:]  # 뒤에서 2개 추출
-        task_list.append((stdid, hhmm, ord_dict, previous_date, forecast_all))
+    for stdid in os.listdir(RAW_DIR):
+        stdid_path = os.path.join(RAW_DIR, stdid)
+        if not os.path.isdir(stdid_path): continue
+        for fname in os.listdir(stdid_path):
+            if not fname.endswith(".json"): continue
+            if not fname.startswith(target_date): continue
+            task_list.append((stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, forecast_all))
 
     with Pool(cpu_count()) as pool:
-        results = pool.map(merge_eta_raw, task_list)
+        results = pool.map(process_single_file, task_list)
 
-    rows = [r for group in results for r in group]
+    rows = [row for group in results for row in group]
     df = pd.DataFrame(rows)
     df.to_parquet(os.path.join(SAVE_PATH, f"{target_date}.parquet"), index=False)
-    print(f"[INFO] 저장 완료: {os.path.join(SAVE_PATH, f'{target_date}.parquet')}")
+    print(f"[INFO] 전처리 완료. 저장 위치: {os.path.join(SAVE_PATH, target_date + '.parquet')}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
