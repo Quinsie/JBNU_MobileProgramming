@@ -88,7 +88,7 @@ def fallback_weather(target_time: datetime, nx_ny: str, weather_all: dict):
 
 # === 개별 파일 처리 함수 ===
 def process_single_file(args):
-    stdid, fname, target_date, stop_to_routes, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all = args
+    stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all = args
 
     rows = []
     stdid_path = os.path.join(RAW_DIR, stdid)
@@ -130,12 +130,9 @@ def process_single_file(args):
         else:
             me_wd_tg = me_total
 
-        stop_id = None
-        for route in stop_to_routes.get(str(record['ord']), []):
-            if route['stdid'] == stdid and route['ord'] == ord:
-                stop_id = str(route.get('stop_id', None))
-                break
-        if not stop_id: continue
+        stop_id = ord_lookup.get((stdid, ord), None)
+        if not stop_id:
+            return []
 
         mi_dict = mean_interval.get(stop_id, {})
         mi_total = normalize(mi_dict.get("total", {}).get("mean", -1), 0, 600)
@@ -198,8 +195,15 @@ def build_replay_parquet(target_date):
 
     with open(os.path.join(MEAN_ELAPSED_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
         mean_elapsed = json.load(f)
-    with open(os.path.join(MEAN_INTERVAL_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전전
+    with open(os.path.join(MEAN_INTERVAL_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
         mean_interval = json.load(f)
+
+    # ✅ 역매핑 딕셔너리 생성 (성능 개선용)
+    ord_lookup = {}  # (stdid, ord) → stop_id
+    for stop_id, routes in stop_to_routes.items():
+        for route in routes:
+            key = (route['stdid'], route['ord'])
+            ord_lookup[key] = stop_id
 
     weather_all = {}
     for file in os.listdir(WEATHER_DIR):
@@ -216,7 +220,7 @@ def build_replay_parquet(target_date):
         for fname in os.listdir(stdid_path):
             if not fname.endswith(".json"): continue
             if not fname.startswith(target_date): continue
-            task_list.append((stdid, fname, target_date, stop_to_routes, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all))
+            task_list.append((stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all))
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_file, task_list)
