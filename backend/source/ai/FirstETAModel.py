@@ -84,9 +84,9 @@ class FirstETAModel(nn.Module):
 
         # === Mean Elapsed ===
         me_total = self.mean_elapsed_total_mlp(x['mean_elapsed_total'])
-        me_wd = self.mean_elapsed_wd_mlp(torch.cat([x['mean_elapsed_wd'], self.weekday_index_emb(x['weekday'])], dim=1))
-        me_tg = self.mean_elapsed_tg_mlp(torch.cat([x['mean_elapsed_tg'], self.timegroup_index_emb(x['timegroup'])], dim=1))
-        me_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['mean_elapsed_wdtg'], self.wd_tg_index_emb(x['wd_tg'])], dim=1))
+        me_wd = self.mean_elapsed_wd_mlp(torch.cat([x['mean_elapsed_weekday'], self.weekday_index_emb(x['weekday'])], dim=1))
+        me_tg = self.mean_elapsed_tg_mlp(torch.cat([x['mean_elapsed_timegroup'], self.timegroup_index_emb(x['timegroup'])], dim=1))
+        me_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['mean_elapsed_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_elapsed = self.mean_elapsed_merge(torch.cat([me_total, me_wd, me_tg, me_wdtg], dim=1))
 
         route_input = torch.cat([bus, direction, branch, ord_ratio, mean_elapsed], dim=1)
@@ -95,9 +95,9 @@ class FirstETAModel(nn.Module):
         # === Node Context ===
         node = self.node_emb(x['node_id'])                      # (B, 8)
         mi_total = self.mean_interval_total_mlp(x['mean_interval_total'])
-        mi_wd = self.mean_interval_wd_mlp(torch.cat([x['mean_interval_wd'], self.weekday_index_emb(x['weekday'])], dim=1))
-        mi_tg = self.mean_interval_tg_mlp(torch.cat([x['mean_interval_tg'], self.timegroup_index_emb(x['timegroup'])], dim=1))
-        mi_wdtg = self.mean_interval_wdtg_mlp(torch.cat([x['mean_interval_wdtg'], self.wd_tg_index_emb(x['wd_tg'])], dim=1))
+        mi_wd = self.mean_interval_wd_mlp(torch.cat([x['mean_interval_weekday'], self.weekday_index_emb(x['weekday'])], dim=1))
+        mi_tg = self.mean_interval_tg_mlp(torch.cat([x['mean_interval_timegroup'], self.timegroup_index_emb(x['timegroup'])], dim=1))
+        mi_wdtg = self.mean_interval_wdtg_mlp(torch.cat([x['mean_interval_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_interval = self.mean_interval_merge(torch.cat([mi_total, mi_wd, mi_tg, mi_wdtg], dim=1))
 
         node_context = self.node_context_mlp(torch.cat([node, mean_interval], dim=1))  # (B, 16)
@@ -105,12 +105,12 @@ class FirstETAModel(nn.Module):
         # === Time Context ===
         wd_emb = self.weekday_emb(x['weekday'])
         tg_emb = self.timegroup_emb(x['timegroup'])
-        wdtg_emb = self.wd_tg_emb(x['wd_tg'])
-        time_context = self.time_mlp(torch.cat([wd_emb, tg_emb, wdtg_emb, x['time_sin_cos']], dim=1))  # (B, 16)
+        wdtg_emb = self.wd_tg_emb(x['weekday_timegroup'])
+        time_context = self.time_mlp(torch.cat([wd_emb, tg_emb, wdtg_emb, x['departure_time_sin'], x['departure_time_cos']], dim=1))  # (B, 16)
 
         # === Weather Context ===
-        pty = self.pty_emb(x['PTY'])
-        weather_context = self.weather_mlp(torch.cat([pty, x['RN1'], x['T1H']], dim=1))
+        pty = self.pty_emb(x['weather_PTY'])
+        weather_context = self.weather_mlp(torch.cat([pty, x['weather_RN1'], x['weather_T1H']], dim=1))
 
         # === Self Review 용 Prev ETA ===
         if phase == 'replay':
