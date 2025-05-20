@@ -40,7 +40,7 @@ class FirstETAModel(nn.Module):
         self.mean_elapsed_merge = nn.Sequential(nn.Linear(16, 16), nn.ReLU())
 
         # ===== Route-ORD Context MLP =====
-        self.route_ord_mlp = nn.Sequential(nn.Linear(32, 32), nn.ReLU())
+        self.route_ord_mlp = nn.Sequential(nn.Linear(36, 32), nn.ReLU())
 
         # ===== Mean Interval Mini MLPs =====
         self.mean_interval_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
