@@ -75,7 +75,7 @@ class FirstETAModel(nn.Module):
         dir_adj = self.dir_cond(bus)                            # (B, 4)
         direction = dir_raw + dir_adj
 
-        branch_raw = self.branch_raw_emb(x['branch_num'])       # (B, 4)
+        branch_raw = self.branch_raw_emb(x['branch'])       # (B, 4)
         branch_input = torch.cat([bus, direction], dim=1)       # (B, 12)
         branch_adj = self.branch_cond(branch_input)
         branch = branch_raw + branch_adj
