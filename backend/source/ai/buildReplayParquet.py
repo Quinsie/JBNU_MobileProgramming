@@ -166,7 +166,7 @@ def process_single_file(args):
             "x_bus_number": bus_number,
             "x_direction": direction,
             "x_branch": branch,
-            "x_weekday": weekday,
+            "x_weekday": weekday - 1,
             "x_timegroup": timegroup,
             "x_weekday_timegroup": wd_tg,
             "x_mean_elapsed_total": me_total,
