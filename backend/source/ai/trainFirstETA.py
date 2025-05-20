@@ -86,7 +86,7 @@ def train_model(phase: str):
     y = torch.tensor(df[y_col].values, dtype=torch.float32).unsqueeze(1).to(device)
 
     # dataset은 리스트(zip) 기반으로 구성
-    dataset = list(zip(*(list(x_dict.values()) + [y])))
+    dataset = list(zip(range(len(df)), *(list(x_dict.values()) + [y])))
     keys = list(x_dict.keys())
 
     # === 학습 루프 ===
@@ -94,7 +94,7 @@ def train_model(phase: str):
     for epoch in range(EPOCHS):
         total_loss = 0
         for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
-            *x_vals, batch_y = batch
+            batch_indices, *x_vals, batch_y = batch
             batch_x = dict(zip(keys, x_vals))
 
             optimizer.zero_grad()
@@ -115,8 +115,8 @@ def train_model(phase: str):
             # ✅ === [여기에 ranking loss를 이동] ===
             if "trip_group_id" in df.columns and "ord" in df.columns:
                 # 👉 각 배치 인덱스에 대한 trip_group_id를 수집
-                trip_ids = df["trip_group_id"].values[[i.item() for i in x_vals[0].cpu()]]  # bus_number 기준 인덱스 사용
-                ords = batch_x["ord"].squeeze()
+                trip_ids = df["trip_group_id"].values[[i.item() for i in batch_indices]]
+                ords = torch.tensor(df["ord"].values[[i.item() for i in batch_indices]], dtype=torch.float32).to(device)
                 preds = pred_mean.squeeze()
 
                 trip_to_local_indices = defaultdict(list)
