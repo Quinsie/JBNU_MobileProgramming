@@ -96,7 +96,7 @@ def train_model(phase: str):
         for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
             *x_vals, batch_y = batch
             batch_x = dict(zip(keys, x_vals))
-            
+
             optimizer.zero_grad()
 
             # forward pass
@@ -106,46 +106,48 @@ def train_model(phase: str):
             hetero_loss = ((batch_y - pred_mean) ** 2 * torch.exp(-pred_log_var) + pred_log_var).mean()
             loss = hetero_loss
 
-            # self-review의 경우 residual penalty 추가
+            # === self-review residual penalty ===
             if phase == "self_review":
                 prev_pred = batch_x["prev_pred_elapsed"].detach().unsqueeze(1)
                 penalty = nn.functional.relu(batch_y - prev_pred).mean()
                 loss = hetero_loss + 0.3 * penalty
-            
-            # ranking loss 추가 (순서 보장)
+
+            # ✅ === [여기에 ranking loss를 이동] ===
             if "trip_group_id" in df.columns and "ord" in df.columns:
-                trip_to_indices = defaultdict(list)
-                for idx, trip in enumerate(df["trip_group_id"].values):
-                    trip_to_indices[trip].append(idx)
-                
+                # 👉 각 배치 인덱스에 대한 trip_group_id를 수집
+                trip_ids = df["trip_group_id"].values[[i.item() for i in x_vals[0].cpu()]]  # bus_number 기준 인덱스 사용
+                ords = batch_x["ord"].squeeze()
+                preds = pred_mean.squeeze()
+
+                trip_to_local_indices = defaultdict(list)
+                for local_idx, trip in enumerate(trip_ids):
+                    trip_to_local_indices[trip].append(local_idx)
+
                 ranking_loss = 0
                 count = 0
-                for indices in trip_to_indices.values():
+                for indices in trip_to_local_indices.values():
                     if len(indices) < 2:
                         continue
+                    ord_subset = ords[indices]
+                    pred_subset = preds[indices]
 
-                    # 1. ord 기준으로 정렬된 index 리스트 얻기
-                    sorted_indices = sorted(indices, key=lambda idx: df["ord"].iloc[idx])
-                    sorted_indices_tensor = torch.tensor(sorted_indices, dtype=torch.long, device=device)
+                    sorted_idx = torch.argsort(ord_subset)
+                    ord_sorted = ord_subset[sorted_idx]
+                    pred_sorted = pred_subset[sorted_idx]
 
-                    # 2. 정렬된 ord와 예측값 가져오기
-                    ords = ord_tensor[sorted_indices_tensor]
-                    preds = pred_mean[sorted_indices].squeeze()
+                    for i in range(len(ord_sorted) - 1):
+                        if ord_sorted[i] < ord_sorted[i + 1]:  # 동률은 스킵
+                            ranking_loss += nn.functional.relu(pred_sorted[i] - pred_sorted[i + 1])
+                            count += 1
 
-                    # 3. 순서대로 loss 계산 (단, 같은 ord는 무시)
-                    for i in range(len(ords) - 1):
-                        if ords[i] < ords[i + 1]:  # 동률은 스킵
-                            ranking_loss += nn.functional.relu(preds[i] - preds[i + 1])
-                            count += 1     
-                            
                 if count > 0:
                     ranking_loss = ranking_loss / count
                     loss += 0.1 * ranking_loss
-                
+            # ✅ === 여기까지 이동
+
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-
         # 에폭당 평균 loss와 최대 예측값 출력
         print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}, Max pred: {pred_mean.max().item():.2f}")
 
