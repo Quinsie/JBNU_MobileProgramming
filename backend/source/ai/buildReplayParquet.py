@@ -130,21 +130,6 @@ def process_single_file(args):
         else:
             me_wd_tg = me_total
 
-        if "total" not in me_dict:
-            print("⚠️ total key 누락됨", stdid, ord, me_dict.keys())
-
-        if f"weekday_{weekday}" not in me_dict:
-            print("⚠️ weekday key 누락됨", stdid, ord, me_dict.keys())
-
-        if f"timegroup_{timegroup}" not in me_dict:
-            print("⚠️ timegroup key 누락됨", stdid, ord, me_dict.keys())
-        
-        if f"wd_tg_{weekday}_{timegroup}" not in me_dict:
-            print("⚠️ wd_tg key 누락됨", stdid, ord, me_dict.keys())
-
-        if str(ord) not in mean_elapsed.get(stdid, {}):
-            print("🚨 평균에 없는 ord 접근 시도", stdid, ord)
-
         stop_id = ord_lookup.get((stdid, ord), None)
         if not stop_id:
             return []
@@ -200,7 +185,6 @@ def process_single_file(args):
 def build_replay_parquet(target_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
     previous_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
-    print(previous_date)
 
     with open(STOP_TO_ROUTES_PATH, encoding='utf-8') as f:
         stop_to_routes = json.load(f)
@@ -214,7 +198,7 @@ def build_replay_parquet(target_date):
     with open(os.path.join(MEAN_INTERVAL_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
         mean_interval = json.load(f)
 
-    # ✅ 역매핑 딕셔너리 생성 (성능 개선용)
+    # 역매핑 딕셔너리 생성 (성능 개선용)
     ord_lookup = {}  # (stdid, ord) → stop_id
     for stop_id, routes in stop_to_routes.items():
         for route in routes:
