@@ -9,7 +9,7 @@ import pandas as pd
 import torch.nn as nn
 from collections import defaultdict
 from datetime import datetime, timedelta
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader
 
 # === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
@@ -47,14 +47,25 @@ def train_model(phase: str):
 
     # x_로 시작하는 모든 column을 feature로 간주
     x_cols = [col for col in df.columns if col.startswith("x_")]
+
+    # self_review일 때는 prev_pred_elapsed가 반드시 있어야 함
+    if phase == "self_review":
+        assert "x_prev_pred_elapsed" in x_cols, "self_review인데 x_prev_pred_elapsed가 없음"
+
     y_col = "y"
 
-    # Tensor로 변환 후 GPU로 이동
-    X = torch.tensor(df[x_cols].values, dtype=torch.float32).to(device)
+    # 딕셔너리로 feature 구성
+    x_dict = {}
+    for col in x_cols:
+        key = col.replace("x_", "")
+        dtype = torch.long if df[col].dtype in ["int64", "int32"] else torch.float32
+        x_dict[key] = torch.tensor(df[col].values, dtype=dtype).to(device)
+
     y = torch.tensor(df[y_col].values, dtype=torch.float32).unsqueeze(1).to(device)
 
-    dataset = TensorDataset(X, y)
-    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+    # dataset은 리스트(zip) 기반으로 구성
+    dataset = list(zip(*(list(x_dict.values()) + [y])))
+    keys = list(x_dict.keys())
 
     # === 모델 정의 및 전날 모델 불러오기 ===
     model = FirstETAModel().to(device)
@@ -70,7 +81,10 @@ def train_model(phase: str):
     # === 학습 루프 ===
     for epoch in range(EPOCHS):
         total_loss = 0
-        for batch_x, batch_y in dataloader:
+        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
+            *x_vals, batch_y = batch
+            batch_x = dict(zip(keys, x_vals))
+            
             optimizer.zero_grad()
 
             # forward pass
