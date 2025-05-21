@@ -61,15 +61,8 @@ class FirstETAModel(nn.Module):
         self.prev_pred_mlp = nn.Sequential(nn.Linear(1, 4), nn.ReLU(), nn.Linear(4, 16), nn.ReLU())
 
         # ===== Final MLP =====
-        self.final_mlp_replay = nn.Sequential(
-            nn.Linear(72, 64), nn.ReLU(),
-            nn.Linear(64, 32), nn.ReLU(),
-        )
+        self.final_mlp = nn.Sequential(nn.Linear(88, 64), nn.ReLU(), nn.Linear(64, 32), nn.ReLU())
 
-        self.final_mlp_review = nn.Sequential(
-            nn.Linear(88, 64), nn.ReLU(),
-            nn.Linear(64, 32), nn.ReLU(),
-        )
         self.head_mean = nn.Linear(32, 1)
         self.head_logvar = nn.Linear(32, 1)
 
@@ -118,13 +111,9 @@ class FirstETAModel(nn.Module):
         weather_context = self.weather_mlp(torch.cat([pty, x['weather_RN1'], x['weather_T1H']], dim=1))
 
         # === Self Review 용 Prev ETA ===
-        if phase == 'replay':
-            full_input = torch.cat([route_context, node_context, time_context, weather_context], dim=1)  # (B, 72)
-            h = self.final_mlp_replay(full_input)
-        else:
-            prev_eta = self.prev_pred_mlp(x['prev_pred_elapsed'])  # (B, 16)
-            full_input = torch.cat([route_context, node_context, time_context, weather_context, prev_eta], dim=1)  # (B, 88)
-            h = self.final_mlp_review(full_input)
+        prev_eta = self.prev_pred_mlp(x['prev_pred_elapsed'])  # (B, 16)
+        full_input = torch.cat([route_context, node_context, time_context, weather_context, prev_eta], dim=1)  # (B, 88)
+        h = self.final_mlp(full_input)
 
         pred_mean = self.head_mean(h)
         pred_log_var = self.head_logvar(h)

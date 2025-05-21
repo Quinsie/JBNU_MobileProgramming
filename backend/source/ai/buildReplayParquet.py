@@ -183,7 +183,8 @@ def process_single_file(args):
             "x_weather_T1H": normalize(weather['T1H'], -30, 50),
             "x_departure_time_sin": t_sin,
             "x_departure_time_cos": t_cos,
-            "x_ord_ratio": round(ord / max_ord, 4)
+            "x_ord_ratio": round(ord / max_ord, 4),
+            "x_prev_pred_elapsed": 0.0
         }
         rows.append(row)
     return rows

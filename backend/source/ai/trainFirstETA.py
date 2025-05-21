@@ -97,7 +97,7 @@ def train_model(phase: str):
             optimizer.zero_grad()
 
             # forward pass
-            pred_mean, pred_log_var = model(batch_x, phase=phase)
+            pred_mean, pred_log_var = model(batch_x)
 
             # 기본 heteroscedastic loss 계산
             hetero_loss = ((batch_y - pred_mean) ** 2 * torch.exp(-pred_log_var) + pred_log_var).mean()
