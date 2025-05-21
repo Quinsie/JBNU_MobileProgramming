@@ -26,6 +26,7 @@ FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
 SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocess", "eta_table", "first_model")
 os.makedirs(SAVE_PATH, exist_ok=True)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 MODEL = None
 
@@ -168,7 +169,7 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
                 if val.dim() == 1 and val.dtype == torch.float32:
                     val = val.unsqueeze(1)
 
-                x_tensor[key] = val
+                x_tensor[key] = val.to(device)
 
             with torch.no_grad():
                 pred_mean, _ = MODEL(x_tensor)
