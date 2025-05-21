@@ -83,8 +83,9 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
 
 # ==== 단일 stdid 처리 함수 ====
 def infer_single(entry, date_str, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
-    hhmm = entry['time']  # "0715"
-    dep = datetime(target_date.year, target_date.month, target_date.day, int(hhmm[:2]), int(hhmm[2:]))
+    hhmm = entry['time']  # ex: "07:50"
+    dep_hour, dep_minute = map(int, hhmm.split(":"))
+    dep = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
     result = {}
 
     model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt")
