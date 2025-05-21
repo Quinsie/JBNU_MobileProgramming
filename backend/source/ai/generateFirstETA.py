@@ -159,13 +159,7 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
             x_tensor = {}
             for k, v in row.items():
                 key = k.replace("x_", "")
-                val = torch.tensor(v)
-
-                # 0D → 1D → 2D 보장
-                if val.dim() == 0:
-                    val = val.unsqueeze(0).unsqueeze(0)
-                elif val.dim() == 1:
-                    val = val.unsqueeze(0)
+                val = torch.tensor(v).reshape(1, -1)
 
                 # 타입 지정
                 if key in float_keys:
