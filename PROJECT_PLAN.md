@@ -696,3 +696,4 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 세상에... 뭔가 진짜 큰 것을 해낸 느낌이다. 물론 아직 멀었다. self-review까지 해보고, 실제랑 차이가 크게 벌어지진 않는지. 학습을 쌓아도 유지되는지까지가 관건이다.
  - 계속 해보자.
  - self-review용 parquet 생성기 초안 완성. 일단 돌려본다.
+ - 논리는 거의 다 맞는데 초장에 에러가 났다. 디버깅...

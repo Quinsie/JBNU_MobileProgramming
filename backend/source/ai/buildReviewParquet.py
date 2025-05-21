@@ -24,6 +24,7 @@ MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interva
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 ETA_TABLE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "first_model")
 RAW_LOG_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
+DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
@@ -173,10 +174,12 @@ def save_review_parquet(date_str):
     forecast_all = {f.replace(".json", ""): load_json(os.path.join(FORECAST_DIR, f)) for f in os.listdir(FORECAST_DIR)}
     eta_table = load_json(os.path.join(ETA_TABLE_DIR, f"{eta_date}.json"))
 
-    task_args = [
-        (stdid, date_str, eta_table, stdid_number, label_bus, label_stop, mean_elapsed, mean_interval, forecast_all)
-        for stdid in os.listdir(RAW_LOG_DIR)
-    ]
+    weekday_type = getDayType(target_date)
+    dep_data = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))["data"]
+    task_args = []
+    for entry in dep_data:
+        for stdid in entry["stdid"]:
+            task_args.append((stdid, date_str, eta_table, stdid_number, label_bus, label_stop, mean_elapsed, mean_interval, forecast_all))
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_review, task_args)
