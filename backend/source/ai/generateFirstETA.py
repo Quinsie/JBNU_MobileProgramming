@@ -177,7 +177,7 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
                 eta_time = dep + timedelta(seconds=elapsed)
                 eta_dict[str(ord)] = eta_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        result[f"{stdid}_{hhmm}"] = eta_dict
+        result[f"{stdid}_{dep_hour}{dep_minute}"] = eta_dict
     return result
 
 # ===== main =====
