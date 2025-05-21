@@ -160,9 +160,9 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
             for k, v in row.items():
                 key = k.replace("x_", "")
                 if key in float_keys:
-                    x_tensor[key] = torch.tensor(v).unsqueeze(0).type(torch.float32)
+                    x_tensor[key] = torch.tensor(v).unsqueeze(1).type(torch.float32)
                 elif key in int_keys:
-                    x_tensor[key] = torch.tensor(v).unsqueeze(0).type(torch.long)
+                    x_tensor[key] = torch.tensor(v).unsqueeze(1).type(torch.long)
                 else:
                     raise ValueError(f"Unknown feature key: {key}")
 
