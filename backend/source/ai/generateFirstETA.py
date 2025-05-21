@@ -162,9 +162,9 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
                 key = k.replace("x_", "")
 
                 if key in float_keys:
-                    val = torch.tensor([[v]], dtype=torch.float32)  # shape: (1, 1)
+                    val = torch.tensor([v], dtype=torch.float32)  # shape: (1, 1)
                 elif key in int_keys:
-                    val = torch.tensor([[v]], dtype=torch.long)     # shape: (1, 1)
+                    val = torch.tensor([v], dtype=torch.long)     # shape: (1, 1)
                 
                 if val.dim() == 1 and val.dtype == torch.float32:
                     val = val.unsqueeze(1)
