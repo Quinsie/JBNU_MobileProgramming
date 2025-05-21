@@ -93,7 +93,7 @@ def process_single_entry(args):
     dep_time = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
 
     model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt")
-    model = torch.load(model_path, map_location=torch.device("cpu"))
+    model = torch.load(model_path, map_location=torch.device("cpu"), weights_only=False)
     model.eval()
 
     rows, eta_output = [], {}
