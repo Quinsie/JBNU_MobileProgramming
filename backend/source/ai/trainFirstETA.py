@@ -108,7 +108,7 @@ def train_model(phase: str):
                 prev_pred = batch_x["prev_pred_elapsed"].detach().unsqueeze(1)
                 penalty = nn.functional.relu(batch_y - prev_pred).mean()
                 loss = hetero_loss + 0.3 * penalty
-                print(f"[E{epoch+1}] hetero_loss: {hetero_loss.item():.4f} | penalty: {penalty.item():.4f}") # DEBUG
+                # print(f"[E{epoch+1}] hetero_loss: {hetero_loss.item():.4f} | penalty: {penalty.item():.4f}") # DEBUG
 
 
             # === [여기에 ranking loss를 이동] ===
@@ -142,15 +142,15 @@ def train_model(phase: str):
                 if count > 0:
                     ranking_loss = ranking_loss / count
                     loss += 0.1 * ranking_loss
-                    print(f"[E{epoch+1}] ranking_loss: {ranking_loss.item():.4f}") # DEBUG
+                    # print(f"[E{epoch+1}] ranking_loss: {ranking_loss.item():.4f}") # DEBUG
 
-            print(f"[E{epoch+1}] pred_mean: min={pred_mean.min().item():.4f}, max={pred_mean.max().item():.4f}, mean={pred_mean.mean().item():.4f}") # DEBUG
-            
+            # print(f"[E{epoch+1}] pred_mean: min={pred_mean.min().item():.4f}, max={pred_mean.max().item():.4f}, mean={pred_mean.mean().item():.4f}") # DEBUG
+
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
         # 에폭당 평균 loss와 최대 예측값 출력
-        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {total_loss/len(dataset):.4f}, Max pred: {pred_mean.max().item():.2f}")
+        print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {total_loss/len(dataset):.4f} | pred_mean: min={pred_mean.min().item():.4f}, max={pred_mean.max().item():.4f}, mean={pred_mean.mean().item():.4f}")
 
     # === 모델 저장 ===
     os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
