@@ -95,7 +95,7 @@ def process_single_entry(args):
     model = FirstETAModel()
     model.load_state_dict(model_state_dict)
     model.eval()
-    
+
     rows, eta_output = [], {}
     for stdid in entry['stdid']:
         stop_path = os.path.join(STOPS_DIR, f"{stdid}.json")
@@ -147,12 +147,9 @@ def process_single_entry(args):
             for k, v in row.items():
                 key = k.replace("x_", "")
                 if isinstance(v, int):
-                    tensor = torch.tensor([v], dtype=torch.long)
+                    tensor = torch.tensor([[v]], dtype=torch.long)  # 바로 [1, 1]
                 else:
-                    tensor = torch.tensor([v], dtype=torch.float32)
-
-                if tensor.dim() == 1:
-                    tensor = tensor.unsqueeze(1)  # [1] -> [1, 1]
+                    tensor = torch.tensor([[v]], dtype=torch.float32)
                 x_tensor[key] = tensor
 
             with torch.no_grad():
