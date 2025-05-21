@@ -22,10 +22,10 @@ LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
 LABEL_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "label_stops.json")
 MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
-DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
-ETA_SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocess", "eta_table", "first_model")
-os.makedirs(ETA_SAVE_PATH, exist_ok=True)
+DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
+SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocess", "eta_table", "first_model")
+os.makedirs(SAVE_PATH, exist_ok=True)
 
 # ==== 보조 함수 ====
 def normalize(v, min_val, max_val):
@@ -82,126 +82,108 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
     return {'T1H': normalize(20.0, -30, 50), 'RN1': normalize(0.0, 0, 100), 'PTY': 0}
 
 # ==== 단일 stdid 처리 함수 ====
-def process_single_entry(args):
-    entry, date_str, target_date, weekday_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all = args
-    hhmm = entry['time']
-    dep_hour, dep_minute = map(int, hhmm.split(":"))
-    dep_time = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
+def infer_single(entry, date_str, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
+    hhmm = entry['time']  # "0715"
+    dep = datetime(target_date.year, target_date.month, target_date.day, int(hhmm[:2]), int(hhmm[2:]))
+    result = {}
 
     model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt")
-    model = torch.load(model_path, map_location=torch.device("cpu"), weights_only=False)
-    model.eval()
+    model = torch.load(model_path, map_location="cpu", weights_only=False); model.eval()
 
-    eta_output = {}
-    for stdid in entry['stdid']:
-        stop_path = os.path.join(STOPS_DIR, f"{stdid}.json")
-        if not os.path.exists(stop_path):
-            continue
-        stops = load_json(stop_path)['resultList']
-        bus_number, direction, branch = extract_route_info(stdid, stdid_number, label_bus)
-        max_ord = max([stop['STOP_ORD'] for stop in stops])
-        eta_list = []
-        prev_elapsed = 0.0
-        for stop in stops:
-            ord = stop['STOP_ORD']
-            stop_id = stop['STOP_ID']
-            stop_id_str = str(stop_id)
-            stop_id_index = int(label_stops.get(stop_id_str, 0))
-            wd = weekday_label
-            tg = get_timegroup(dep_time)
-            wd_tg = wd * 8 + (tg - 1)
-            nx_ny = f"{stop['NODE_ID'] // 1000000}_{(stop['NODE_ID'] % 1000000) // 1000}"
-            weather = forecast_lookup(dep_time, nx_ny, forecast_all)
-            me_dict = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
-            mi_dict = mean_interval.get(str(stop_id), {})
+    for stdid in entry["stdid"]:
+        stop_file = os.path.join(STOPS_DIR, f"{stdid}.json")
+        if not os.path.exists(stop_file): continue
+        stops = load_json(stop_file)['resultList']
+        bn, dr, br = extract_route_info(stdid, stdid_number, label_bus)
+        max_ord = max(s["STOP_ORD"] for s in stops)
+        eta_dict, prev_elapsed = {}, 0.0
+
+        for s in stops:
+            ord = s["STOP_ORD"]; stop_id = s["STOP_ID"]
+            eta_time = dep + timedelta(seconds=prev_elapsed)
+            if ord == 1:
+                eta_dict[str(ord)] = eta_time.strftime("%Y-%m-%d %H:%M:%S")
+                continue
+
+            stop_idx = int(label_stops.get(str(stop_id), 0))
+            tg = get_timegroup(dep)
+            wd_tg = wd_label * 8 + (tg - 1)
+            nx_ny = f"{s['NODE_ID']//1000000}_{(s['NODE_ID']%1000000)//1000}"
+            weather = forecast_lookup(dep, nx_ny, forecast_all)
+            me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
+            mi = mean_interval.get(str(stop_id), {})
+
             row = {
-                "x_bus_number": bus_number,
-                "x_direction": direction,
-                "x_branch": branch,
-                "x_weekday": wd,
+                "x_bus_number": bn,
+                "x_direction": dr,
+                "x_branch": br,
+                "x_weekday": wd_label,
                 "x_timegroup": tg,
                 "x_weekday_timegroup": wd_tg,
-                "x_mean_elapsed_total": normalize(me_dict.get("total", {}).get("mean", -1), 0, 7200),
-                "x_mean_elapsed_weekday": normalize(me_dict.get(f"weekday_{wd}", {}).get("mean", -1), 0, 7200),
-                "x_mean_elapsed_timegroup": normalize(me_dict.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 7200),
-                "x_mean_elapsed_wd_tg": normalize(me_dict.get(f"wd_tg_{wd}_{tg}", {}).get("mean", -1), 0, 7200),
-                "x_node_id": stop_id_index,
-                "x_mean_interval_total": normalize(mi_dict.get("total", {}).get("mean", -1), 0, 600),
-                "x_mean_interval_weekday": normalize(mi_dict.get(f"weekday_{wd}", {}).get("mean", -1), 0, 600),
-                "x_mean_interval_timegroup": normalize(mi_dict.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 600),
-                "x_mean_interval_wd_tg": normalize(mi_dict.get(f"wd_tg_{wd}_{tg}", {}).get("mean", -1), 0, 600),
-                "x_weather_PTY": weather['PTY'],
-                "x_weather_RN1": weather['RN1'],
-                "x_weather_T1H": weather['T1H'],
-                "x_departure_time_sin": time_to_sin_cos(dep_time)[0],
-                "x_departure_time_cos": time_to_sin_cos(dep_time)[1],
+                "x_mean_elapsed_total": normalize(me.get("total", {}).get("mean", -1), 0, 7200),
+                "x_mean_elapsed_weekday": normalize(me.get(f"weekday_{wd_label}", {}).get("mean", -1), 0, 7200),
+                "x_mean_elapsed_timegroup": normalize(me.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 7200),
+                "x_mean_elapsed_wd_tg": normalize(me.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", -1), 0, 7200),
+                "x_node_id": stop_idx,
+                "x_mean_interval_total": normalize(mi.get("total", {}).get("mean", -1), 0, 600),
+                "x_mean_interval_weekday": normalize(mi.get(f"weekday_{wd_label}", {}).get("mean", -1), 0, 600),
+                "x_mean_interval_timegroup": normalize(mi.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 600),
+                "x_mean_interval_wd_tg": normalize(mi.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", -1), 0, 600),
+                "x_weather_PTY": weather["PTY"],
+                "x_weather_RN1": weather["RN1"],
+                "x_weather_T1H": weather["T1H"],
+                "x_departure_time_sin": time_to_sin_cos(dep)[0],
+                "x_departure_time_cos": time_to_sin_cos(dep)[1],
                 "x_ord_ratio": round(ord / max_ord, 4),
                 "x_prev_pred_elapsed": normalize(prev_elapsed, 0, 7200)
             }
 
-            float_keys = {
-                "mean_elapsed_total", "mean_elapsed_weekday", "mean_elapsed_timegroup", "mean_elapsed_wd_tg",
-                "mean_interval_total", "mean_interval_weekday", "mean_interval_timegroup", "mean_interval_wd_tg",
-                "weather_RN1", "weather_T1H",
-                "departure_time_sin", "departure_time_cos",
-                "ord_ratio", "prev_pred_elapsed"
-            }
-            x_tensor = {}
-            for k, v in row.items():
-                key = k.replace("x_", "")
-                if key in float_keys:
-                    tensor = torch.tensor([[v]], dtype=torch.float32)
-                else:
-                    tensor = torch.tensor([[v]], dtype=torch.long)
-                x_tensor[key] = tensor
+            float_keys = {k for k in row if any(k.endswith(suffix) for suffix in ["_sin", "_cos", "_RN1", "_T1H", "_ratio", "_elapsed", "_interval", "_prev_pred_elapsed"])}
+            x_tensor = {k.replace("x_", ""): torch.tensor([[v]], dtype=(torch.float32 if k in float_keys else torch.long)) for k, v in row.items()}
 
             with torch.no_grad():
                 pred_mean, _ = model(x_tensor)
-                elapsed = float(pred_mean.item())
-                prev_elapsed = elapsed
-            eta_time = dep_time + timedelta(seconds=elapsed)
-            eta_list.append({"ord": ord, "time": eta_time.strftime("%Y-%m-%d %H:%M:%S")})
-        eta_output[f"{stdid}_{hhmm}"] = eta_list
-    return eta_output
+                elapsed = float(pred_mean.item()); prev_elapsed = elapsed
+                eta_time = dep + timedelta(seconds=elapsed)
+                eta_dict[str(ord)] = eta_time.strftime("%Y-%m-%d %H:%M:%S")
 
-# === main 함수 ===
+        result[f"{stdid}_{hhmm}"] = eta_dict
+    return result
+
+# ===== main =====
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", required=True)
     args = parser.parse_args()
 
     now = time.time()
+    print(f"ETA Table 생성 시작... {args.date}")
+
     target_date = datetime.strptime(args.date, "%Y%m%d")
-    date_str = target_date.strftime("%Y%m%d")
+    date_str = args.date
     prev_date_str = (target_date - timedelta(days=1)).strftime("%Y%m%d")
     weekday_type = getDayType(target_date)
-    weekday_label = {"weekday": 1, "saturday": 2, "holiday": 3}[weekday_type]
+    wd_label = {"weekday": 1, "saturday": 2, "holiday": 3}[weekday_type]
 
     stdid_number = load_json(STDID_NUMBER_PATH)
     label_bus = load_json(LABEL_BUS_PATH)
     label_stops = load_json(LABEL_STOP_PATH)
     mean_elapsed = load_json(os.path.join(MEAN_ELAPSED_DIR, f"{prev_date_str}.json"))
     mean_interval = load_json(os.path.join(MEAN_INTERVAL_DIR, f"{prev_date_str}.json"))
-    forecast_all = {fname.replace(".json", ""): load_json(os.path.join(FORECAST_DIR, fname)) for fname in os.listdir(FORECAST_DIR) if fname.endswith(".json")}
-    departure_cache = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))['data']
+    forecast_all = {f.replace(".json", ""): load_json(os.path.join(FORECAST_DIR, f)) for f in os.listdir(FORECAST_DIR)}
+    dep_data = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))["data"]
 
-    model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
-    model = FirstETAModel()
-    model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
-    model.eval()
-    model_full_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt")
-    torch.save(model, model_full_path)
+    model_pth = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
+    model = FirstETAModel(); model.load_state_dict(torch.load(model_pth, map_location="cpu"))
+    torch.save(model, os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
 
-    task_args = [(entry, date_str, target_date, weekday_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
+    task_args = [(entry, date_str, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
     with Pool(cpu_count()) as pool:
-        eta_results = pool.map(process_single_entry, task_args)
+        results = pool.map(lambda args: infer_single(*args), task_args)
 
-    all_eta = {}
-    for eta_dict in eta_results:
-        all_eta.update(eta_dict)
+    final = {}; [final.update(r) for r in results]
+    with open(os.path.join(SAVE_PATH, f"{date_str}.json"), "w", encoding="utf-8") as f:
+        json.dump(final, f, ensure_ascii=False, indent=2)
 
-    with open(os.path.join(ETA_SAVE_PATH, f"{date_str}.json"), "w", encoding="utf-8") as f:
-        json.dump(all_eta, f, ensure_ascii=False, indent=2)
-
-    print(f"[INFO] ETA 추론 및 저장 완료: {date_str}")
+    print(f"[INFO] ETA 저장 완료: {date_str} / 총 {len(final)}개 운행")
     print("소요 시간: ", time.time() - now, "sec")
