@@ -213,8 +213,9 @@ if __name__ == "__main__":
     task_args = [(entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
     
     def unpack_and_infer(args): return infer_single(*args)
-    with Pool(cpu_count()) as pool:
-        results = pool.map(unpack_and_infer, task_args)
+    # with Pool(cpu_count()) as pool:
+    #     results = pool.map(unpack_and_infer, task_args)
+    results = [unpack_and_infer(args) for args in task_args]
 
     final = {}; [final.update(r) for r in results]
     with open(os.path.join(SAVE_PATH, f"{date_str}.json"), "w", encoding="utf-8") as f:
