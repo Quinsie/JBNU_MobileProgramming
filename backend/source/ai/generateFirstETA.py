@@ -143,6 +143,13 @@ def process_single_entry(args):
                 "x_prev_pred_elapsed": normalize(prev_elapsed, 0, 7200)
             }
 
+            float_keys = {
+                "mean_elapsed_total", "mean_elapsed_weekday", "mean_elapsed_timegroup", "mean_elapsed_wd_tg",
+                "mean_interval_total", "mean_interval_weekday", "mean_interval_timegroup", "mean_interval_wd_tg",
+                "weather_RN1", "weather_T1H",
+                "departure_time_sin", "departure_time_cos",
+                "ord_ratio", "prev_pred_elapsed"
+            }
             x_tensor = {}
             for k, v in row.items():
                 key = k.replace("x_", "")
