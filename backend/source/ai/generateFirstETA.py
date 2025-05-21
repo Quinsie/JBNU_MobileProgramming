@@ -87,12 +87,15 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
 
 # ==== 단일 stdid 처리 함수 ====
 def process_single_entry(args):
-    entry, date_str, target_date, weekday_label, model_path, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all = args
+    entry, date_str, target_date, weekday_label, model_state_dict, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all = args
     hhmm = entry['time']
     dep_hour, dep_minute = map(int, hhmm.split(":"))
     dep_time = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
-    model = FirstETAModel().eval()
-    model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
+
+    model = FirstETAModel()
+    model.load_state_dict(model_state_dict)
+    model.eval()
+    
     rows, eta_output = [], {}
     for stdid in entry['stdid']:
         stop_path = os.path.join(STOPS_DIR, f"{stdid}.json")
@@ -139,7 +142,7 @@ def process_single_entry(args):
                 "x_ord_ratio": round(ord / max_ord, 4),
                 "x_prev_pred_elapsed": normalize(prev_elapsed, 0, 7200)
             }
-            
+
             x_tensor = {}
             for k, v in row.items():
                 key = k.replace("x_", "")
@@ -188,8 +191,12 @@ if __name__ == "__main__":
     departure_cache = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))['data']
 
     model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
+    model = FirstETAModel()
+    model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
+    model.eval()
+    model_state_dict = model.state_dict()
 
-    task_args = [(entry, date_str, target_date, weekday_label, model_path, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
+    task_args = [(entry, date_str, target_date, weekday_label, model_state_dict, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_entry, task_args)
