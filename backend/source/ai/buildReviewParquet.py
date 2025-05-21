@@ -104,7 +104,9 @@ def process_single_review(args):
 
     rows = []
     for trip in trips:
-        hhmm = trip[0].split()[-1][:5]
+        first_arrival = trip[0]["ARRIVAL_TIME"]  # 또는 stop["time"]이 될 수도 있음
+        hhmm = first_arrival.split()[-1][:5]
+        key = f"{stdid}_{hhmm}"
         key = f"{stdid}_{hhmm}"
         if key not in eta_table:
             continue
