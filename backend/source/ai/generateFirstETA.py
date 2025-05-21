@@ -24,7 +24,7 @@ MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed"
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
-SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocess", "eta_table", "first_model")
+SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "first_model")
 os.makedirs(SAVE_PATH, exist_ok=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
