@@ -192,7 +192,7 @@ def process_single_file(args):
 # === 메인 전처리 함수 ===
 def build_replay_parquet(target_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
-    mean_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d")
+    mean_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d") # mean은 이틀 전
 
     with open(os.path.join(MEAN_ELAPSED_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
         mean_elapsed = json.load(f)
@@ -232,7 +232,7 @@ def build_replay_parquet(target_date):
             if not fname.endswith(".json"): continue
             raw_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
             if not fname.startswith(raw_date): continue
-            task_list.append((stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
+            task_list.append((stdid, fname, raw_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_file, task_list)
