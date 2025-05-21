@@ -87,13 +87,13 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
 
 # ==== 단일 stdid 처리 함수 ====
 def process_single_entry(args):
-    entry, date_str, target_date, weekday_label, model_state_dict, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all = args
+    entry, date_str, target_date, weekday_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all = args
     hhmm = entry['time']
     dep_hour, dep_minute = map(int, hhmm.split(":"))
     dep_time = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
 
-    model = FirstETAModel()
-    model.load_state_dict(model_state_dict)
+    model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt")
+    model = torch.load(model_path, map_location=torch.device("cpu"))
     model.eval()
 
     rows, eta_output = [], {}
@@ -198,9 +198,10 @@ if __name__ == "__main__":
     model = FirstETAModel()
     model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
     model.eval()
-    model_state_dict = model.state_dict()
+    model_full_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt")
+    torch.save(model, model_full_path)
 
-    task_args = [(entry, date_str, target_date, weekday_label, model_state_dict, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
+    task_args = [(entry, date_str, target_date, weekday_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_entry, task_args)
