@@ -87,6 +87,10 @@ class FirstETAModel(nn.Module):
         me_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['mean_elapsed_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_elapsed = self.mean_elapsed_merge(torch.cat([me_total, me_wd, me_tg, me_wdtg], dim=1))
 
+        print("bus shape:", bus.shape)  # 예: torch.Size([1, 8])
+        print("direction shape:", direction.shape)  # 예: torch.Size([1, 4])
+        print("branch_input shape before cat:", bus.shape, direction.shape)
+
         route_input = torch.cat([bus, direction, branch, ord_ratio, mean_elapsed], dim=1)
         route_context = self.route_ord_mlp(route_input)         # (B, 32)
 
