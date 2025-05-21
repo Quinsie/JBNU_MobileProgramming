@@ -10,12 +10,11 @@ import argparse
 import pandas as pd
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
-from source.utils.getDayType import getDayType
-from source.ai.FirstETAModel import FirstETAModel
 
 # ==== 경로 설정 ====
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.append(BASE_DIR)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
+from source.utils.getDayType import getDayType
+from source.ai.FirstETAModel import FirstETAModel
 
 # ==== 경로 상수 ====
 STOPS_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
