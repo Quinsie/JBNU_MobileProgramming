@@ -139,7 +139,19 @@ def process_single_entry(args):
                 "x_ord_ratio": round(ord / max_ord, 4),
                 "x_prev_pred_elapsed": normalize(prev_elapsed, 0, 7200)
             }
-            x_tensor = {k.replace("x_", ""): torch.tensor([[v]], dtype=torch.long if isinstance(v, int) else torch.float32) for k, v in row.items()}
+            
+            x_tensor = {}
+            for k, v in row.items():
+                key = k.replace("x_", "")
+                if isinstance(v, int):
+                    tensor = torch.tensor([v], dtype=torch.long)
+                else:
+                    tensor = torch.tensor([v], dtype=torch.float32)
+
+                if tensor.dim() == 1:
+                    tensor = tensor.unsqueeze(1)  # [1] -> [1, 1]
+                x_tensor[key] = tensor
+
             with torch.no_grad():
                 pred_mean, _ = model(x_tensor)
                 elapsed = float(pred_mean.item())
