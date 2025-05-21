@@ -139,8 +139,26 @@ def infer_single(entry, date_str, target_date, wd_label, stdid_number, label_bus
                 "x_prev_pred_elapsed": normalize(prev_elapsed, 0, 7200)
             }
 
-            float_keys = {k for k in row if any(k.endswith(suffix) for suffix in ["_sin", "_cos", "_RN1", "_T1H", "_ratio", "_elapsed", "_interval", "_prev_pred_elapsed"])}
-            x_tensor = {k.replace("x_", ""): torch.tensor([[v]], dtype=(torch.float32 if k in float_keys else torch.long)) for k, v in row.items()}
+            int_keys = {
+                "bus_number", "direction", "branch", "node_id", "weekday", "timegroup", "weekday_timegroup", "weather_PTY"
+            }
+            float_keys = {
+                "mean_elapsed_total", "mean_elapsed_weekday", "mean_elapsed_timegroup", "mean_elapsed_wd_tg",
+                "mean_interval_total", "mean_interval_weekday", "mean_interval_timegroup", "mean_interval_wd_tg",
+                "weather_RN1", "weather_T1H",
+                "departure_time_sin", "departure_time_cos",
+                "ord_ratio", "prev_pred_elapsed"
+            }
+
+            x_tensor = {}
+            for k, v in row.items():
+                key = k.replace("x_", "")
+                if key in float_keys:
+                    x_tensor[key] = torch.tensor([[v]], dtype=torch.float32)
+                elif key in int_keys:
+                    x_tensor[key] = torch.tensor([[v]], dtype=torch.long)
+                else:
+                    raise ValueError(f"Unknown feature key: {key}")
 
             with torch.no_grad():
                 pred_mean, _ = model(x_tensor)
