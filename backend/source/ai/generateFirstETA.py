@@ -97,6 +97,8 @@ if __name__ == "__main__":
 
     target_date = datetime.strptime(args.date, "%Y%m%d")
     date_str = target_date.strftime("%Y%m%d")
+    prev_date_str = (target_date - timedelta(days=1)).strftime("%Y%m%d")
+    
     weekday_type = getDayType(target_date)  # 'weekday', 'saturday', 'holiday'
     weekday_label = {"weekday": 1, "saturday": 2, "holiday": 3}[weekday_type]
 
@@ -104,8 +106,8 @@ if __name__ == "__main__":
     stdid_number = load_json(STDID_NUMBER_PATH)
     label_bus = load_json(LABEL_BUS_PATH)
     label_stops = load_json(LABEL_STOP_PATH)
-    mean_elapsed = load_json(os.path.join(MEAN_ELAPSED_DIR, f"{date_str}.json"))
-    mean_interval = load_json(os.path.join(MEAN_INTERVAL_DIR, f"{date_str}.json"))
+    mean_elapsed = load_json(os.path.join(MEAN_ELAPSED_DIR, f"{prev_date_str}.json"))
+    mean_interval = load_json(os.path.join(MEAN_INTERVAL_DIR, f"{prev_date_str}.json"))
     forecast_all = {}
     for fname in os.listdir(FORECAST_DIR):
         if fname.endswith(".json"):
