@@ -178,8 +178,10 @@ if __name__ == "__main__":
     torch.save(model, os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
 
     task_args = [(entry, date_str, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
+    
+    def unpack_and_infer(args): return infer_single(*args)
     with Pool(cpu_count()) as pool:
-        results = pool.map(lambda args: infer_single(*args), task_args)
+        results = pool.map(unpack_and_infer, task_args)
 
     final = {}; [final.update(r) for r in results]
     with open(os.path.join(SAVE_PATH, f"{date_str}.json"), "w", encoding="utf-8") as f:
