@@ -173,7 +173,7 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
 
             with torch.no_grad():
                 pred_mean, _ = MODEL(x_tensor)
-                elapsed = float(pred_mean.item()); prev_elapsed = elapsed
+                elapsed = float(pred_mean.item()) * 7200; prev_elapsed = elapsed
                 eta_time = dep + timedelta(seconds=elapsed)
                 eta_dict[str(ord)] = eta_time.strftime("%Y-%m-%d %H:%M:%S")
 
