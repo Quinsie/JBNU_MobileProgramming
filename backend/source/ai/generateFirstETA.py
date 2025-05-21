@@ -147,9 +147,9 @@ def process_single_entry(args):
             for k, v in row.items():
                 key = k.replace("x_", "")
                 if isinstance(v, int):
-                    tensor = torch.tensor([[v]], dtype=torch.long)  # 바로 [1, 1]
+                    tensor = torch.tensor([v], dtype=torch.long)  # 바로 [1, 1]
                 else:
-                    tensor = torch.tensor([[v]], dtype=torch.float32)
+                    tensor = torch.tensor([v], dtype=torch.float32)
                 x_tensor[key] = tensor
 
             with torch.no_grad():
