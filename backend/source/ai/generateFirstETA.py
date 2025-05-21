@@ -27,6 +27,8 @@ DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cac
 SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocess", "eta_table", "first_model")
 os.makedirs(SAVE_PATH, exist_ok=True)
 
+MODEL = None
+
 # ==== 보조 함수 ====
 def normalize(v, min_val, max_val):
     return max(min((v - min_val) / (max_val - min_val), 1), 0)
@@ -81,15 +83,19 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
                             }
     return {'T1H': normalize(20.0, -30, 50), 'RN1': normalize(0.0, 0, 100), 'PTY': 0}
 
+def set_global_model(model_path):
+    global MODEL
+    MODEL = torch.load(model_path, map_location="cpu", weights_only=False)
+    MODEL.eval()
+
 # ==== 단일 stdid 처리 함수 ====
-def infer_single(entry, date_str, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
+def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
     hhmm = entry['time']  # ex: "07:50"
     dep_hour, dep_minute = map(int, hhmm.split(":"))
     dep = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
     result = {}
 
-    model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt")
-    model = torch.load(model_path, map_location="cpu", weights_only=False); model.eval()
+    global MODEL
 
     for stdid in entry["stdid"]:
         stop_file = os.path.join(STOPS_DIR, f"{stdid}.json")
@@ -161,7 +167,7 @@ def infer_single(entry, date_str, target_date, wd_label, stdid_number, label_bus
                     raise ValueError(f"Unknown feature key: {key}")
 
             with torch.no_grad():
-                pred_mean, _ = model(x_tensor)
+                pred_mean, _ = MODEL(x_tensor)
                 elapsed = float(pred_mean.item()); prev_elapsed = elapsed
                 eta_time = dep + timedelta(seconds=elapsed)
                 eta_dict[str(ord)] = eta_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -193,10 +199,13 @@ if __name__ == "__main__":
     dep_data = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))["data"]
 
     model_pth = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
-    model = FirstETAModel(); model.load_state_dict(torch.load(model_pth, map_location="cpu"))
-    torch.save(model, os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
+    model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location="cpu"))
+    torch.save(model_obj, os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
 
-    task_args = [(entry, date_str, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
+    # global model 로드 (multiprocessing-safe)
+    set_global_model(os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
+
+    task_args = [(entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
     
     def unpack_and_infer(args): return infer_single(*args)
     with Pool(cpu_count()) as pool:
