@@ -88,11 +88,11 @@ def fallback_forecast(target_dt, nx_ny, forecast_all):
     return {"PTY": 0, "T1H": normalize(20.0, -30, 50), "RN1": normalize(0.0, 0, 100)}
 
 def process_single_review(args):
-    stdid, date_str, eta_table, stdid_number, label_bus, label_stop, mean_elapsed, mean_interval, forecast_all = args
+    stdid, hhmm, date_str, eta_table, stdid_number, label_bus, label_stop, mean_elapsed, mean_interval, forecast_all = args
     target_date = datetime.strptime(date_str, "%Y%m%d")
     eta_date = (target_date - timedelta(days=1)).strftime("%Y%m%d")
     wd_label = {"weekday": 1, "saturday": 2, "holiday": 3}[getDayType(target_date)]
-    path = os.path.join(RAW_LOG_DIR, stdid, f"{eta_date}_0000.json")
+    path = os.path.join(RAW_LOG_DIR, stdid, f"{eta_date}_{hhmm}.json")
 
     if not os.path.exists(path):
         return []
@@ -178,9 +178,9 @@ def save_review_parquet(date_str):
     dep_data = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))["data"]
     task_args = []
     for entry in dep_data:
+        hhmm = entry["time"]
         for stdid in entry["stdid"]:
-            task_args.append((stdid, date_str, eta_table, stdid_number, label_bus, label_stop, mean_elapsed, mean_interval, forecast_all))
-
+            task_args.append((str(stdid), hhmm, date_str, eta_table, stdid_number, label_bus, label_stop, mean_elapsed, mean_interval, forecast_all))
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_review, task_args)
 
