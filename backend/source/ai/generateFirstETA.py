@@ -7,7 +7,6 @@ import math
 import time
 import torch
 import argparse
-import pandas as pd
 from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
 
@@ -25,11 +24,8 @@ MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed"
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
 DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
-
 ETA_SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocess", "eta_table", "first_model")
-FEATURE_PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocess", "first_train", "inference")
 os.makedirs(ETA_SAVE_PATH, exist_ok=True)
-os.makedirs(FEATURE_PARQUET_PATH, exist_ok=True)
 
 # ==== 보조 함수 ====
 def normalize(v, min_val, max_val):
@@ -96,7 +92,7 @@ def process_single_entry(args):
     model = torch.load(model_path, map_location=torch.device("cpu"), weights_only=False)
     model.eval()
 
-    rows, eta_output = [], {}
+    eta_output = {}
     for stdid in entry['stdid']:
         stop_path = os.path.join(STOPS_DIR, f"{stdid}.json")
         if not os.path.exists(stop_path):
@@ -163,14 +159,10 @@ def process_single_entry(args):
                 pred_mean, _ = model(x_tensor)
                 elapsed = float(pred_mean.item())
                 prev_elapsed = elapsed
-            parquet_row = row.copy()
-            parquet_row['trip_group_id'] = f"{date_str}_{hhmm}_{stdid}"
-            parquet_row['ord'] = ord
-            rows.append(parquet_row)
             eta_time = dep_time + timedelta(seconds=elapsed)
             eta_list.append({"ord": ord, "time": eta_time.strftime("%Y-%m-%d %H:%M:%S")})
         eta_output[f"{stdid}_{hhmm}"] = eta_list
-    return rows, eta_output
+    return eta_output
 
 # === main 함수 ===
 if __name__ == "__main__":
@@ -179,7 +171,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     now = time.time()
-
     target_date = datetime.strptime(args.date, "%Y%m%d")
     date_str = target_date.strftime("%Y%m%d")
     prev_date_str = (target_date - timedelta(days=1)).strftime("%Y%m%d")
@@ -202,20 +193,15 @@ if __name__ == "__main__":
     torch.save(model, model_full_path)
 
     task_args = [(entry, date_str, target_date, weekday_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
-
     with Pool(cpu_count()) as pool:
-        results = pool.map(process_single_entry, task_args)
+        eta_results = pool.map(process_single_entry, task_args)
 
-    all_rows, all_eta = [], {}
-    for rows, eta_dict in results:
-        all_rows.extend(rows)
+    all_eta = {}
+    for eta_dict in eta_results:
         all_eta.update(eta_dict)
 
     with open(os.path.join(ETA_SAVE_PATH, f"{date_str}.json"), "w", encoding="utf-8") as f:
         json.dump(all_eta, f, ensure_ascii=False, indent=2)
 
-    df = pd.DataFrame(all_rows)
-    next_date_str = (target_date + timedelta(days=1)).strftime("%Y%m%d")
-    df.to_parquet(os.path.join(FEATURE_PARQUET_PATH, f"{next_date_str}.parquet"), index=False)
     print(f"[INFO] ETA 추론 및 저장 완료: {date_str}")
     print("소요 시간: ", time.time() - now, "sec")
