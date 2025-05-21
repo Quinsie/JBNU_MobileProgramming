@@ -63,7 +63,7 @@ class FirstETAModel(nn.Module):
         # ===== Final MLP =====
         self.final_mlp = nn.Sequential(nn.Linear(88, 64), nn.ReLU(), nn.Linear(64, 32), nn.ReLU())
 
-        self.head_mean = nn.Sequential(nn.Linear(32, 1), nn.Sigmoid())
+        self.head_mean = nn.Sequential(nn.Linear(32, 1))
         self.head_logvar = nn.Linear(32, 1)
 
     def forward(self, x, phase="self_review"):
