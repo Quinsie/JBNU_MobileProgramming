@@ -682,3 +682,8 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
   + mean 생성 (2025-05-07)
   + generateFirstETA (2025-05-08)
   + ]] ... loop
+
+---
+### 2025-05-22
+#### 진행 상황
+ - 추론값이 음수가 나오는 괴상한 상황이 벌어져서 모델을 조금 손봤다. 마지막 final부분에서 ReLU를 안 먹인 탓이 아닐까 싶다.

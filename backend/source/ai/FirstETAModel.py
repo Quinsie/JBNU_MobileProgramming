@@ -117,4 +117,5 @@ class FirstETAModel(nn.Module):
 
         pred_mean = self.head_mean(h)
         pred_log_var = self.head_logvar(h)
+        pred_log_var = torch.clamp(pred_log_var, min=-10.0, max=5.0)
         return pred_mean, pred_log_var
