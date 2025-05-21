@@ -87,10 +87,12 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
 
 # ==== 단일 stdid 처리 함수 ====
 def process_single_entry(args):
-    entry, date_str, target_date, weekday_label, model, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all = args
+    entry, date_str, target_date, weekday_label, model_path, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all = args
     hhmm = entry['time']
     dep_hour, dep_minute = map(int, hhmm.split(":"))
     dep_time = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
+    model = FirstETAModel().eval()
+    model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
     rows, eta_output = [], {}
     for stdid in entry['stdid']:
         stop_path = os.path.join(STOPS_DIR, f"{stdid}.json")
@@ -173,10 +175,9 @@ if __name__ == "__main__":
     forecast_all = {fname.replace(".json", ""): load_json(os.path.join(FORECAST_DIR, fname)) for fname in os.listdir(FORECAST_DIR) if fname.endswith(".json")}
     departure_cache = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))['data']
 
-    model = FirstETAModel().eval()
-    model.load_state_dict(torch.load(os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth"), map_location=torch.device("cpu")))
+    model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
 
-    task_args = [(entry, date_str, target_date, weekday_label, model, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
+    task_args = [(entry, date_str, target_date, weekday_label, model_path, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in departure_cache]
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_entry, task_args)
