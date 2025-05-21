@@ -134,12 +134,12 @@ def process_single_file(args):
 
         stop_id = ord_lookup.get((stdid, ord), None)
         if stop_id is None:
-            return []
+            continue
         try:
             stop_id_str = str(stop_id)  # string이어도 int로 강제 변환
             stop_id_index = int(label_stops.get(stop_id_str, 0))  # fallback index=0
         except ValueError:
-            return []  # 혹시라도 이상한 값 들어올 경우 방어
+            continue  # 혹시라도 이상한 값 들어올 경우 방어
 
         mi_dict = mean_interval.get(stop_id, {})
         mi_total = normalize(mi_dict.get("total", {}).get("mean", -1), 0, 600)
@@ -192,8 +192,12 @@ def process_single_file(args):
 # === 메인 전처리 함수 ===
 def build_replay_parquet(target_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
-    previous_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
+    mean_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d")
 
+    with open(os.path.join(MEAN_ELAPSED_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
+        mean_elapsed = json.load(f)
+    with open(os.path.join(MEAN_INTERVAL_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
+        mean_interval = json.load(f)
     with open(STOP_TO_ROUTES_PATH, encoding='utf-8') as f:
         stop_to_routes = json.load(f)
     with open(STDID_NUMBER_PATH, encoding='utf-8') as f:
@@ -204,11 +208,6 @@ def build_replay_parquet(target_date):
         label_bus = json.load(f)
     with open(LABEL_STOP_PATH, encoding="utf-8") as f:
         label_stops = json.load(f)
-
-    with open(os.path.join(MEAN_ELAPSED_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
-        mean_elapsed = json.load(f)
-    with open(os.path.join(MEAN_INTERVAL_DIR, f"{previous_date}.json"), encoding='utf-8') as f: # mean은 하루 전
-        mean_interval = json.load(f)
 
     # 역매핑 딕셔너리 생성 (성능 개선용)
     ord_lookup = {}  # (stdid, ord) → stop_id
@@ -231,7 +230,8 @@ def build_replay_parquet(target_date):
         if not os.path.isdir(stdid_path): continue
         for fname in os.listdir(stdid_path):
             if not fname.endswith(".json"): continue
-            if not fname.startswith(target_date): continue
+            raw_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
+            if not fname.startswith(raw_date): continue
             task_list.append((stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
 
     with Pool(cpu_count()) as pool:
