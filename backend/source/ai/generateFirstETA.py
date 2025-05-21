@@ -84,9 +84,9 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
                             }
     return {'T1H': normalize(20.0, -30, 50), 'RN1': normalize(0.0, 0, 100), 'PTY': 0}
 
-def set_global_model(model_path):
+def set_global_model(model):
     global MODEL
-    MODEL = torch.load(model_path, map_location="cpu", weights_only=False)
+    MODEL = model
     MODEL.eval()
 
 # ==== 단일 stdid 처리 함수 ====
@@ -204,11 +204,11 @@ if __name__ == "__main__":
     dep_data = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))["data"]
 
     model_pth = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
-    model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location="cpu"))
-    torch.save(model_obj, os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
+    model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location=device))
+    set_global_model(model_obj.to(device))
 
     # global model 로드 (multiprocessing-safe)
-    set_global_model(os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
+    # set_global_model(os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
 
     task_args = [(entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
     
