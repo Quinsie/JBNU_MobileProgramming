@@ -695,3 +695,4 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 와. 추론코드에서 나도 모르게 RNN-like 추론을 시키고 있었던게 핵심 원인이었다. 현재로선 거의 실제와 유사하게 추론이 이뤄진다.
  - 세상에... 뭔가 진짜 큰 것을 해낸 느낌이다. 물론 아직 멀었다. self-review까지 해보고, 실제랑 차이가 크게 벌어지진 않는지. 학습을 쌓아도 유지되는지까지가 관건이다.
  - 계속 해보자.
+ - self-review용 parquet 생성기 초안 완성. 일단 돌려본다.

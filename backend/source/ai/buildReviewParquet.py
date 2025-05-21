@@ -23,7 +23,7 @@ MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed"
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 ETA_TABLE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "first_model")
-RAW_LOG_DIR = os.path.join(BASE_DIR, "data", "raw", "realtime_bus")
+RAW_LOG_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
