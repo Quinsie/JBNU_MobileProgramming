@@ -687,3 +687,5 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
 ### 2025-05-22
 #### 진행 상황
  - 추론값이 음수가 나오는 괴상한 상황이 벌어져서 모델을 조금 손봤다. 마지막 final부분에서 ReLU를 안 먹인 탓이 아닐까 싶다.
+ - ReLU를 마지막에 추가해줬더니 갑자기 log var이 터졌는지 13에폭부터 NaN을 띄운다. clamp 걸어서 안정화.
+ - 이번엔 전부 0에 수렴한다. 다시 ReLU는 빼고 clamp만 걸고 한번 상태를 보자.
