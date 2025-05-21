@@ -93,6 +93,7 @@ def set_global_model(model):
 def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
     hhmm = entry['time']  # ex: "07:50"
     dep_hour, dep_minute = map(int, hhmm.split(":"))
+    save_hour, save_minute = hhmm.split(":")
     dep = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
     result = {}
 
@@ -177,7 +178,7 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
                 eta_time = dep + timedelta(seconds=elapsed)
                 eta_dict[str(ord)] = eta_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        result[f"{stdid}_{dep_hour}{dep_minute}"] = eta_dict
+        result[f"{stdid}_{save_hour}{save_minute}"] = eta_dict
     return result
 
 # ===== main =====
