@@ -4,7 +4,7 @@ import pandas as pd
 import os
 
 # === 설정 ===
-DATE = "20250506"
+DATE = "20250507"
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 PARQUET_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay", f"{DATE}.parquet")
 
