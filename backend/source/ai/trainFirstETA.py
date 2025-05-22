@@ -157,6 +157,21 @@ def train_model(phase: str):
     torch.save(model.state_dict(), model_save_path)
     print(f"[INFO] Saved model to {model_save_path}")
 
+    # === test ===
+    model.eval()
+    with torch.no_grad():
+        test_batch = next(iter(DataLoader(dataset, batch_size=32, shuffle=True)))
+        batch_indices, *x_vals, batch_y = test_batch
+        batch_x = dict(zip(keys, x_vals))
+
+        pred_mean, _ = model(batch_x)
+        pred_elapsed = pred_mean.squeeze() * 7200
+        real_elapsed = batch_y.squeeze() * 7200
+
+        print("\n=== 학습 후 추론 테스트 (pred vs real) ===")
+        for i in range(min(10, len(pred_elapsed))):
+            print(f"[{i}] Pred: {pred_elapsed[i]:.2f}s | Real: {real_elapsed[i]:.2f}s")
+
 # === main 함수 진입점 ===
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
