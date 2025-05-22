@@ -122,6 +122,33 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
             me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
             mi = mean_interval.get(str(stop_id), {})
 
+            # === 평균값 fallback 구조 적용 ===
+            me_total = normalize(me.get("total", {}).get("mean", -1), 0, 7200)
+            me_weekday = normalize(me.get(f"weekday_{wd_label}", {}).get("mean", me_total), 0, 7200)
+            me_timegroup = normalize(me.get(f"timegroup_{tg}", {}).get("mean", me_total), 0, 7200)
+            me_wd_tg_raw = me.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", None)
+            if me_wd_tg_raw is not None:
+                me_wd_tg = normalize(me_wd_tg_raw, 0, 7200)
+            elif me.get(f"weekday_{wd_label}"):
+                me_wd_tg = me_weekday
+            elif me.get(f"timegroup_{tg}"):
+                me_wd_tg = me_timegroup
+            else:
+                me_wd_tg = me_total
+
+            mi_total = normalize(mi.get("total", {}).get("mean", -1), 0, 600)
+            mi_weekday = normalize(mi.get(f"weekday_{wd_label}", {}).get("mean", mi_total), 0, 600)
+            mi_timegroup = normalize(mi.get(f"timegroup_{tg}", {}).get("mean", mi_total), 0, 600)
+            mi_wd_tg_raw = mi.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", None)
+            if mi_wd_tg_raw is not None:
+                mi_wd_tg = normalize(mi_wd_tg_raw, 0, 600)
+            elif mi.get(f"weekday_{wd_label}"):
+                mi_wd_tg = mi_weekday
+            elif mi.get(f"timegroup_{tg}"):
+                mi_wd_tg = mi_timegroup
+            else:
+                mi_wd_tg = mi_total
+
             row = {
                 "x_bus_number": bn,
                 "x_direction": dr,
@@ -129,22 +156,22 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
                 "x_weekday": wd_label,
                 "x_timegroup": tg,
                 "x_weekday_timegroup": wd_tg,
-                "x_mean_elapsed_total": normalize(me.get("total", {}).get("mean", -1), 0, 7200),
-                "x_mean_elapsed_weekday": normalize(me.get(f"weekday_{wd_label}", {}).get("mean", -1), 0, 7200),
-                "x_mean_elapsed_timegroup": normalize(me.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 7200),
-                "x_mean_elapsed_wd_tg": normalize(me.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", -1), 0, 7200),
+                "x_mean_elapsed_total": me_total,
+                "x_mean_elapsed_weekday": me_weekday,
+                "x_mean_elapsed_timegroup": me_timegroup,
+                "x_mean_elapsed_wd_tg": me_wd_tg,
                 "x_node_id": stop_idx,
-                "x_mean_interval_total": normalize(mi.get("total", {}).get("mean", -1), 0, 600),
-                "x_mean_interval_weekday": normalize(mi.get(f"weekday_{wd_label}", {}).get("mean", -1), 0, 600),
-                "x_mean_interval_timegroup": normalize(mi.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 600),
-                "x_mean_interval_wd_tg": normalize(mi.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", -1), 0, 600),
+                "x_mean_interval_total": mi_total,
+                "x_mean_interval_weekday": mi_weekday,
+                "x_mean_interval_timegroup": mi_timegroup,
+                "x_mean_interval_wd_tg": mi_wd_tg,
                 "x_weather_PTY": weather["PTY"],
                 "x_weather_RN1": weather["RN1"],
                 "x_weather_T1H": weather["T1H"],
                 "x_departure_time_sin": time_to_sin_cos(dep)[0],
                 "x_departure_time_cos": time_to_sin_cos(dep)[1],
                 "x_ord_ratio": round(ord / max_ord, 4),
-                "x_prev_pred_elapsed": normalize(prev_elapsed, 0, 7200)
+                "x_prev_pred_elapsed": 0.0
             }
 
             int_keys = {

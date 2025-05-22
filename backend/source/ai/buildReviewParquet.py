@@ -120,11 +120,31 @@ def process_single_file(args):
         me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
         mi = mean_interval.get(str(stop_id), {})
 
-        # debug
-        for k in [f"weekday_{weekday}", f"wd_tg_{weekday}_{tg}"]:
-            v = me.get(k, {}).get("mean", -1)
-            n = normalize(v, 0, 7200)
-            print(f"[{trip_group_id}] {k}: raw={v}, normalized={n}, type={type(n)}")
+        me_total = normalize(me.get("total", {}).get("mean", -1), 0, 7200)
+        me_weekday = normalize(me.get(f"weekday_{weekday}", {}).get("mean", me_total), 0, 7200)
+        me_timegroup = normalize(me.get(f"timegroup_{tg}", {}).get("mean", me_total), 0, 7200)
+        me_wd_tg_raw = me.get(f"wd_tg_{weekday}_{tg}", {}).get("mean", None)
+        if me_wd_tg_raw is not None:
+            me_wd_tg = normalize(me_wd_tg_raw, 0, 7200)
+        elif me.get(f"weekday_{weekday}"):
+            me_wd_tg = me_weekday
+        elif me.get(f"timegroup_{tg}"):
+            me_wd_tg = me_timegroup
+        else:
+            me_wd_tg = me_total
+
+        mi_total = normalize(mi.get("total", {}).get("mean", -1), 0, 600)
+        mi_weekday = normalize(mi.get(f"weekday_{weekday}", {}).get("mean", mi_total), 0, 600)
+        mi_timegroup = normalize(mi.get(f"timegroup_{tg}", {}).get("mean", mi_total), 0, 600)
+        mi_wd_tg_raw = mi.get(f"wd_tg_{weekday}_{tg}", {}).get("mean", None)
+        if mi_wd_tg_raw is not None:
+            mi_wd_tg = normalize(mi_wd_tg_raw, 0, 600)
+        elif mi.get(f"weekday_{weekday}"):
+            mi_wd_tg = mi_weekday
+        elif mi.get(f"timegroup_{tg}"):
+            mi_wd_tg = mi_timegroup
+        else:
+            mi_wd_tg = mi_total
 
         row = {
             "trip_group_id": trip_group_id,
@@ -136,15 +156,15 @@ def process_single_file(args):
             "x_weekday": weekday,
             "x_timegroup": tg,
             "x_weekday_timegroup": wd_tg,
-            "x_mean_elapsed_total": normalize(me.get("total", {}).get("mean", -1), 0, 7200),
-            "x_mean_elapsed_weekday": normalize(me.get(f"weekday_{weekday}", {}).get("mean", -1), 0, 7200),
-            "x_mean_elapsed_timegroup": normalize(me.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 7200),
-            "x_mean_elapsed_wd_tg": normalize(me.get(f"wd_tg_{weekday}_{tg}", {}).get("mean", -1), 0, 7200),
+            "x_mean_elapsed_total": me_total,
+            "x_mean_elapsed_weekday": me_weekday,
+            "x_mean_elapsed_timegroup": me_timegroup,
+            "x_mean_elapsed_wd_tg": me_wd_tg,
             "x_node_id": stop_idx,
-            "x_mean_interval_total": normalize(mi.get("total", {}).get("mean", -1), 0, 600),
-            "x_mean_interval_weekday": normalize(mi.get(f"weekday_{weekday}", {}).get("mean", -1), 0, 600),
-            "x_mean_interval_timegroup": normalize(mi.get(f"timegroup_{tg}", {}).get("mean", -1), 0, 600),
-            "x_mean_interval_wd_tg": normalize(mi.get(f"wd_tg_{weekday}_{tg}", {}).get("mean", -1), 0, 600),
+            "x_mean_interval_total": mi_total,
+            "x_mean_interval_weekday": mi_weekday,
+            "x_mean_interval_timegroup": mi_timegroup,
+            "x_mean_interval_wd_tg": mi_wd_tg,
             "x_weather_PTY": weather['PTY'],
             "x_weather_RN1": weather['RN1'],
             "x_weather_T1H": weather['T1H'],
