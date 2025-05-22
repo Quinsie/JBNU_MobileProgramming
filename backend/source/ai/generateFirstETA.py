@@ -63,7 +63,7 @@ def extract_route_info(stdid, stdid_number, label_bus):
     return bus_number, direction, branch
 
 def forecast_lookup(target_dt, nx_ny, forecast_all):
-    target_keys = [(target_dt - timedelta(hours=h)).strftime('%Y%m%d_%H00') for h in range(0, 6)]
+    target_keys = [(target_dt - timedelta(hours=h)).strftime('%Y%m%d_%H00') for h in range(0, 4)]
     fallback_dates = [target_dt.strftime('%Y%m%d'), (target_dt - timedelta(days=1)).strftime('%Y%m%d'), (target_dt - timedelta(days=2)).strftime('%Y%m%d')]
     for date_key in fallback_dates:
         forecast = forecast_all.get(date_key)
