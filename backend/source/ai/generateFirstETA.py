@@ -219,6 +219,12 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
             with torch.no_grad():
                 pred_mean, _ = MODEL(x_tensor)
                 elapsed = float(pred_mean.item()) * 7200
+                # debug
+                print(f"[DEBUG] STDID={stdid}, ORD={ord}")
+                for k, v in x_tensor.items():
+                    print(f"    {k}: {v.cpu().numpy().flatten()}")
+                print(f"    => pred_mean: {pred_mean.item():.4f}, elapsed: {elapsed:.2f}s, ETA: {eta_time.strftime('%H:%M:%S')}")
+
                 eta_time = dep + timedelta(seconds=elapsed)
                 eta_dict[str(ord)] = eta_time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -250,8 +256,18 @@ if __name__ == "__main__":
     with open(NX_NY_STOP_PATH, encoding='utf-8') as f: nx_ny_stops = json.load(f)
 
     model_pth = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
-    model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location=device))
+    # model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location=device))
+    state_dict = torch.load(model_pth, map_location=device)
+    missing, unexpected = model_obj.load_state_dict(state_dict, strict=False)
+    if missing or unexpected:
+        print("[WARNING] Model state_dict 불일치 감지됨")
+        print(" - Missing keys:", missing)
+        print(" - Unexpected keys:", unexpected)
+    else:
+        print("[INFO] 모델 state_dict 로딩 정상")
+
     set_global_model(model_obj.to(device))
+    #set_global_model(model_obj.to(device))
 
     # global model 로드 (multiprocessing-safe)
     # set_global_model(os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
