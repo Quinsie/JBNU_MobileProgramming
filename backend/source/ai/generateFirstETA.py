@@ -24,6 +24,7 @@ MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed"
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
 FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 DEPARTURE_CACHE_DIR = os.path.join(BASE_DIR, "data", "processed", "departure_cache")
+NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "first_model")
 os.makedirs(SAVE_PATH, exist_ok=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -90,7 +91,7 @@ def set_global_model(model):
     MODEL.eval()
 
 # ==== 단일 stdid 처리 함수 ====
-def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
+def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
     hhmm = entry['time']  # ex: "07:50"
     dep_hour, dep_minute = map(int, hhmm.split(":"))
     save_hour, save_minute = hhmm.split(":")
@@ -117,7 +118,7 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
             stop_idx = int(label_stops.get(str(stop_id), 0))
             tg = get_timegroup(dep)
             wd_tg = wd_label * 8 + (tg - 1)
-            nx_ny = f"{s['NODE_ID']//1000000}_{(s['NODE_ID']%1000000)//1000}"
+            nx_ny = nx_ny_stops.get(f"{stdid}_{ord}", "63_89")
             weather = forecast_lookup(dep, nx_ny, forecast_all)
             me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
             mi = mean_interval.get(str(stop_id), {})
@@ -246,6 +247,7 @@ if __name__ == "__main__":
     mean_interval = load_json(os.path.join(MEAN_INTERVAL_DIR, f"{prev_date_str}.json"))
     forecast_all = {f.replace(".json", ""): load_json(os.path.join(FORECAST_DIR, f)) for f in os.listdir(FORECAST_DIR)}
     dep_data = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))["data"]
+    with open(NX_NY_STOP_PATH, encoding='utf-8') as f: nx_ny_stops = json.load(f)
 
     model_pth = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
     model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location=device))
@@ -254,7 +256,7 @@ if __name__ == "__main__":
     # global model 로드 (multiprocessing-safe)
     # set_global_model(os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}_full.pt"))
 
-    task_args = [(entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
+    task_args = [(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
     
     def unpack_and_infer(args): return infer_single(*args)
     # with Pool(cpu_count()) as pool:
