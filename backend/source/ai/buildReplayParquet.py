@@ -119,15 +119,22 @@ def process_single_file(args):
         real_elapsed = (arr_time - base_time).total_seconds()
 
         me_dict = mean_elapsed.get(stdid, {}).get(str(ord), {})
-        me_total = normalize(me_dict.get("total", {}).get("mean", -1), 0, 7200)
-        me_weekday = normalize(me_dict.get(f"weekday_{weekday}", {}).get("mean", me_total), 0, 7200)
-        me_timegroup = normalize(me_dict.get(f"timegroup_{timegroup}", {}).get("mean", me_total), 0, 7200)
-        me_wd_tg_raw = me_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
-        if me_wd_tg_raw is not None:
-            me_wd_tg = normalize(me_wd_tg_raw, 0, 7200)
-        elif me_dict.get(f"weekday_{weekday}"):
+
+        raw_me_total = me_dict.get("total", {}).get("mean", None)
+        me_total = normalize(raw_me_total, 0, 7200) if raw_me_total is not None else 0.0
+
+        raw_me_weekday = me_dict.get(f"weekday_{weekday}", {}).get("mean", None)
+        me_weekday = normalize(raw_me_weekday, 0, 7200) if raw_me_weekday is not None else me_total
+
+        raw_me_timegroup = me_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
+        me_timegroup = normalize(raw_me_timegroup, 0, 7200) if raw_me_timegroup is not None else me_total
+
+        raw_me_wd_tg = me_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if raw_me_wd_tg is not None:
+            me_wd_tg = normalize(raw_me_wd_tg, 0, 7200)
+        elif raw_me_weekday is not None:
             me_wd_tg = me_weekday
-        elif me_dict.get(f"timegroup_{timegroup}"):
+        elif raw_me_timegroup is not None:
             me_wd_tg = me_timegroup
         else:
             me_wd_tg = me_total
@@ -142,15 +149,22 @@ def process_single_file(args):
             continue  # 혹시라도 이상한 값 들어올 경우 방어
 
         mi_dict = mean_interval.get(stop_id, {})
-        mi_total = normalize(mi_dict.get("total", {}).get("mean", -1), 0, 600)
-        mi_weekday = normalize(mi_dict.get(f"weekday_{weekday}", {}).get("mean", mi_total), 0, 600)
-        mi_timegroup = normalize(mi_dict.get(f"timegroup_{timegroup}", {}).get("mean", mi_total), 0, 600)
-        mi_wd_tg_raw = mi_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
-        if mi_wd_tg_raw is not None:
-            mi_wd_tg = normalize(mi_wd_tg_raw, 0, 600)
-        elif mi_dict.get(f"weekday_{weekday}"):
+
+        raw_mi_total = mi_dict.get("total", {}).get("mean", None)
+        mi_total = normalize(raw_mi_total, 0, 600) if raw_mi_total is not None else 0.0
+
+        raw_mi_weekday = mi_dict.get(f"weekday_{weekday}", {}).get("mean", None)
+        mi_weekday = normalize(raw_mi_weekday, 0, 600) if raw_mi_weekday is not None else mi_total
+
+        raw_mi_timegroup = mi_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
+        mi_timegroup = normalize(raw_mi_timegroup, 0, 600) if raw_mi_timegroup is not None else mi_total
+
+        raw_mi_wd_tg = mi_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if raw_mi_wd_tg is not None:
+            mi_wd_tg = normalize(raw_mi_wd_tg, 0, 600)
+        elif raw_mi_weekday is not None:
             mi_wd_tg = mi_weekday
-        elif mi_dict.get(f"timegroup_{timegroup}"):
+        elif raw_mi_timegroup is not None:
             mi_wd_tg = mi_timegroup
         else:
             mi_wd_tg = mi_total

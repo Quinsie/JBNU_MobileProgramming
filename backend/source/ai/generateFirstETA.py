@@ -123,28 +123,43 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
             mi = mean_interval.get(str(stop_id), {})
 
             # === 평균값 fallback 구조 적용 ===
-            me_total = normalize(me.get("total", {}).get("mean", -1), 0, 7200)
-            me_weekday = normalize(me.get(f"weekday_{wd_label}", {}).get("mean", me_total), 0, 7200)
-            me_timegroup = normalize(me.get(f"timegroup_{tg}", {}).get("mean", me_total), 0, 7200)
-            me_wd_tg_raw = me.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", None)
-            if me_wd_tg_raw is not None:
-                me_wd_tg = normalize(me_wd_tg_raw, 0, 7200)
-            elif me.get(f"weekday_{wd_label}"):
+            me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
+            mi = mean_interval.get(str(stop_id), {})
+
+            raw_me_total = me.get("total", {}).get("mean", None)
+            me_total = normalize(raw_me_total, 0, 7200) if raw_me_total is not None else 0.0
+
+            raw_me_weekday = me.get(f"weekday_{wd_label}", {}).get("mean", None)
+            me_weekday = normalize(raw_me_weekday, 0, 7200) if raw_me_weekday is not None else me_total
+
+            raw_me_timegroup = me.get(f"timegroup_{tg}", {}).get("mean", None)
+            me_timegroup = normalize(raw_me_timegroup, 0, 7200) if raw_me_timegroup is not None else me_total
+
+            raw_me_wd_tg = me.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", None)
+            if raw_me_wd_tg is not None:
+                me_wd_tg = normalize(raw_me_wd_tg, 0, 7200)
+            elif raw_me_weekday is not None:
                 me_wd_tg = me_weekday
-            elif me.get(f"timegroup_{tg}"):
+            elif raw_me_timegroup is not None:
                 me_wd_tg = me_timegroup
             else:
                 me_wd_tg = me_total
 
-            mi_total = normalize(mi.get("total", {}).get("mean", -1), 0, 600)
-            mi_weekday = normalize(mi.get(f"weekday_{wd_label}", {}).get("mean", mi_total), 0, 600)
-            mi_timegroup = normalize(mi.get(f"timegroup_{tg}", {}).get("mean", mi_total), 0, 600)
-            mi_wd_tg_raw = mi.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", None)
-            if mi_wd_tg_raw is not None:
-                mi_wd_tg = normalize(mi_wd_tg_raw, 0, 600)
-            elif mi.get(f"weekday_{wd_label}"):
+            raw_mi_total = mi.get("total", {}).get("mean", None)
+            mi_total = normalize(raw_mi_total, 0, 600) if raw_mi_total is not None else 0.0
+
+            raw_mi_weekday = mi.get(f"weekday_{wd_label}", {}).get("mean", None)
+            mi_weekday = normalize(raw_mi_weekday, 0, 600) if raw_mi_weekday is not None else mi_total
+
+            raw_mi_timegroup = mi.get(f"timegroup_{tg}", {}).get("mean", None)
+            mi_timegroup = normalize(raw_mi_timegroup, 0, 600) if raw_mi_timegroup is not None else mi_total
+
+            raw_mi_wd_tg = mi.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", None)
+            if raw_mi_wd_tg is not None:
+                mi_wd_tg = normalize(raw_mi_wd_tg, 0, 600)
+            elif raw_mi_weekday is not None:
                 mi_wd_tg = mi_weekday
-            elif mi.get(f"timegroup_{tg}"):
+            elif raw_mi_timegroup is not None:
                 mi_wd_tg = mi_timegroup
             else:
                 mi_wd_tg = mi_total
