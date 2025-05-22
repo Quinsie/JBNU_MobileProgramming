@@ -188,6 +188,7 @@ def infer_single(entry, target_date, wd_label, stdid_number, label_bus, label_st
                 "x_ord_ratio": round(ord / max_ord, 4),
                 "x_prev_pred_elapsed": 0.0
             }
+            print(bn, dr, br, wd_label, tg, wd_tg, me_total, me_weekday, me_timegroup, me_wd_tg, stop_idx, mi_total, mi_weekday, mi_timegroup, mi_wd_tg, weather, time_to_sin_cos(dep)[0], time_to_sin_cos(dep)[1], round(ord / max_ord, 4))
 
             int_keys = {
                 "bus_number", "direction", "branch", "node_id", "weekday", "timegroup", "weekday_timegroup", "weather_PTY"

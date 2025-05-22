@@ -697,3 +697,5 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 계속 해보자.
  - self-review용 parquet 생성기 초안 완성. 일단 돌려본다.
  - 논리는 거의 다 맞는데 초장에 에러가 났다. 디버깅...
+ - 추론 코드 및 파케이 생성 코드에서 중대한 오류를 발견했다. mean fallback이 제대로 이뤄지고 있지 않았다. (중복 정규화 발생 가능)
+ - 즉시 수정했고, self-review용 파케이 생성기는 일단 완성되긴 했다. loop를 돌린 이후 육안으로 비교해보도록 하겠다.
