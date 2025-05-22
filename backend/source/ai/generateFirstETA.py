@@ -257,6 +257,7 @@ if __name__ == "__main__":
 
     model_pth = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
     # model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location=device))
+    model_obj = FirstETAModel()
     state_dict = torch.load(model_pth, map_location=device)
     missing, unexpected = model_obj.load_state_dict(state_dict, strict=False)
     if missing or unexpected:
