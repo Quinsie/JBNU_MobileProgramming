@@ -202,30 +202,30 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
                 "ord_ratio", "prev_pred_elapsed"
             }
 
-            # x_tensor = {}
-            # for k, v in row.items():
-            #     key = k.replace("x_", "")
-
-            #     if key in float_keys:
-            #         val = torch.tensor([v], dtype=torch.float32)  # shape: (1, 1)
-            #     elif key in int_keys:
-            #         val = torch.tensor([v], dtype=torch.long)     # shape: (1, 1)
-                
-            #     if val.dim() == 1 and val.dtype == torch.float32:
-            #         val = val.unsqueeze(1)
-
-            #     x_tensor[key] = val.to(device)
-
             x_tensor = {}
             for k, v in row.items():
                 key = k.replace("x_", "")
 
-                val = torch.tensor([v], dtype=torch.float32 if key in float_keys else torch.long)
-
-                if val.dim() == 1:
+                if key in float_keys:
+                    val = torch.tensor([v], dtype=torch.float32)  # shape: (1, 1)
+                elif key in int_keys:
+                    val = torch.tensor([v], dtype=torch.long)     # shape: (1, 1)
+                
+                if val.dim() == 1 and val.dtype == torch.float32:
                     val = val.unsqueeze(1)
 
                 x_tensor[key] = val.to(device)
+
+            # x_tensor = {}
+            # for k, v in row.items():
+            #     key = k.replace("x_", "")
+
+            #     val = torch.tensor([v], dtype=torch.float32 if key in float_keys else torch.long)
+
+            #     if val.dim() == 1:
+            #         val = val.unsqueeze(1)
+
+            #     x_tensor[key] = val.to(device)
 
             # ==== DEBUG: shape 확인 ====
             # print(f"[DEBUG] STDID={stdid}, ORD={ord}")
