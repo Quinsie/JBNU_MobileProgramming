@@ -120,6 +120,12 @@ def process_single_file(args):
         me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
         mi = mean_interval.get(str(stop_id), {})
 
+        # debug
+        for k in [f"weekday_{weekday}", f"wd_tg_{weekday}_{tg}"]:
+            v = me.get(k, {}).get("mean", -1)
+            n = normalize(v, 0, 7200)
+            print(f"[{trip_group_id}] {k}: raw={v}, normalized={n}, type={type(n)}")
+
         row = {
             "trip_group_id": trip_group_id,
             "ord": ord,
