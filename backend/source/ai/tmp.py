@@ -8,6 +8,7 @@ import time
 import torch
 import argparse
 from datetime import datetime, timedelta
+from multiprocessing import Pool, cpu_count
 
 # ==== 경로 설정 ====
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
@@ -27,8 +28,6 @@ NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json"
 SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "first_model")
 os.makedirs(SAVE_PATH, exist_ok=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-MODEL = None
 
 # ==== 보조 함수 ====
 def normalize(v, min_val, max_val):
@@ -84,20 +83,21 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
                             }
     return {'T1H': normalize(20.0, -30, 50), 'RN1': normalize(0.0, 0, 100), 'PTY': 0}
 
-def set_global_model(model):
-    global MODEL
-    MODEL = model
-    MODEL.eval()
-
 # ==== 단일 stdid 처리 함수 ====
-def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all):
+def infer_single_gpu(args):
+    (nx_ny_stops, entry, target_date, wd_label, stdid_number, label_bus,
+     label_stops, mean_elapsed, mean_interval, forecast_all, model_path) = args
+
+    model = FirstETAModel()
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    model = model.to(device)
+    model.eval()
+
     hhmm = entry['time']  # ex: "07:50"
     dep_hour, dep_minute = map(int, hhmm.split(":"))
     save_hour, save_minute = hhmm.split(":")
     dep = datetime(target_date.year, target_date.month, target_date.day, dep_hour, dep_minute)
     result = {}
-
-    global MODEL
 
     for stdid in entry["stdid"]:
         stop_file = os.path.join(STOPS_DIR, f"{stdid}.json")
@@ -216,7 +216,7 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
                 x_tensor[key] = val.to(device)
 
             with torch.no_grad():
-                pred_mean, _ = MODEL(x_tensor)
+                pred_mean, _ = model(x_tensor)
                 elapsed = float(pred_mean.item()) * 7200
 
                 eta_time = dep + timedelta(seconds=elapsed)
@@ -249,14 +249,16 @@ if __name__ == "__main__":
     dep_data = load_json(os.path.join(DEPARTURE_CACHE_DIR, f"{weekday_type}.json"))["data"]
     with open(NX_NY_STOP_PATH, encoding='utf-8') as f: nx_ny_stops = json.load(f)
 
-    model_pth = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
-    model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location=device))
-    set_global_model(model_obj.to(device))
+    model_path = os.path.join(BASE_DIR, "data", "model", "firstETA", "replay", f"{date_str}.pth")
 
-    task_args = [(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
-    
-    def unpack_and_infer(args): return infer_single(*args)
-    results = [unpack_and_infer(args) for args in task_args]
+    task_args = [
+        (nx_ny_stops, entry, target_date, wd_label, stdid_number, label_bus,
+        label_stops, mean_elapsed, mean_interval, forecast_all, model_path)
+        for entry in dep_data
+    ]
+
+    with Pool(processes=min(cpu_count(), 8)) as pool:
+        results = pool.map(infer_single_gpu, task_args)
 
     final = {}; [final.update(r) for r in results]
     with open(os.path.join(SAVE_PATH, f"{date_str}.json"), "w", encoding="utf-8") as f:
