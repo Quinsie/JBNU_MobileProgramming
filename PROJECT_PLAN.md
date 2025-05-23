@@ -728,4 +728,4 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 현재 해결 중.
  - 수정 완료. 종속성 부여 완료.
  - mean feature 1개 더 추가는 뭔가 너무 narrow해서 그냥 배제하기로 함. timegroup별 평균만 해도 충분히 의미있다고 생각한다. hint로서는.
- - 
+ - 음. 종속성 부여가 아직 제대로 안 된 상황이었다. 드디어 해결 완료. emb+mlp+덧셈으로 해결했다. 진짜 돌아버리는줄.

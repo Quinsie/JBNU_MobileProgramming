@@ -40,9 +40,9 @@ class FirstETAModel(nn.Module):
         self.mean_elapsed_merge = nn.Sequential(nn.Linear(16, 16), nn.ReLU())
 
         # ===== Route-ORD Context MLP =====
-        # self.route_ord_mlp = nn.Sequential(nn.Linear(36, 32), nn.ReLU())
-        self.ord_context_mlp = nn.Sequential(nn.Linear(16 + 4, 20), nn.ReLU())         # branch + ord_ratio → 20
-        self.elapsed_context_mlp = nn.Sequential(nn.Linear(20 + 16, 32), nn.ReLU())    # ord_rep + mean_elapsed → 32
+        self.route_ord_mlp = nn.Sequential(nn.Linear(36, 32), nn.ReLU())
+        # self.ord_context_mlp = nn.Sequential(nn.Linear(16 + 4, 20), nn.ReLU())         # branch + ord_ratio → 20
+        # self.elapsed_context_mlp = nn.Sequential(nn.Linear(20 + 16, 32), nn.ReLU())    # ord_rep + mean_elapsed → 32
 
         # ===== Mean Interval Mini MLPs =====
         self.mean_interval_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
@@ -51,8 +51,8 @@ class FirstETAModel(nn.Module):
         self.mean_interval_wdtg_mlp = nn.Sequential(nn.Linear(1 + 12, 6), nn.ReLU())
         self.mean_interval_merge = nn.Sequential(nn.Linear(16, 16), nn.ReLU())
 
-        # self.node_context_mlp = nn.Sequential(nn.Linear(24, 16), nn.ReLU())
-        self.node_interval_mlp = nn.Sequential(nn.Linear(8 + 16, 16), nn.ReLU())      # node + mean_interval → 16
+        self.node_context_mlp = nn.Sequential(nn.Linear(24, 16), nn.ReLU())
+        # self.node_interval_mlp = nn.Sequential(nn.Linear(8 + 16, 16), nn.ReLU())      # node + mean_interval → 16
 
         # ===== Time Context =====
         self.time_mlp = nn.Sequential(nn.Linear(26, 16), nn.ReLU())
@@ -90,13 +90,13 @@ class FirstETAModel(nn.Module):
         me_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['mean_elapsed_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_elapsed = self.mean_elapsed_merge(torch.cat([me_total, me_wd, me_tg, me_wdtg], dim=1))
 
-        # route_input = torch.cat([bus, direction, branch, ord_ratio, mean_elapsed], dim=1)
-        # route_context = self.route_ord_mlp(route_input)         # (B, 32)
+        route_input = torch.cat([bus, direction, branch, ord_ratio, mean_elapsed], dim=1)
+        route_context = self.route_ord_mlp(route_input)         # (B, 32)
 
-        ord_input = torch.cat([branch, ord_ratio], dim=1)       # (B, 16 + 4)
-        ord_rep = self.ord_context_mlp(ord_input)               # (B, 20)
-        elapsed_input = torch.cat([ord_rep, mean_elapsed], dim=1)  # (B, 20 + 16)
-        route_context = self.elapsed_context_mlp(elapsed_input)    # (B, 32)
+        # ord_input = torch.cat([bus, direction, branch, ord_ratio], dim=1)       # (B, 16 + 4)
+        # ord_rep = self.ord_context_mlp(ord_input)               # (B, 20)
+        # elapsed_input = torch.cat([ord_rep, mean_elapsed], dim=1)  # (B, 20 + 16)
+        # route_context = self.elapsed_context_mlp(elapsed_input)    # (B, 32)
 
         # === Node Context ===
         node = self.node_emb(x['node_id'])                      # (B, 8)
@@ -106,8 +106,8 @@ class FirstETAModel(nn.Module):
         mi_wdtg = self.mean_interval_wdtg_mlp(torch.cat([x['mean_interval_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_interval = self.mean_interval_merge(torch.cat([mi_total, mi_wd, mi_tg, mi_wdtg], dim=1))
 
-        # node_context = self.node_context_mlp(torch.cat([node, mean_interval], dim=1))  # (B, 16)
-        node_context = self.node_interval_mlp(torch.cat([node, mean_interval], dim=1))  # (B, 16)
+        node_context = self.node_context_mlp(torch.cat([node, mean_interval], dim=1))  # (B, 16)
+        # node_context = self.node_interval_mlp(torch.cat([node, mean_interval], dim=1))  # (B, 16)
 
         # === Time Context ===
         wd_emb = self.weekday_emb(x['weekday'])
