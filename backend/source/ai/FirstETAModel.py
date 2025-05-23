@@ -2,7 +2,6 @@
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class FirstETAModel(nn.Module):
     def __init__(self):
@@ -10,8 +9,8 @@ class FirstETAModel(nn.Module):
 
         # ===== Embedding Tables =====
         self.bus_emb = nn.Embedding(200, 8)         # bus_number
-        self.dir_raw_emb = nn.Embedding(5, 4)        # direction raw
-        self.branch_raw_emb = nn.Embedding(10, 4)    # branch_num raw
+        self.dir_raw_emb = nn.Embedding(5, 12)        # direction raw
+        self.branch_raw_emb = nn.Embedding(10, 16)    # branch_num raw
 
         self.node_emb = nn.Embedding(3000, 8)         # node_id
 
@@ -26,23 +25,22 @@ class FirstETAModel(nn.Module):
         self.wd_tg_emb = self.wd_tg_index_emb
 
         # ===== Direction / Branch conditional MLPs =====
-        self.dir_cond = nn.Sequential(nn.Linear(8, 4))
-        self.branch_cond = nn.Sequential(nn.Linear(12, 4))
+        self.dir_cond = nn.Sequential(nn.Linear(8, 12))
+        self.branch_cond = nn.Sequential(nn.Linear(12, 16))
 
         # ===== ORD ratio =====
-        self.ord_ratio_mlp = nn.Sequential(nn.Linear(1, 4), nn.ReLU())
+        self.ord_ratio_mlp = nn.Sequential(nn.Linear(1, 20), nn.ReLU())
 
         # ===== Mean Elapsed Mini MLPs =====
         self.mean_elapsed_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
         self.mean_elapsed_wd_mlp = nn.Sequential(nn.Linear(1 + 4, 4), nn.ReLU())
         self.mean_elapsed_tg_mlp = nn.Sequential(nn.Linear(1 + 8, 4), nn.ReLU())
         self.mean_elapsed_wdtg_mlp = nn.Sequential(nn.Linear(1 + 12, 6), nn.ReLU())
-        self.mean_elapsed_merge = nn.Sequential(nn.Linear(16, 16), nn.ReLU())
+        self.mean_elapsed_merge = nn.Sequential(nn.Linear(16, 32), nn.ReLU()) # 32 dim
 
         # ===== Route-ORD Context MLP =====
-        self.route_ord_mlp = nn.Sequential(nn.Linear(36, 32), nn.ReLU())
-        # self.ord_context_mlp = nn.Sequential(nn.Linear(16 + 4, 20), nn.ReLU())         # branch + ord_ratio → 20
-        # self.elapsed_context_mlp = nn.Sequential(nn.Linear(20 + 16, 32), nn.ReLU())    # ord_rep + mean_elapsed → 32
+        self.ord_ratio_cond = nn.Sequential(nn.Linear(16, 20), nn.ReLU())
+        self.route_cond = nn.Sequential(nn.Linear(20, 32), nn.ReLU())
 
         # ===== Mean Interval Mini MLPs =====
         self.mean_interval_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
@@ -51,8 +49,7 @@ class FirstETAModel(nn.Module):
         self.mean_interval_wdtg_mlp = nn.Sequential(nn.Linear(1 + 12, 6), nn.ReLU())
         self.mean_interval_merge = nn.Sequential(nn.Linear(16, 16), nn.ReLU())
 
-        self.node_context_mlp = nn.Sequential(nn.Linear(24, 16), nn.ReLU())
-        # self.node_interval_mlp = nn.Sequential(nn.Linear(8 + 16, 16), nn.ReLU())      # node + mean_interval → 16
+        self.node_cond = nn.Sequential(nn.Linear(8, 16), nn.ReLU())
 
         # ===== Time Context =====
         self.time_mlp = nn.Sequential(nn.Linear(26, 16), nn.ReLU())
@@ -72,16 +69,17 @@ class FirstETAModel(nn.Module):
     def forward(self, x, phase="self_review"):
         # === Route-related ===
         bus = self.bus_emb(x['bus_number'])                      # (B, 8)
-        dir_raw = self.dir_raw_emb(x['direction'])              # (B, 4)
-        dir_adj = self.dir_cond(bus)                            # (B, 4)
-        direction = dir_raw + dir_adj
+        dir_adj = self.dir_cond(bus)                            # (B, 12)
+        dir_raw = self.dir_raw_emb(x['direction'])              # (B, 12)
+        direction = dir_raw + dir_adj # dir complete, 12dim
 
-        branch_raw = self.branch_raw_emb(x['branch'])       # (B, 4)
-        branch_input = torch.cat([bus, direction], dim=1)       # (B, 12)
-        branch_adj = self.branch_cond(branch_input)
-        branch = branch_raw + branch_adj
+        branch_adj = self.branch_cond(direction)         # (B, 16)
+        branch_raw = self.branch_raw_emb(x['branch'])       # (B, 16)     
+        branch = branch_raw + branch_adj # branch complete, 16 dim
 
-        ord_ratio = self.ord_ratio_mlp(x['ord_ratio'])          # (B, 4)
+        ord_adj = self.ord_ratio_cond(branch)                   # (B, 20)
+        ord_ratio_raw = self.ord_ratio_mlp(x['ord_ratio'])          # (B, 20)
+        ord_ratio = ord_adj + ord_ratio_raw # ord_ratio complete, 20 dim
 
         # === Mean Elapsed ===
         me_total = self.mean_elapsed_total_mlp(x['mean_elapsed_total'])
@@ -90,13 +88,8 @@ class FirstETAModel(nn.Module):
         me_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['mean_elapsed_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_elapsed = self.mean_elapsed_merge(torch.cat([me_total, me_wd, me_tg, me_wdtg], dim=1))
 
-        route_input = torch.cat([bus, direction, branch, ord_ratio, mean_elapsed], dim=1)
-        route_context = self.route_ord_mlp(route_input)         # (B, 32)
-
-        # ord_input = torch.cat([bus, direction, branch, ord_ratio], dim=1)       # (B, 16 + 4)
-        # ord_rep = self.ord_context_mlp(ord_input)               # (B, 20)
-        # elapsed_input = torch.cat([ord_rep, mean_elapsed], dim=1)  # (B, 20 + 16)
-        # route_context = self.elapsed_context_mlp(elapsed_input)    # (B, 32)
+        route_adj = self.route_cond(ord_ratio) # (B, 32)
+        route_context = route_adj + mean_elapsed # route_context complese, 32 dim
 
         # === Node Context ===
         node = self.node_emb(x['node_id'])                      # (B, 8)
@@ -106,8 +99,8 @@ class FirstETAModel(nn.Module):
         mi_wdtg = self.mean_interval_wdtg_mlp(torch.cat([x['mean_interval_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_interval = self.mean_interval_merge(torch.cat([mi_total, mi_wd, mi_tg, mi_wdtg], dim=1))
 
-        node_context = self.node_context_mlp(torch.cat([node, mean_interval], dim=1))  # (B, 16)
-        # node_context = self.node_interval_mlp(torch.cat([node, mean_interval], dim=1))  # (B, 16)
+        node_adj = self.node_cond(node)
+        node_context = node_adj + mean_interval # dim 16 complete
 
         # === Time Context ===
         wd_emb = self.weekday_emb(x['weekday'])
