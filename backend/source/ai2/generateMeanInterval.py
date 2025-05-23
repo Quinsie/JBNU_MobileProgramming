@@ -134,4 +134,4 @@ if __name__ == "__main__":
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(mean_interval, f, ensure_ascii=False, indent=2)
 
-    print(f"저장 완료: {SAVE_PATH}_2")
+    print(f"저장 완료: {SAVE_PATH}")
