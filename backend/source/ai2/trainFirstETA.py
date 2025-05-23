@@ -10,7 +10,6 @@ import torch.nn as nn
 from collections import defaultdict
 from datetime import datetime, timedelta
 from torch.utils.data import DataLoader
-from FirstETAModel import FirstETAModel
 
 # === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
@@ -20,6 +19,7 @@ MODEL_SAVE_PATH_2 = None
 SELF_REVIEW_PATH = None
 REPLAY_PATH = None
 YESTERDAY_MODEL_PATH_2 = None
+from FirstETAModel import FirstETAModel
 
 # === 하이퍼파라미터 ===
 EPOCHS = 15
@@ -155,7 +155,7 @@ def train_model(phase: str):
     # === 모델 저장 ===
     os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
     torch.save(model.state_dict(), model_save_path)
-    print(f"[INFO] Saved model to {model_save_path}")
+    print(f"[INFO] Saved model to {model_save_path}_2")
 
     # === test ===
     model.eval()
@@ -182,11 +182,11 @@ if __name__ == "__main__":
     DATE = args.date
     YESTERDAY = (datetime.strptime(DATE, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
     
-    MODEL_SAVE_PATH_1 = os.path.join(MODEL_DIR, "self_review", f"{DATE}.pth")
-    MODEL_SAVE_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{DATE}.pth")
-    SELF_REVIEW_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review", f"{DATE}.parquet")
-    REPLAY_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay", f"{DATE}.parquet")
-    YESTERDAY_MODEL_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{YESTERDAY}.pth")
+    MODEL_SAVE_PATH_1 = os.path.join(MODEL_DIR, "self_review", f"{DATE}_2.pth")
+    MODEL_SAVE_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{DATE}_2.pth")
+    SELF_REVIEW_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review", f"{DATE}_2.parquet")
+    REPLAY_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay", f"{DATE}_2.parquet")
+    YESTERDAY_MODEL_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{YESTERDAY}_2.pth")
 
     now = time.time()
     train_model(args.mode)
