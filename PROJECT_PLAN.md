@@ -747,3 +747,5 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 학습 도중, 5월 17일 예보에 PTY: -999가 들어있는 값을 발견했다. 처음 보는 문제여서 진짜 깜짝 놀랐음.
  - -999라는 예외가 발생할 수 있다는 사실을 처음 알았다. 애당초 이런 값이 나올거라는 생각을 하질 않아서 놀란듯.
  - 이따가 자고 일어나서 buildReplayParquet.py --date 20250517부터 돌려야한다. 기억하기.
+ - 음수 예외 찾았다. 16일 20시 관측날씨다. PTY랑 RN1이 음수일 경우 continue해주는 로직을 추가해야겠다.
+ - 이따가 자고 일어나서 repalyparquet을 비롯한 날씨 전처리 또는 사용하는 코드에서 PTY나 RN1이 음수일 경우 skip하는 로직 추가해줘야한다.
