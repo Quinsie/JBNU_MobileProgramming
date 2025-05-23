@@ -720,4 +720,9 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 음... 잘 나오긴 한다.
  - 근데 모델 확장에 대한 욕심과, 일단 만족한 뒤 2차 모델로 넘어가느냐에 대한 고민이 된다. 아직 시간은 그래도 좀 있다. 3주정도?
  - 우선 추론기 병렬화는 시도해봤는데 GPU사용률만 높아지고 컨텍스트 스위칭 때문인지 뭔지 오히려 속도는 느려졌다. 그냥 직렬 유지해야할듯. 어차피 3~4분 내외에 끝난다.
- - 
+ - 3일정도만 더 1차에 투자를 해보자. baseline이 안정화될수록 실시간 추론도 더더욱 쉬워지는 법이다.
+ - 실험을 거친다. mean feature 자체 1개 더 추가 (stdid_ord 귀속된 "이전 정류장까지 elapsed 또는 이전 정류장~현 정류장 간격)
+ - mean_elapsed, mean_interval 하나 더 추가 (stdid_ord별 mean, stop_id별 mean (현재는 해당 stdid_ord의 group별 mean이다.))
+ - 실험적으로 최초 6일을 한번에 parquet으로 가공하여 학습에 투입.
+ - mean feature 추가를 위해 모델을 분석하던 도중 현재 모델의 문제점을 발견했다. ord ratio와 mean elapsed가 완벽히 route에 종속되지 않는 문제였다.
+ - 현재 해결 중.

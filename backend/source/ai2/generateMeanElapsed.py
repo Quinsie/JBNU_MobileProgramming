@@ -1,5 +1,5 @@
 # backend/source/ai2/generateMeanElapsed.py
-# 1차 모델 확장 실험
+# 실험용
 
 import os
 import sys
@@ -40,7 +40,7 @@ def process_file(args):
 
     wd = str(get_weekday_type(departure_time))
     tg = str(get_time_group(departure_time))
-    hhmm = departure_time.strftime("%H%M")
+    group = f"wd_tg_{wd}_{tg}"
 
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -64,7 +64,7 @@ def process_file(args):
         except:
             continue
         elapsed = (arr_time - base_time).total_seconds()
-        result.append(((stdid, int(ord_val), wd, tg, hhmm), elapsed))
+        result.append(((stdid, int(ord_val), group, wd, tg), elapsed))
 
     return result
 
@@ -102,11 +102,6 @@ if __name__ == "__main__":
     weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
     timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
     total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
-    time_sum = defaultdict(lambda: [0.0, 0])
-
-    for (stdid, ord_val, wd, tg, hhmm), elapsed in all_results:
-        time_sum[(stdid, ord_val, wd, hhmm)][0] += elapsed
-        time_sum[(stdid, ord_val, wd, hhmm)][1] += 1
 
     for (stdid, ord_val, group, wd, tg), elapsed in all_results:
         group_sum[(stdid, ord_val, group)][0] += elapsed
@@ -129,68 +124,41 @@ if __name__ == "__main__":
                 for ord_str, group_dict in ord_dict.items():
                     ord_val = int(ord_str)
                     for group_key, val in group_dict.items():
+                        if not group_key.startswith("wd_tg_"):
+                            continue
                         s, n = val["mean"] * val["num"], val["num"]
+                        group_sum[(stdid, ord_val, group_key)][0] += s
+                        group_sum[(stdid, ord_val, group_key)][1] += n
+                        try:
+                            _, _, wd, tg = group_key.split("_")
+                        except:
+                            continue
+                        weekday_sum[stdid][ord_val][wd][0] += s
+                        weekday_sum[stdid][ord_val][wd][1] += n
+                        timegroup_sum[stdid][ord_val][tg][0] += s
+                        timegroup_sum[stdid][ord_val][tg][1] += n
+                        total_sum[stdid][ord_val][0] += s
+                        total_sum[stdid][ord_val][1] += n
 
-                        if group_key.startswith("time_"):
-                            _, wd, hhmm = group_key.split("_")
-                            time_sum[(stdid, ord_val, wd, hhmm)][0] += s
-                            time_sum[(stdid, ord_val, wd, hhmm)][1] += n
-
-                        elif group_key.startswith("wd_tg_"):
-                            group_sum[(stdid, ord_val, group_key)][0] += s
-                            group_sum[(stdid, ord_val, group_key)][1] += n
-                            try:
-                                _, _, wd, tg = group_key.split("_")
-                            except:
-                                continue
-                            weekday_sum[stdid][ord_val][wd][0] += s
-                            weekday_sum[stdid][ord_val][wd][1] += n
-                            timegroup_sum[stdid][ord_val][tg][0] += s
-                            timegroup_sum[stdid][ord_val][tg][1] += n
-                            total_sum[stdid][ord_val][0] += s
-                            total_sum[stdid][ord_val][1] += n
-
-    # 평균 계산 구조
+    # 평균 계산
     mean_elapsed = defaultdict(lambda: defaultdict(dict))
 
-    # step 1: 시간 단위 평균 → time_{wd}_{hhmm}
-    for (stdid, ord_val, wd, hhmm), (s, n) in time_sum.items():
-        key = f"time_{wd}_{hhmm}"
-        mean_elapsed[stdid][ord_val][key] = {"mean": s / n, "num": n}
+    for (stdid, ord_val, group), (s, n) in group_sum.items():
+        mean_elapsed[stdid][ord_val][group] = {"mean": s / n, "num": n}
 
-    # step 2: wd_tg 누적
-    wd_tg_sum = defaultdict(lambda: [0.0, 0])
-    for (stdid, ord_val, wd, hhmm), (s, n) in time_sum.items():
-        tg = str(get_time_group(datetime.strptime(hhmm, "%H%M")))
-        key = f"wd_tg_{wd}_{tg}"
-        wd_tg_sum[(stdid, ord_val, key)][0] += s
-        wd_tg_sum[(stdid, ord_val, key)][1] += n
+    for stdid in weekday_sum:
+        for ord_val in weekday_sum[stdid]:
+            for wd, (s, n) in weekday_sum[stdid][ord_val].items():
+                mean_elapsed[stdid][ord_val][f"weekday_{wd}"] = {"mean": s / n, "num": n}
 
-    for (stdid, ord_val, key), (s, n) in wd_tg_sum.items():
-        mean_elapsed[stdid][ord_val][key] = {"mean": s / n, "num": n}
+    for stdid in timegroup_sum:
+        for ord_val in timegroup_sum[stdid]:
+            for tg, (s, n) in timegroup_sum[stdid][ord_val].items():
+                mean_elapsed[stdid][ord_val][f"timegroup_{tg}"] = {"mean": s / n, "num": n}
 
-    # step 3: weekday, timegroup 누적
-    weekday_sum = defaultdict(lambda: [0.0, 0])
-    timegroup_sum = defaultdict(lambda: [0.0, 0])
-    total_sum = defaultdict(lambda: [0.0, 0])
-
-    for (stdid, ord_val, key), (s, n) in wd_tg_sum.items():
-        _, _, wd, tg = key.split("_")
-        weekday_sum[(stdid, ord_val, wd)][0] += s
-        weekday_sum[(stdid, ord_val, wd)][1] += n
-        timegroup_sum[(stdid, ord_val, tg)][0] += s
-        timegroup_sum[(stdid, ord_val, tg)][1] += n
-        total_sum[(stdid, ord_val)][0] += s
-        total_sum[(stdid, ord_val)][1] += n
-
-    for (stdid, ord_val, wd), (s, n) in weekday_sum.items():
-        mean_elapsed[stdid][ord_val][f"weekday_{wd}"] = {"mean": s / n, "num": n}
-
-    for (stdid, ord_val, tg), (s, n) in timegroup_sum.items():
-        mean_elapsed[stdid][ord_val][f"timegroup_{tg}"] = {"mean": s / n, "num": n}
-
-    for (stdid, ord_val), (s, n) in total_sum.items():
-        mean_elapsed[stdid][ord_val]["total"] = {"mean": s / n, "num": n}
+    for stdid in total_sum:
+        for ord_val, (s, n) in total_sum[stdid].items():
+            mean_elapsed[stdid][ord_val]["total"] = {"mean": s / n, "num": n}
 
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(mean_elapsed, f, ensure_ascii=False, indent=2)
