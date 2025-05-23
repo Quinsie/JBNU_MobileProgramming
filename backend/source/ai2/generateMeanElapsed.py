@@ -175,7 +175,7 @@ if __name__ == "__main__":
     total_sum = defaultdict(lambda: [0.0, 0])
 
     for (stdid, ord_val, key), (s, n) in wd_tg_sum.items():
-        _, wd, tg = key.split("_")
+        _, _, wd, tg = key.split("_")
         weekday_sum[(stdid, ord_val, wd)][0] += s
         weekday_sum[(stdid, ord_val, wd)][1] += n
         timegroup_sum[(stdid, ord_val, tg)][0] += s
