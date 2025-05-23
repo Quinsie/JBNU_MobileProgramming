@@ -94,6 +94,13 @@ def train_model(phase: str):
             batch_indices, *x_vals, batch_y = batch
             batch_x = dict(zip(keys, x_vals))
 
+            # debug
+            for key in batch_x:
+                try:
+                    print(f"[DEBUG] {key} min: {batch_x[key].min().item()}, max: {batch_x[key].max().item()}")
+                except Exception as e:
+                    print(f"[DEBUG] {key} → skip ({e})")
+
             optimizer.zero_grad()
 
             # forward pass
