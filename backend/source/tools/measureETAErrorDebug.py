@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-ETA_TABLE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
+ETA_TABLE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "firstModel")
 REALTIME_RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 
 def time_to_seconds(tstr):

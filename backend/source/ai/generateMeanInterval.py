@@ -1,4 +1,4 @@
-# backend/source/tools/generateMeanInterval.py
+# backend/source/ai/generateMeanInterval.py
 
 import os
 import sys

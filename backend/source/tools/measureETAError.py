@@ -10,7 +10,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
 # 설정
-ETA_TABLE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table")
+ETA_TABLE_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "firstModel")
 REALTIME_RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 
 def load_eta_table(target_date_str):

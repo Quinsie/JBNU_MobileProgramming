@@ -1,4 +1,4 @@
-# backend/source/tools/generateMeanElapsed.py
+# backend/source/ai/generateMeanElapsed.py
 
 import os
 import sys
