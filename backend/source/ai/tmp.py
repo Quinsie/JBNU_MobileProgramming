@@ -7,13 +7,14 @@ import math
 import time
 import torch
 import argparse
+import multiprocessing
 from datetime import datetime, timedelta
-from multiprocessing import Pool, cpu_count
 
 # ==== 경로 설정 ====
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 from source.utils.getDayType import getDayType
 from source.ai.FirstETAModel import FirstETAModel
+multiprocessing.set_start_method("spawn", force=True)
 
 # ==== 경로 상수 ====
 STOPS_DIR = os.path.join(BASE_DIR, "data", "raw", "staticInfo", "stops")
@@ -257,7 +258,7 @@ if __name__ == "__main__":
         for entry in dep_data
     ]
 
-    with Pool(processes=min(cpu_count(), 8)) as pool:
+    with multiprocessing.Pool(processes=min(multiprocessing.cpu_count(), 8)) as pool:
         results = pool.map(infer_single_gpu, task_args)
 
     final = {}; [final.update(r) for r in results]
