@@ -42,8 +42,8 @@ class FirstETAModel(nn.Module):
 
         # ===== Route-ORD Context MLP =====
         # self.route_ord_mlp = nn.Sequential(nn.Linear(36, 32), nn.ReLU())
-        self.ord_context_mlp = nn.Sequential(nn.Linear(16 + 4, 8), nn.ReLU())         # branch + ord_ratio → 8
-        self.elapsed_context_mlp = nn.Sequential(nn.Linear(8 + 16, 32), nn.ReLU())    # ord_rep + mean_elapsed → 32
+        self.ord_context_mlp = nn.Sequential(nn.Linear(16 + 4, 20), nn.ReLU())         # branch + ord_ratio → 20
+        self.elapsed_context_mlp = nn.Sequential(nn.Linear(20 + 16, 32), nn.ReLU())    # ord_rep + mean_elapsed → 32
 
         # ===== Mean Interval Mini MLPs =====
         self.mean_interval_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
@@ -94,9 +94,9 @@ class FirstETAModel(nn.Module):
         # route_input = torch.cat([bus, direction, branch, ord_ratio, mean_elapsed], dim=1)
         # route_context = self.route_ord_mlp(route_input)         # (B, 32)
         ord_input = torch.cat([branch, ord_ratio], dim=1)       # (B, 16 + 4)
-        ord_rep = self.ord_context_mlp(ord_input)               # (B, 8)
+        ord_rep = self.ord_context_mlp(ord_input)               # (B, 20)
 
-        elapsed_input = torch.cat([ord_rep, mean_elapsed], dim=1)  # (B, 8 + 16)
+        elapsed_input = torch.cat([ord_rep, mean_elapsed], dim=1)  # (B, 20 + 16)
         route_context = self.elapsed_context_mlp(elapsed_input)    # (B, 32)
 
         # === Node Context ===
