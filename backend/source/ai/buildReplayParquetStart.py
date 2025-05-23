@@ -1,4 +1,4 @@
-# backend/source/ai/buildReplayParquet.py
+# backend/source/ai/buildReplayParquetStart.py
 
 import os
 import sys
@@ -244,9 +244,14 @@ def build_replay_parquet(target_date):
         if not os.path.isdir(stdid_path): continue
         for fname in os.listdir(stdid_path):
             if not fname.endswith(".json"): continue
-            raw_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
-            if not fname.startswith(raw_date): continue
-            task_list.append((stdid, fname, raw_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
+            target_dt = datetime.strptime(target_date, "%Y%m%d")
+            start_dt = datetime.strptime("20250505", "%Y%m%d")
+            valid_prefixes = [(start_dt + timedelta(days=i)).strftime("%Y%m%d") for i in range((target_dt - start_dt).days)]
+
+            # 로그 파일 날짜 필터
+            if not any(fname.startswith(prefix) for prefix in valid_prefixes): continue
+            log_date = fname.split("_")[0]
+            task_list.append((stdid, fname, log_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_file, task_list)

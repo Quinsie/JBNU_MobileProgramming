@@ -726,4 +726,6 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 실험적으로 최초 6일을 한번에 parquet으로 가공하여 학습에 투입.
  - mean feature 추가를 위해 모델을 분석하던 도중 현재 모델의 문제점을 발견했다. ord ratio와 mean elapsed가 완벽히 route에 종속되지 않는 문제였다.
  - 현재 해결 중.
- - 수정 완료. 종속성 부여.
+ - 수정 완료. 종속성 부여 완료.
+ - mean feature 1개 더 추가는 뭔가 너무 narrow해서 그냥 배제하기로 함. timegroup별 평균만 해도 충분히 의미있다고 생각한다. hint로서는.
+ - 
