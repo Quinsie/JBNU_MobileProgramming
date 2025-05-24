@@ -31,6 +31,7 @@ class FirstETAModel(nn.Module):
 
         # ===== ORD ratio =====
         self.ord_ratio_mlp = nn.Sequential(nn.Linear(1, 20), nn.ReLU())
+        self.prev_ord_ratio_mlp = nn.Sequential(nn.Linear(1, 24), nn.ReLU())
 
         # ===== Mean Elapsed Mini MLPs =====
         self.mean_elapsed_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
@@ -104,7 +105,10 @@ class FirstETAModel(nn.Module):
         pme_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['prev_mean_elapsed_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         prev_mean_elapsed = self.mean_elapsed_merge(torch.cat([pme_total, pme_wd, pme_tg, pme_wdtg], dim=1))
 
-        me_pme = self.me_pme_cat(torch.cat([mean_elapsed, prev_mean_elapsed], dim=1))
+        prev_ord_ratio_raw = self.prev_ord_ratio_mlp(x['prev_ord_ratio'])
+        prev = prev_mean_elapsed + prev_ord_ratio_raw
+
+        me_pme = self.me_pme_cat(torch.cat([mean_elapsed, prev], dim=1))
         route_adj = self.route_cond(ord_ratio) # (B, 48)
         route_context = route_adj + me_pme # route_context complese, 48 dim
 

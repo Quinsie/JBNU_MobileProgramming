@@ -210,6 +210,7 @@ def process_single_file(args):
             "x_departure_time_sin": dep_sin,
             "x_departure_time_cos": dep_cos,
             "x_ord_ratio": round(ord / max_ord, 4),
+            "x_prev_ord_ratio": round((ord-1) / max_ord, 4),
             "x_prev_pred_elapsed": normalize(prev_pred_elapsed, 0, 7200)
         }
         rows.append(row)

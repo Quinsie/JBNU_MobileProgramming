@@ -215,6 +215,7 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
                 "x_departure_time_sin": time_to_sin_cos(dep)[0],
                 "x_departure_time_cos": time_to_sin_cos(dep)[1],
                 "x_ord_ratio": round(ord / max_ord, 4),
+                "x_prev_ord_ratio": round((ord-1) / max_ord, 4),
                 "x_prev_pred_elapsed": 0.0
             }
             # print(bn, dr, br, wd_label, tg, wd_tg, me_total, me_weekday, me_timegroup, me_wd_tg, stop_idx, mi_total, mi_weekday, mi_timegroup, mi_wd_tg, weather, time_to_sin_cos(dep)[0], time_to_sin_cos(dep)[1], round(ord / max_ord, 4))
