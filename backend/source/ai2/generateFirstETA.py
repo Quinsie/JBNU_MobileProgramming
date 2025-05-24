@@ -64,7 +64,11 @@ def extract_route_info(stdid, stdid_number, label_bus):
 
 def forecast_lookup(target_dt, nx_ny, forecast_all):
     target_keys = [(target_dt - timedelta(hours=h)).strftime('%Y%m%d_%H00') for h in range(0, 4)]
-    fallback_dates = [target_dt.strftime('%Y%m%d'), (target_dt - timedelta(days=1)).strftime('%Y%m%d'), (target_dt - timedelta(days=2)).strftime('%Y%m%d')]
+    fallback_dates = [
+        target_dt.strftime('%Y%m%d'),
+        (target_dt - timedelta(days=1)).strftime('%Y%m%d'),
+        (target_dt - timedelta(days=2)).strftime('%Y%m%d')
+    ]
     for date_key in fallback_dates:
         forecast = forecast_all.get(date_key)
         if not forecast:
@@ -76,14 +80,15 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
                     for dy in [0, -1, 1]:
                         key2 = f"{nx + dx}_{ny + dy}"
                         data = forecast[ts].get(key2)
-                        if data and all(k in data for k in ('TMP', 'PCP', 'PTY')):
+                        if (data and all(k in data for k in ('TMP', 'PCP', 'PTY')) and
+                            data['PTY'] is not None and int(data['PTY']) >= 0 and
+                            data['PCP'] is not None and int(data['PCP'] >= 0)):
                             return {
                                 'T1H': normalize(data['TMP'], -30, 50),
                                 'RN1': normalize(data['PCP'], 0, 100),
                                 'PTY': int(data['PTY'])
                             }
     return {'T1H': normalize(20.0, -30, 50), 'RN1': normalize(0.0, 0, 100), 'PTY': 0}
-
 def set_global_model(model):
     global MODEL
     MODEL = model

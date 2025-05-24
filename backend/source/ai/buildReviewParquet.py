@@ -69,7 +69,9 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
                     for dy in [0, -1, 1]:
                         key2 = f"{nx + dx}_{ny + dy}"
                         data = forecast[ts].get(key2)
-                        if data and all(k in data for k in ('TMP', 'PCP', 'PTY')):
+                        if (data and all(k in data for k in ('TMP', 'PCP', 'PTY')) and
+                            data['PTY'] is not None and int(data['PTY']) >= 0 and
+                            data['PCP'] is not None and int(data['PCP'] >= 0)):
                             return {
                                 'T1H': normalize(data['TMP'], -30, 50),
                                 'RN1': normalize(data['PCP'], 0, 100),

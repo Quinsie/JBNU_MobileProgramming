@@ -53,7 +53,7 @@ def time_to_sin_cos(dt):
 def fallback_weather(target_time: datetime, nx_ny: str, weather_all: dict):
     tried_timestamps = sorted(weather_all.keys(), reverse=True)
 
-    for i in range(6):  # 최대 5 fallback까지 시도
+    for i in range(4):  # 최대 5 fallback까지 시도
         closest_key = None
         for ts in tried_timestamps:
             ts_dt = datetime.strptime(ts, "%Y%m%d_%H%M")
@@ -69,7 +69,9 @@ def fallback_weather(target_time: datetime, nx_ny: str, weather_all: dict):
         # nx_ny가 없거나 값이 None이면 fallback
         if nx_ny in grid_data and grid_data[nx_ny] is not None:
             val = grid_data[nx_ny]
-            if val['PTY'] is not None and val['RN1'] is not None and val['T1H'] is not None:
+            if ( val['PTY'] is not None and val['PTY'] >= 0 and
+                val['RN1'] is not None and val['RN1'] >= 0 and
+                val['T1H'] is not None ):
                 return val
 
         # 인접 격자 탐색
@@ -80,7 +82,9 @@ def fallback_weather(target_time: datetime, nx_ny: str, weather_all: dict):
                 key2 = f"{nx+dx}_{ny+dy}"
                 if key2 in grid_data and grid_data[key2] is not None:
                     val2 = grid_data[key2]
-                    if val2['PTY'] is not None and val2['RN1'] is not None and val2['T1H'] is not None:
+                    if ( val2['PTY'] is not None and val2['PTY'] >= 0 and
+                        val2['RN1'] is not None and val2['RN1'] >= 0 and
+                        val2['T1H'] is not None ):
                         return val2
 
         target_time -= timedelta(minutes=10)
