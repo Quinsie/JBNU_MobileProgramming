@@ -53,6 +53,7 @@ def analyze_eta(date_str):
     print(f"[INFO] ETA 분석 시작: {date_str}")
 
     eta_path = os.path.join(ETA_DIR, f"{date_str}_2.json")
+    save_path = os.path.join(SAVE_DIR, f"{date_str}_2.json")
     mean_path = os.path.join(MEAN_DIR, f"{date_str}.json")
     stdid_map = json.load(open(STDID_MAP_PATH, encoding='utf-8'))
     eta_table = json.load(open(eta_path, encoding='utf-8'))
@@ -107,7 +108,6 @@ def analyze_eta(date_str):
         }
 
     # 저장
-    save_path = os.path.join(SAVE_DIR, f"{date_str}.json")
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
     print(f"[INFO] 저장 완료: {save_path}")
