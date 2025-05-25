@@ -96,9 +96,6 @@ def analyze_eta(date_str):
             elapsed_pred = (pred_time - base_time).total_seconds()
             elapsed_true = (true_time - base_time).total_seconds()
 
-            abs_error = abs(elapsed_pred - elapsed_true)
-            if abs_error > 600: over_10min_count += 1
-
             mean_val = mean_elapsed.get(stdid, {}).get(ord, {}).get(f"wd_tg_{wd_tg}", {}).get("mean", None)
             elapsed_mean = mean_val if mean_val is not None else 0.0
 
