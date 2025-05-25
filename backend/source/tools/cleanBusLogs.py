@@ -64,6 +64,7 @@ def clean_pair(file_path: str) -> tuple:
 
         # ===== 2. pos 로그 처리 =====
         pos_file = os.path.join(POS_DIR, stdid, filename)
+        original_pos_len = len(pos_data)
         pos_deleted = 0
         if os.path.exists(pos_file):
             with open(pos_file, encoding="utf-8") as f:
@@ -76,7 +77,7 @@ def clean_pair(file_path: str) -> tuple:
             with open(pos_file, "w", encoding="utf-8") as f:
                 json.dump(pos_data, f, ensure_ascii=False, indent=2)
 
-        return (stdid, filename, ord_deleted, pos_deleted)
+        return (stdid, filename, ord_deleted, original_pos_len - pos_deleted)
 
     except Exception as e:
         return (file_path, f"[ERROR] {e}", 0)
