@@ -2,6 +2,7 @@ import time
 import subprocess
 from datetime import datetime, timedelta
 
+s = time.time()
 # 시작일자, 종료일자 설정
 start_date = datetime.strptime("20250508", "%Y%m%d")
 end_date = datetime.strptime("20250526", "%Y%m%d")  # 종료일 포함
@@ -78,3 +79,5 @@ while current_date <= end_date:
     
     current_date += timedelta(days=1)
 print("ai2/ 끝, 소요 시간: ", time.time() - now, "sec")
+
+print("총 소요 시간: ", time.time() - s, "sec")
