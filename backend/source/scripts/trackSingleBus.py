@@ -56,6 +56,7 @@ def get_closest_route_node(lat, lng, ord, node_list, ord_pair_map, prev_node_id)
 
 def track_bus(stdid, start_time_str):
     log("trackSingleBus", f"{stdid} 버스 {start_time_str} 출발분 추적 시작")
+    start_ts = time.time()
 
     stop_list = load_json(os.path.join(STOP_DIR, f"{stdid}.json"))["resultList"]
     node_list = load_json(os.path.join(NODE_DIR, f"{stdid}.json"))
@@ -88,6 +89,11 @@ def track_bus(stdid, start_time_str):
 
     try:
         while True:
+            # 강제종료 마지막 fall-back
+            if time.time() - start_ts > 7200:
+                log("trackSingleBus", f"{stdid} 추적 7200초 초과 → 강제 종료")
+                break
+            
             now = datetime.now().time()
             if now < start_time:
                 time.sleep(10)
