@@ -76,7 +76,7 @@ def clean_pair(file_path: str) -> tuple:
             with open(pos_file, "w", encoding="utf-8") as f:
                 json.dump(pos_data, f, ensure_ascii=False, indent=2)
 
-        return (filename, ord_deleted, pos_deleted)
+        return (stdid, filename, ord_deleted, pos_deleted)
 
     except Exception as e:
         return (file_path, f"[ERROR] {e}", 0)
@@ -91,11 +91,11 @@ if __name__ == "__main__":
         results = pool.map(clean_pair, all_files)
 
     print("\n=== 삭제 통계 ===")
-    for filename, ord_del, pos_del in results:
+    for stdid, filename, ord_del, pos_del in results:
         if isinstance(ord_del, str):  # 에러 케이스
             print(f"[ERROR] {filename} | {ord_del}")
         elif ord_del > 0 or pos_del > 0:
-            print(f"{filename} | ORD 삭제: {ord_del} | 10초 로그 삭제: {pos_del}")
+            print(f"{stdid}_{filename} | ORD 삭제: {ord_del} | 10초 로그 삭제: {pos_del}")
 
     print(f"\n[완료] 총 처리 파일 수: {len(results)}")
     print("소요 시간: ", time.time() - now, "sec")
