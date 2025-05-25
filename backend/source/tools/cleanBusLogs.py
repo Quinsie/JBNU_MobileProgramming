@@ -80,7 +80,8 @@ def clean_pair(file_path: str) -> tuple:
     except Exception as e:
         return (file_path, f"[ERROR] {e}", 0)
 
-def main():
+
+if __name__ == "__main__":
     now = time.time()
     all_files = glob(os.path.join(BUS_DIR, "*", "*.json"))
     print(f"[INFO] 전체 파일 개수: {len(all_files)}")
@@ -94,6 +95,3 @@ def main():
 
     print(f"\n[완료] 총 처리 파일 수: {len(results)}")
     print("소요 시간: ", time.time() - now, "sec")
-
-if __name__ == "__main__":
-    main()
