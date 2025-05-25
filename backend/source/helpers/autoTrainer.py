@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime, timedelta
 
 # 시작일자, 종료일자 설정
-start_date = datetime.strptime("20250510", "%Y%m%d")
+start_date = datetime.strptime("20250508", "%Y%m%d")
 end_date = datetime.strptime("20250524", "%Y%m%d")  # 종료일 포함
 
 # 실행할 스크립트 및 인자 정의
