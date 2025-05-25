@@ -6,7 +6,7 @@ import json
 import math
 import argparse
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
 
 # ==== 경로 설정 ====
@@ -88,8 +88,16 @@ def analyze_eta(date_str):
 
             pred_time = datetime.strptime(pred_str, "%Y-%m-%d %H:%M:%S")
             true_time = datetime.strptime(record['time'], "%Y-%m-%d %H:%M:%S")
+            
+            # 날짜 넘어간 예측으로 간주해서 하루 더해줌
+            if pred_time < base_time: pred_time += timedelta(days=1)
+            if true_time < base_time: true_time += timedelta(days=1)
+            
             elapsed_pred = (pred_time - base_time).total_seconds()
             elapsed_true = (true_time - base_time).total_seconds()
+
+            abs_error = abs(elapsed_pred - elapsed_true)
+            if abs_error > 600: over_10min_count += 1
 
             mean_val = mean_elapsed.get(stdid, {}).get(ord, {}).get(f"wd_tg_{wd_tg}", {}).get("mean", None)
             elapsed_mean = mean_val if mean_val is not None else 0.0
@@ -114,13 +122,37 @@ def analyze_eta(date_str):
                 stats[cat]['pred'].append(elapsed_pred)
                 stats[cat]['true'].append(elapsed_true)
                 stats[cat]['mean'].append(elapsed_mean)
+                stats[cat]['errors'].append({
+                    "stdid": stdid,
+                    "route_name": route_name,
+                    "bus_number": bus_number,
+                    "hhmm": hhmm,
+                    "ord": ord,
+                    "pred": elapsed_pred,
+                    "true": elapsed_true,
+                    "abs_error": abs(elapsed_pred - elapsed_true)
+                })
 
     # 지표 계산
     result = {}
     for cat in stats:
+        eta = stats[cat]['pred']
+        true = stats[cat]['true']
+        mean = stats[cat]['mean']
+        errors = stats[cat]['errors']
+
         result[cat] = {
-            "eta_vs_true": calculate_metrics(stats[cat]['pred'], stats[cat]['true']),
-            "mean_vs_true": calculate_metrics(stats[cat]['mean'], stats[cat]['true'])
+            "pred_vs_true": calculate_metrics(eta, true),
+            "pred_vs_mean": calculate_metrics(eta, mean),
+        }
+
+        # meta 정보 추가
+        over_10 = sum(1 for e in errors if e['abs_error'] > 600)
+        top10 = sorted(errors, key=lambda e: e['abs_error'], reverse=True)[:10]
+
+        result[cat]["_meta"] = {
+            "over_10min_errors": over_10,
+            "top10_errors": top10
         }
 
     # 저장

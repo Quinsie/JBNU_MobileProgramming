@@ -15,10 +15,19 @@ def load_analysis_data(date_str, base_dir=os.path.join(BASE_DIR, "data", "proces
 
 def print_metrics(title, metrics_dict):
     print(f"\n==== {title} ====")
-    for model_type, metrics in metrics_dict.items():
-        print(f"\n[{model_type}]")
-        for k, v in metrics.items():
-            print(f"{k:>12}: {v}")
+    for key, val in metrics_dict.items():
+        if key.startswith("_"):
+            print(f"\n[{key}]")
+            if key == "_meta":
+                print(f"  over_10min_errors: {val.get('over_10min_errors', 0)}")
+                print("  top10_errors:")
+                for i, e in enumerate(val.get("top10_errors", []), 1):
+                    print(f"    {i}. STDID={e['stdid']}, ORD={e['ord']}, "
+                          f"pred={e['pred']:.1f}, true={e['true']:.1f}, error={e['abs_error']:.1f}")
+        else:
+            print(f"\n[{key}]")
+            for k, v in val.items():
+                print(f"{k:>12}: {v}")
 
 def main():
     date_str = input("날짜를 입력하세요 (YYYYMMDD): ").strip()
