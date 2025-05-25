@@ -35,7 +35,8 @@ def clean_pair(file_path: str) -> tuple:
         with open(file_path, encoding="utf-8") as f:
             bus_data = json.load(f)
 
-        logs = bus_data.get("stop_reached_logs", [])
+        original_logs = bus_data.get("stop_reached_logs", [])
+        logs = original_logs[:]  # 복사해서 작업
         cutoff_time = None
 
         for i in range(1, len(logs)):
@@ -55,7 +56,7 @@ def clean_pair(file_path: str) -> tuple:
         if cutoff_time:
             logs = [log for log in logs if datetime.strptime(log["time"], "%Y-%m-%d %H:%M:%S") < cutoff_time]
 
-        ord_deleted = len(bus_data.get("stop_reached_logs", [])) - len(logs)
+        ord_deleted = len(original_logs) - len(logs) 
         bus_data["stop_reached_logs"] = logs
 
         with open(file_path, "w", encoding="utf-8") as f:
