@@ -30,7 +30,7 @@ while current_date <= end_date:
         # 날짜 결정 (일부 스크립트는 하루 전 날짜 사용)
         target_date = date_minus1 if "Mean" in script else date_str
         args = [arg.format(date=target_date) for arg in args_template]
-        full_command = ["python3", f"ai/{script}"] + args
+        full_command = ["python3", f"../ai/{script}"] + args
         print(f"실행 중: {' '.join(full_command)}")
         subprocess.run(full_command)
     
@@ -49,7 +49,7 @@ while current_date <= end_date:
         # 날짜 결정 (일부 스크립트는 하루 전 날짜 사용)
         target_date = date_minus1 if "Mean" in script else date_str
         args = [arg.format(date=target_date) for arg in args_template]
-        full_command = ["python3", f"ai2/{script}"] + args
+        full_command = ["python3", f"../ai2/{script}"] + args
         print(f"실행 중: {' '.join(full_command)}")
         subprocess.run(full_command)
     

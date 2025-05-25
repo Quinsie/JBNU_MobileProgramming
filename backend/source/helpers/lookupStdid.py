@@ -1,4 +1,4 @@
-# backend/source/tools/lookup_stdid.py
+# backend/source/helpers/lookup_stdid.py
 
 import os
 import json
