@@ -1,4 +1,5 @@
-# backend/source/helpers/analyzeETAError.py
+# backend/source/helpers/analyzeETAError2.py
+# 비교군
 
 import os
 import sys
@@ -52,8 +53,8 @@ def calculate_metrics(pred, true):
 def analyze_eta(date_str):
     print(f"[INFO] ETA 분석 시작: {date_str}")
 
-    eta_path = os.path.join(ETA_DIR, f"{date_str}.json")
-    save_path = os.path.join(SAVE_DIR, f"{date_str}.json")
+    eta_path = os.path.join(ETA_DIR, f"{date_str}_2.json")
+    save_path = os.path.join(SAVE_DIR, f"{date_str}_2.json")
     mean_path = os.path.join(MEAN_DIR, f"{date_str}.json")
     stdid_map = json.load(open(STDID_MAP_PATH, encoding='utf-8'))
     eta_table = json.load(open(eta_path, encoding='utf-8'))
