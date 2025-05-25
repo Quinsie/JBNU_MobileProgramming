@@ -6,7 +6,7 @@ import json
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 def load_analysis_data(date_str, base_dir=os.path.join(BASE_DIR, "data", "processed", "analysis", "first_model")):
-    path = os.path.join(base_dir, f"{date_str}.json")
+    path = os.path.join(base_dir, f"{date_str}_2.json")
     if not os.path.exists(path):
         print(f"[ERROR] 파일이 존재하지 않습니다: {path}")
         return None
