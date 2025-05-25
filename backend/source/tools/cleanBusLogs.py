@@ -2,6 +2,7 @@
 
 import os
 import json
+import time
 import multiprocessing
 from datetime import datetime
 from glob import glob
@@ -80,6 +81,7 @@ def clean_pair(file_path: str) -> tuple:
         return (file_path, f"[ERROR] {e}", 0)
 
 def main():
+    now = time.time()
     all_files = glob(os.path.join(BUS_DIR, "*", "*.json"))
     print(f"[INFO] 전체 파일 개수: {len(all_files)}")
 
@@ -91,6 +93,7 @@ def main():
         print(f"{filename} | ORD 삭제: {ord_del} | 10초 로그 삭제: {pos_del}")
 
     print(f"\n[완료] 총 처리 파일 수: {len(results)}")
+    print("소요 시간: ", time.time() - now, "sec")
 
 if __name__ == "__main__":
     main()
