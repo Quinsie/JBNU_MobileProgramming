@@ -44,7 +44,7 @@ def clean_pair(file_path: str) -> tuple:
             t2 = datetime.strptime(logs[i]["time"], "%Y-%m-%d %H:%M:%S")
 
             # [조건 1] 15분 이상 차이
-            if (t2 - t1).total_seconds() > 900:
+            if (t2 - t1).total_seconds() > 600:
                 cutoff_time = t2
                 break
 
