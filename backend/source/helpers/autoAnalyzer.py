@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 # 시작일자, 종료일자 설정
 start_date = datetime.strptime("20250507", "%Y%m%d")
-end_date = datetime.strptime("20250523", "%Y%m%d")  # 종료일 포함
+end_date = datetime.strptime("20250524", "%Y%m%d")  # 종료일 포함
 
 # 실행할 스크립트 및 인자 정의
 scripts = [
