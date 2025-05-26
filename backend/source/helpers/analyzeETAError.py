@@ -15,7 +15,7 @@ sys.path.append(BASE_DIR)
 
 ETA_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "first_model")
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
-MEAN_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
+# MEAN_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
 STDID_MAP_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "analysis", "first_model")
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -54,10 +54,10 @@ def analyze_eta(date_str):
 
     eta_path = os.path.join(ETA_DIR, f"{date_str}.json")
     save_path = os.path.join(SAVE_DIR, f"{date_str}.json")
-    mean_path = os.path.join(MEAN_DIR, f"{date_str}.json")
+    # mean_path = os.path.join(MEAN_DIR, f"{date_str}.json")
     stdid_map = json.load(open(STDID_MAP_PATH, encoding='utf-8'))
     eta_table = json.load(open(eta_path, encoding='utf-8'))
-    mean_elapsed = json.load(open(mean_path, encoding='utf-8'))
+    # mean_elapsed = json.load(open(mean_path, encoding='utf-8'))
 
     # 분석용 구조: {category: {'pred': [], 'true': [], 'mean': []}}
     stats = defaultdict(lambda: defaultdict(list))
@@ -96,8 +96,8 @@ def analyze_eta(date_str):
             elapsed_pred = (pred_time - base_time).total_seconds()
             elapsed_true = (true_time - base_time).total_seconds()
 
-            mean_val = mean_elapsed.get(stdid, {}).get(ord, {}).get(f"wd_tg_{wd_tg}", {}).get("mean", None)
-            elapsed_mean = mean_val if mean_val is not None else 0.0
+            # mean_val = mean_elapsed.get(stdid, {}).get(ord, {}).get(f"wd_tg_{wd_tg}", {}).get("mean", None)
+            # elapsed_mean = mean_val if mean_val is not None else 0.0
 
             try:
                 ord_num = int(ord)
@@ -118,7 +118,7 @@ def analyze_eta(date_str):
             for cat in ["overall", f"weekday_{weekday}", f"tg_{tg}", f"wdtg_{wd_tg}", f"route_{route_name}", f"bus_{bus_number}", ord_group]:
                 stats[cat]['pred'].append(elapsed_pred)
                 stats[cat]['true'].append(elapsed_true)
-                stats[cat]['mean'].append(elapsed_mean)
+                # stats[cat]['mean'].append(elapsed_mean)
                 stats[cat]['errors'].append({
                     "stdid": stdid,
                     "route_name": route_name,
