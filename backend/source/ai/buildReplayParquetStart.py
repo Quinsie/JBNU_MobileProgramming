@@ -233,6 +233,9 @@ def process_single_file(args):
 def build_replay_parquet(target_date, mean_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
 
+    start_date = datetime.strptime("20250505", "%Y%m%d")
+    end_date = datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)
+
     with open(os.path.join(MEAN_ELAPSED_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
         mean_elapsed = json.load(f)
     with open(os.path.join(MEAN_INTERVAL_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
@@ -264,14 +267,17 @@ def build_replay_parquet(target_date, mean_date):
 
     # 처리 대상 파일 준비
     task_list = []
-    for stdid in os.listdir(RAW_DIR):
-        stdid_path = os.path.join(RAW_DIR, stdid)
-        if not os.path.isdir(stdid_path): continue
-        for fname in os.listdir(stdid_path):
-            if not fname.endswith(".json"): continue
-            raw_date = target_date
-            if not fname.startswith(raw_date): continue
-            task_list.append((stdid, fname, raw_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
+    for dt in pd.date_range(start=start_date, end=end_date):
+        raw_date = dt.strftime("%Y%m%d")
+        for stdid in os.listdir(RAW_DIR):
+            stdid_path = os.path.join(RAW_DIR, stdid)
+            if not os.path.isdir(stdid_path): continue
+            for fname in os.listdir(stdid_path):
+                if not fname.endswith(".json"): continue
+                if not fname.startswith(raw_date): continue
+                task_list.append((stdid, fname, raw_date, ord_lookup, stdid_number,
+                                  nx_ny_stops, mean_elapsed, mean_interval, weather_all,
+                                  label_bus, label_stops))
 
     with Pool(cpu_count()) as pool:
         results = pool.map(process_single_file, task_list)
@@ -291,7 +297,7 @@ if __name__ == "__main__":
     end_date = datetime.strptime(args.date, "%Y%m%d") - timedelta(days=1)
 
     mean_date = (datetime.strptime(args.date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d")
-    for dt in pd.date_range(start=start_date, end=end_date):
-        date_str = dt.strftime("%Y%m%d")
-        build_replay_parquet(date_str, mean_date)
+    target_date = args.date
+    mean_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d")
+    build_replay_parquet(target_date, mean_date)
     print("총 소요 시간: ", time.time() - now, "sec")
