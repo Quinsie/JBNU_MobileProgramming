@@ -230,9 +230,8 @@ def process_single_file(args):
     return rows
 
 # === 메인 전처리 함수 ===
-def build_replay_parquet(target_date):
+def build_replay_parquet(target_date, mean_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
-    mean_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d") # mean은 이틀 전
 
     with open(os.path.join(MEAN_ELAPSED_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
         mean_elapsed = json.load(f)
@@ -291,7 +290,8 @@ if __name__ == "__main__":
     start_date = datetime.strptime("20250505", "%Y%m%d")
     end_date = datetime.strptime(args.date, "%Y%m%d") - timedelta(days=1)
 
+    mean_date = (datetime.strptime(args.date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d")
     for dt in pd.date_range(start=start_date, end=end_date):
         date_str = dt.strftime("%Y%m%d")
-        build_replay_parquet(date_str)
+        build_replay_parquet(date_str, mean_date)
     print("총 소요 시간: ", time.time() - now, "sec")
