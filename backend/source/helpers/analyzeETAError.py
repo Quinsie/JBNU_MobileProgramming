@@ -135,12 +135,12 @@ def analyze_eta(date_str):
     for cat in stats:
         eta = stats[cat]['pred']
         true = stats[cat]['true']
-        mean = stats[cat]['mean']
+        # mean = stats[cat]['mean']
         errors = stats[cat]['errors']
 
         result[cat] = {
             "pred_vs_true": calculate_metrics(eta, true),
-            "pred_vs_mean": calculate_metrics(eta, mean),
+            # "pred_vs_mean": calculate_metrics(eta, mean),
         }
 
         # meta 정보 추가
