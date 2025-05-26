@@ -122,6 +122,7 @@ def process_single_file(args):
         # mean
         me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
         mi = mean_interval.get(str(stop_id), {})
+        pme = mean_elapsed.get(str(stdid), {}).get(str(ord - 1), {})
 
         raw_me_total = me.get("total", {}).get("mean", None)
         me_total = normalize(raw_me_total, 0, 7200) if raw_me_total is not None else 0.0
@@ -161,6 +162,25 @@ def process_single_file(args):
         else:
             mi_wd_tg = mi_total
 
+        raw_pme_total = pme.get("total", {}).get("mean", None)
+        pme_total = normalize(raw_pme_total, 0, 7200) if raw_pme_total is not None else 0.0
+
+        raw_pme_weekday = pme.get(f"weekday_{weekday}", {}).get("mean", None)
+        pme_weekday = normalize(raw_pme_weekday, 0, 7200) if raw_pme_weekday is not None else pme_total
+
+        raw_pme_timegroup = pme.get(f"timegroup_{tg}", {}).get("mean", None)
+        pme_timegroup = normalize(raw_pme_timegroup, 0, 7200) if raw_pme_timegroup is not None else pme_total
+
+        raw_pme_wd_tg = pme.get(f"wd_tg_{weekday}_{tg}", {}).get("mean", None)
+        if raw_pme_wd_tg is not None:
+            pme_wd_tg = normalize(raw_pme_wd_tg, 0, 7200)
+        elif raw_pme_weekday is not None:
+            pme_wd_tg = pme_weekday
+        elif raw_pme_timegroup is not None:
+            pme_wd_tg = pme_timegroup
+        else:
+            pme_wd_tg = pme_total
+
         row = {
             "trip_group_id": trip_group_id,
             "ord": ord,
@@ -175,6 +195,10 @@ def process_single_file(args):
             "x_mean_elapsed_weekday": me_weekday,
             "x_mean_elapsed_timegroup": me_timegroup,
             "x_mean_elapsed_wd_tg": me_wd_tg,
+            "x_prev_mean_elapsed_total": pme_total,
+            "x_prev_mean_elapsed_weekday": pme_weekday,
+            "x_prev_mean_elapsed_timegroup": pme_timegroup,
+            "x_prev_mean_elapsed_wd_tg": pme_wd_tg,
             "x_node_id": stop_idx,
             "x_mean_interval_total": mi_total,
             "x_mean_interval_weekday": mi_weekday,
@@ -186,6 +210,7 @@ def process_single_file(args):
             "x_departure_time_sin": dep_sin,
             "x_departure_time_cos": dep_cos,
             "x_ord_ratio": round(ord / max_ord, 4),
+            "x_prev_ord_ratio": round((ord-1) / max_ord, 4),
             "x_prev_pred_elapsed": normalize(prev_pred_elapsed, 0, 7200)
         }
         rows.append(row)

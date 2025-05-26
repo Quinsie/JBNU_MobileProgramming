@@ -89,7 +89,6 @@ def forecast_lookup(target_dt, nx_ny, forecast_all):
                                 'PTY': int(data['PTY'])
                             }
     return {'T1H': normalize(20.0, -30, 50), 'RN1': normalize(0.0, 0, 100), 'PTY': 0}
-
 def set_global_model(model):
     global MODEL
     MODEL = model
@@ -131,6 +130,7 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
             # === 평균값 fallback 구조 적용 ===
             me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
             mi = mean_interval.get(str(stop_id), {})
+            pme = mean_elapsed.get(str(stdid), {}).get(str(ord - 1), {})
 
             raw_me_total = me.get("total", {}).get("mean", None)
             me_total = normalize(raw_me_total, 0, 7200) if raw_me_total is not None else 0.0
@@ -170,6 +170,25 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
             else:
                 mi_wd_tg = mi_total
 
+            raw_pme_total = pme.get("total", {}).get("mean", None)
+            pme_total = normalize(raw_pme_total, 0, 7200) if raw_pme_total is not None else 0.0
+
+            raw_pme_weekday = pme.get(f"weekday_{wd_label}", {}).get("mean", None)
+            pme_weekday = normalize(raw_pme_weekday, 0, 7200) if raw_pme_weekday is not None else pme_total
+
+            raw_pme_timegroup = pme.get(f"timegroup_{tg}", {}).get("mean", None)
+            pme_timegroup = normalize(raw_pme_timegroup, 0, 7200) if raw_pme_timegroup is not None else pme_total
+
+            raw_pme_wd_tg = pme.get(f"wd_tg_{wd_label}_{tg}", {}).get("mean", None)
+            if raw_pme_wd_tg is not None:
+                pme_wd_tg = normalize(raw_pme_wd_tg, 0, 7200)
+            elif raw_pme_weekday is not None:
+                pme_wd_tg = pme_weekday
+            elif raw_pme_timegroup is not None:
+                pme_wd_tg = pme_timegroup
+            else:
+                pme_wd_tg = pme_total
+
             row = {
                 "x_bus_number": bn,
                 "x_direction": dr,
@@ -181,6 +200,10 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
                 "x_mean_elapsed_weekday": me_weekday,
                 "x_mean_elapsed_timegroup": me_timegroup,
                 "x_mean_elapsed_wd_tg": me_wd_tg,
+                "x_prev_mean_elapsed_total": pme_total,
+                "x_prev_mean_elapsed_weekday": pme_weekday,
+                "x_prev_mean_elapsed_timegroup": pme_timegroup,
+                "x_prev_mean_elapsed_wd_tg": pme_wd_tg,
                 "x_node_id": stop_idx,
                 "x_mean_interval_total": mi_total,
                 "x_mean_interval_weekday": mi_weekday,
@@ -192,6 +215,7 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
                 "x_departure_time_sin": time_to_sin_cos(dep)[0],
                 "x_departure_time_cos": time_to_sin_cos(dep)[1],
                 "x_ord_ratio": round(ord / max_ord, 4),
+                "x_prev_ord_ratio": round((ord-1) / max_ord, 4),
                 "x_prev_pred_elapsed": 0.0
             }
             # print(bn, dr, br, wd_label, tg, wd_tg, me_total, me_weekday, me_timegroup, me_wd_tg, stop_idx, mi_total, mi_weekday, mi_timegroup, mi_wd_tg, weather, time_to_sin_cos(dep)[0], time_to_sin_cos(dep)[1], round(ord / max_ord, 4))
@@ -201,6 +225,7 @@ def infer_single(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_
             }
             float_keys = {
                 "mean_elapsed_total", "mean_elapsed_weekday", "mean_elapsed_timegroup", "mean_elapsed_wd_tg",
+                "prev_mean_elapsed_total", "prev_mean_elapsed_weekday", "prev_mean_elapsed_timegroup", "prev_mean_elapsed_wd_tg",
                 "mean_interval_total", "mean_interval_weekday", "mean_interval_timegroup", "mean_interval_wd_tg",
                 "weather_RN1", "weather_T1H",
                 "departure_time_sin", "departure_time_cos",

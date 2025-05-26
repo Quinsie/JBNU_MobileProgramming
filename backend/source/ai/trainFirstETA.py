@@ -10,7 +10,6 @@ import torch.nn as nn
 from collections import defaultdict
 from datetime import datetime, timedelta
 from torch.utils.data import DataLoader
-from FirstETAModel import FirstETAModel
 
 # === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
@@ -20,6 +19,7 @@ MODEL_SAVE_PATH_2 = None
 SELF_REVIEW_PATH = None
 REPLAY_PATH = None
 YESTERDAY_MODEL_PATH_2 = None
+from FirstETAModel import FirstETAModel
 
 # === 하이퍼파라미터 ===
 EPOCHS = 15
@@ -93,6 +93,13 @@ def train_model(phase: str):
         for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
             batch_indices, *x_vals, batch_y = batch
             batch_x = dict(zip(keys, x_vals))
+
+            # debug
+            # for key in batch_x:
+            #     try:
+            #         print(f"[DEBUG] {key} min: {batch_x[key].min().item()}, max: {batch_x[key].max().item()}")
+            #     except Exception as e:
+            #         print(f"[DEBUG] {key} → skip ({e})")
 
             optimizer.zero_grad()
 

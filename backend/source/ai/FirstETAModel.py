@@ -1,4 +1,5 @@
 # backend/source/ai/FirstETAModel.py
+# pme 추가 버전
 
 import torch
 import torch.nn as nn
@@ -30,17 +31,26 @@ class FirstETAModel(nn.Module):
 
         # ===== ORD ratio =====
         self.ord_ratio_mlp = nn.Sequential(nn.Linear(1, 20), nn.ReLU())
+        self.prev_ord_ratio_mlp = nn.Sequential(nn.Linear(1, 24), nn.ReLU())
 
         # ===== Mean Elapsed Mini MLPs =====
         self.mean_elapsed_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
         self.mean_elapsed_wd_mlp = nn.Sequential(nn.Linear(1 + 4, 4), nn.ReLU())
         self.mean_elapsed_tg_mlp = nn.Sequential(nn.Linear(1 + 8, 4), nn.ReLU())
         self.mean_elapsed_wdtg_mlp = nn.Sequential(nn.Linear(1 + 12, 6), nn.ReLU())
-        self.mean_elapsed_merge = nn.Sequential(nn.Linear(16, 32), nn.ReLU()) # 32 dim
+        self.mean_elapsed_merge = nn.Sequential(nn.Linear(16, 24), nn.ReLU()) # 32 dim
+
+        # ===== Prev Mean Elapsed Mini MLPs =====
+        self.prev_mean_elapsed_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
+        self.prev_mean_elapsed_wd_mlp = nn.Sequential(nn.Linear(1 + 4, 4), nn.ReLU())
+        self.prev_mean_elapsed_tg_mlp = nn.Sequential(nn.Linear(1 + 8, 4), nn.ReLU())
+        self.prev_mean_elapsed_wdtg_mlp = nn.Sequential(nn.Linear(1 + 12, 6), nn.ReLU())
+        self.prev_mean_elapsed_merge = nn.Sequential(nn.Linear(16, 24), nn.ReLU()) # 32 dim
 
         # ===== Route-ORD Context MLP =====
+        self.me_pme_cat = nn.Sequential(nn.Linear(24 + 24, 48), nn.ReLU())
         self.ord_ratio_cond = nn.Sequential(nn.Linear(16, 20), nn.ReLU())
-        self.route_cond = nn.Sequential(nn.Linear(20, 32), nn.ReLU())
+        self.route_cond = nn.Sequential(nn.Linear(20, 48), nn.ReLU())
 
         # ===== Mean Interval Mini MLPs =====
         self.mean_interval_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
@@ -61,7 +71,7 @@ class FirstETAModel(nn.Module):
         self.prev_pred_mlp = nn.Sequential(nn.Linear(1, 4), nn.ReLU(), nn.Linear(4, 16), nn.ReLU())
 
         # ===== Final MLP =====
-        self.final_mlp = nn.Sequential(nn.Linear(88, 64), nn.ReLU(), nn.Linear(64, 32), nn.ReLU())
+        self.final_mlp = nn.Sequential(nn.Linear(104, 64), nn.ReLU(), nn.Linear(64, 32), nn.ReLU())
 
         self.head_mean = nn.Sequential(nn.Linear(32, 1), nn.Sigmoid())
         self.head_logvar = nn.Linear(32, 1)
@@ -88,8 +98,19 @@ class FirstETAModel(nn.Module):
         me_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['mean_elapsed_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
         mean_elapsed = self.mean_elapsed_merge(torch.cat([me_total, me_wd, me_tg, me_wdtg], dim=1))
 
-        route_adj = self.route_cond(ord_ratio) # (B, 32)
-        route_context = route_adj + mean_elapsed # route_context complese, 32 dim
+        # === Prev Mean Elapsed ===
+        pme_total = self.mean_elapsed_total_mlp(x['prev_mean_elapsed_total'])
+        pme_wd = self.mean_elapsed_wd_mlp(torch.cat([x['prev_mean_elapsed_weekday'], self.weekday_index_emb(x['weekday'])], dim=1))
+        pme_tg = self.mean_elapsed_tg_mlp(torch.cat([x['prev_mean_elapsed_timegroup'], self.timegroup_index_emb(x['timegroup'])], dim=1))
+        pme_wdtg = self.mean_elapsed_wdtg_mlp(torch.cat([x['prev_mean_elapsed_wd_tg'], self.wd_tg_index_emb(x['weekday_timegroup'])], dim=1))
+        prev_mean_elapsed = self.mean_elapsed_merge(torch.cat([pme_total, pme_wd, pme_tg, pme_wdtg], dim=1))
+
+        prev_ord_ratio_raw = self.prev_ord_ratio_mlp(x['prev_ord_ratio'])
+        prev = prev_mean_elapsed + prev_ord_ratio_raw
+
+        me_pme = self.me_pme_cat(torch.cat([mean_elapsed, prev], dim=1))
+        route_adj = self.route_cond(ord_ratio) # (B, 48)
+        route_context = route_adj + me_pme # route_context complese, 48 dim
 
         # === Node Context ===
         node = self.node_emb(x['node_id'])                      # (B, 8)
