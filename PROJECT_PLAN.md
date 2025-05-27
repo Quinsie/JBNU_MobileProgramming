@@ -819,40 +819,32 @@ bus_number
      └ branch (branch@dir@bus: 이 방향인 버스에서의 n번째 본/분선)
          └ node_id_ratio (node@branch@dir@bus: n번째 본/분선이면서 이 방향인 버스에서의 몇 번째 route node id)
              ├ [ORD+1]: node_id_ratio (얘는 ord_ratio가 나을지 node_id_ratio가 나을지 모르겠다. 기준점이 node_id_ratio인데 좀 애매함)
-             │              ├ avg_congestion
-             │              ├ weather(PTY, RN1, T1H)
-             │              ├ mean_interval(mean elapsed ord+1 - now)
+             │              ├ avg_congestion 24
+             │              ├ weather(PTY, RN1, T1H) 8
+             │              ├ mean_interval(mean elapsed ord+1 - now) 16
              │              ├ eta1_hint? (넣을지 말지 고려)
-             │              └ stop_id(해당 ord의 정류장 ID)
+             │              └ stop_id(해당 ord의 정류장 ID) (일단 뺌)
              │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
              ├ [ORD+2]: node_id_ratio
              │              ├ avg_congestion
              │              ├ weather(PTY, RN1, T1H)
              │              ├ mean_interval(mean elapsed ord+2 - now)
-             │              ├ eta1_hint? (넣을지 말지 고려)
-             │              └ stop_id(해당 ord의 정류장 ID)
-             │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+             │              └ eta1_hint? (넣을지 말지 고려)
              ├ [ORD+3]: node_id_ratio
              │              ├ avg_congestion
              │              ├ weather(PTY, RN1, T1H)
              │              ├ mean_interval(mean elapsed ord+3 - now)
-             │              ├ eta1_hint? (넣을지 말지 고려)
-             │              └ stop_id(해당 ord의 정류장 ID)
-             │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+             │              └ eta1_hint? (넣을지 말지 고려)
              ├ [ORD+4]: node_id_ratio
              │              ├ avg_congestion
              │              ├ weather(PTY, RN1, T1H)
              │              ├ mean_interval(mean elapsed ord+4 - now)
-             │              ├ eta1_hint? (넣을지 말지 고려)
-             │              └ stop_id(해당 ord의 정류장 ID)
-             │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+             │              └ eta1_hint? (넣을지 말지 고려)
              └ [ORD+5]: node_id_ratio
                               ├ avg_congestion
                               ├ weather(PTY, RN1, T1H)
                               ├ mean_interval(mean elapsed ord+5 - now)
-                              ├ eta1_hint? (넣을지 말지 고려)
-                              └ stop_id(해당 ord의 정류장 ID)
-                                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+                              └ eta1_hint? (넣을지 말지 고려)
 
 [Time Context]
 weekday (버스 운행 요일 종류 (0, 1, 2))
@@ -867,3 +859,6 @@ prev_pred_interval (self-review용, 이전에 예측했던 각 ord에 대한 소
  </pre>
  - 상술된 구조로 model이 만들어질것이다. 종속성 표현 정확히 해줘야 한다.
  - y는 5개, 즉 5차원 값이 나와야 한다.
+
+ - 어... 2차 모델 만들면서 1차 모델 참조하다가, condition에 ReLU를 넣은 정황을 발견했다.
+ - 일단 이걸로 성능 향상이 있을 수도 있으니... 재학습 들어간다.

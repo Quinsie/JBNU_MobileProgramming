@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 # === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
 MODEL_DIR = os.path.join(BASE_DIR, "data", "model", "firstETA")
-ODEL_SAVE_PATH_1 = None
+MODEL_SAVE_PATH_1 = None
 MODEL_SAVE_PATH_2 = None
 SELF_REVIEW_PATH = None
 REPLAY_PATH = None
