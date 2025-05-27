@@ -1,4 +1,6 @@
-# backend/source/tools/cleanBusLogs.py
+# backend/source/ai/cleanBusLogs.py
+# 하루 이상 차이나는 log 강제 삭제 및 15분 이상 차이 log 삭제하는 script
+# 추후 trackSingleBus 수정 등으로 자정 넘은 상황에 대한 Bug를 수정할 필요 있음
 
 import os
 import json

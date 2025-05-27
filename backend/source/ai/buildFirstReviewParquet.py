@@ -1,4 +1,4 @@
-# backend/source/ai/buildReviewParquet.py
+# backend/source/ai/buildFirstReviewParquet.py
 
 import os
 import sys

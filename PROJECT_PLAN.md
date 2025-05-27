@@ -785,3 +785,85 @@ Mobile Prgramming with Kotlin(Android Studio), Python 3
  - 와우. 실험 결과가 굉장히 인상적이다. PME 포함 버전이 압도적 우세다. 딱 하나, 성능 최고점은 평일 한정으로 PME 없는 버전이 더 낫지만, 포함한 경우에 안정성이 압도적이다.
  - 1차 모델을 최종적으로 확정했다. "더미를 사용하지 않고 최초 학습은 n일치를 한번에 파케이로 만들어 학습시키는 방법"이 안정성이 더 뛰어난 것으롭 보인다.
  - 이제 2차 모델링 들어간다. baseline은 이 정도로 만들어놓자. 추후 시간이 남으면 하이퍼파라미터 조정 등으로 성능 향상에 대한 실험가치가 있을 것으로 추측된다.
+ - 1차 모델은 ORD단위가 1개 row가 된다. 반면 2차 모델은 ORD단위가 1개 "10초 단위 log"가 된다.
+ - 60ORD기준 대략 1시간 30분 trip이 이어진다고 가정하면, 대략 15배의 cost가 들게 된다.
+ - 현재 1회 loop당 1차 모델의 소요시간이 대략 3분 40초이기 때문에, 15배의 시간이 들어도 55분이면 1일 loop가 돌 수 있을 것으로 기대된다.
+ - self-review를 위해, 2차 모델의 output은 외부에서 사용할 용도로 갱신하는 table 하나와 self-review용으로 쓸 10초 단위 table을 따로 저장한다.
+ - 공간 절약을 위해 self-review용 table은 "버스 하나의 table"만 저장한다.
+ - 다시 정리. self-review는 당일 실시간 추론한 결과를 저장해놓고 raw와 비교를 하는것이다.
+
+ - 아주 중요한 부분을 잡았다. 10초단위 log보다 훨씬 많은 row가 나온다. 정확히는 10초 단위로 "남은 ord"에 대한 내용이 전부 row가 된다.
+ - 일반화해서 60개 ORD를 1시간 30분동안 일정하게 주행한다고 가정하자.
+  + 정류장 간 거리 1분 30초: 로그 9개씩 찍힘
+  + ORD 1일 때: 2~60에 대한 추론 전부 수행을 9번: 9 × 59
+  + ORD 2일 때: 3~60에 대한 추론 전부 수행을 9번: 9 × 58
+  + ... 계산하면 9 × n(n + 1) ÷ 2 가 되어, 15930개의 row가 나온다. 기존 대비 265배가 되어 학습시간 16시간 이상 소모 예상.
+  + batch size 512, epoch 15 기준이긴 하지만.. 이정도면 너무 무겁다.
+  + 향후 5개만 계산한다고 쳐도 대충 9 × 5 × 60 ÷ 60하면 45배가 된다. 45배면 대략 2시간 45분정도로 나름 나쁘지 않은 학습 시간이 나온다.
+ - 따라서 5개로 제한을 하든, batch size를 확 늘리든 무언가 액션이 필요하다.
+
+ - 일단 1차는 나중에 batch-size 256까지 fine-tuning을 할 듯 하다. hyper-parameters나 MLP-depth 관련해서도 한번 생각해봐야겠다.
+ - 2차 설계 본격적으로 시작.
+ - 비용을 조금 효율적으로 잡기 위해, 10초 단위 학습/추론에서 route_node 단위로 쪼개기로 했다.
+ - 어차피 ORD 사이에 1~3개의 route node는 위치하지 않을까 싶고... 이거 기준으로 해도 충분히 세밀하다고 판단된다. dramatic한 차이는 없을듯.
+
+---
+### 2025-05-27
+#### 진행 상황
+ - 2차 모델 코딩 시작
+ <pre>
+ <code>
+[Route Context]
+bus_number
+ └ direction (dir@bus: 이 버스에서의 이 방향)
+     └ branch (branch@dir@bus: 이 방향인 버스에서의 n번째 본/분선)
+         └ node_id_ratio (node@branch@dir@bus: n번째 본/분선이면서 이 방향인 버스에서의 몇 번째 route node id)
+             ├ [ORD+1]: node_id_ratio (얘는 ord_ratio가 나을지 node_id_ratio가 나을지 모르겠다. 기준점이 node_id_ratio인데 좀 애매함)
+             │              ├ avg_congestion
+             │              ├ weather(PTY, RN1, T1H)
+             │              ├ mean_interval(mean elapsed ord+1 - now)
+             │              ├ eta1_hint? (넣을지 말지 고려)
+             │              └ stop_id(해당 ord의 정류장 ID)
+             │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+             ├ [ORD+2]: node_id_ratio
+             │              ├ avg_congestion
+             │              ├ weather(PTY, RN1, T1H)
+             │              ├ mean_interval(mean elapsed ord+2 - now)
+             │              ├ eta1_hint? (넣을지 말지 고려)
+             │              └ stop_id(해당 ord의 정류장 ID)
+             │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+             ├ [ORD+3]: node_id_ratio
+             │              ├ avg_congestion
+             │              ├ weather(PTY, RN1, T1H)
+             │              ├ mean_interval(mean elapsed ord+3 - now)
+             │              ├ eta1_hint? (넣을지 말지 고려)
+             │              └ stop_id(해당 ord의 정류장 ID)
+             │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+             ├ [ORD+4]: node_id_ratio
+             │              ├ avg_congestion
+             │              ├ weather(PTY, RN1, T1H)
+             │              ├ mean_interval(mean elapsed ord+4 - now)
+             │              ├ eta1_hint? (넣을지 말지 고려)
+             │              └ stop_id(해당 ord의 정류장 ID)
+             │                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+             └ [ORD+5]: node_id_ratio
+                              ├ avg_congestion
+                              ├ weather(PTY, RN1, T1H)
+                              ├ mean_interval(mean elapsed ord+5 - now)
+                              ├ eta1_hint? (넣을지 말지 고려)
+                              └ stop_id(해당 ord의 정류장 ID)
+                                  └ stop_interval (해당 정류장을 지나는 모든 노선에 대한 -1정류장과의 평균 소요시간)
+
+[Time Context]
+weekday (버스 운행 요일 종류 (0, 1, 2))
+timegroup (버스 출발시간 기준 소속 timegroup)
+weekday_timegroup (요일+timegroup)
+departure time sin (버스 출발시간 주기성 부여)
+departure time cos (버스 출발시간 주기성 부여)
+
+[Self-review]
+prev_pred_interval (self-review용, 이전에 예측했던 각 ord에 대한 소요시간)
+ </code>
+ </pre>
+ - 상술된 구조로 model이 만들어질것이다. 종속성 표현 정확히 해줘야 한다.
+ - y는 5개, 즉 5차원 값이 나와야 한다.

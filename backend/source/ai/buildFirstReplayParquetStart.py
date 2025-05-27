@@ -1,4 +1,4 @@
-# backend/source/ai/buildReplayParquetStart.py
+# backend/source/ai/buildFirstReplayParquetStart.py
 
 import os
 import sys

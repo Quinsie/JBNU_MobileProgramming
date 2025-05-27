@@ -1,5 +1,4 @@
 # backend/source/ai/FirstETAModel.py
-# pme 추가 버전
 
 import torch
 import torch.nn as nn
@@ -49,8 +48,8 @@ class FirstETAModel(nn.Module):
 
         # ===== Route-ORD Context MLP =====
         self.me_pme_cat = nn.Sequential(nn.Linear(24 + 24, 48), nn.ReLU())
-        self.ord_ratio_cond = nn.Sequential(nn.Linear(16, 20), nn.ReLU())
-        self.route_cond = nn.Sequential(nn.Linear(20, 48), nn.ReLU())
+        self.ord_ratio_cond = nn.Sequential(nn.Linear(16, 20))
+        self.route_cond = nn.Sequential(nn.Linear(20, 48))
 
         # ===== Mean Interval Mini MLPs =====
         self.mean_interval_total_mlp = nn.Sequential(nn.Linear(1, 2), nn.ReLU())
@@ -59,7 +58,7 @@ class FirstETAModel(nn.Module):
         self.mean_interval_wdtg_mlp = nn.Sequential(nn.Linear(1 + 12, 6), nn.ReLU())
         self.mean_interval_merge = nn.Sequential(nn.Linear(16, 16), nn.ReLU())
 
-        self.node_cond = nn.Sequential(nn.Linear(8, 16), nn.ReLU())
+        self.node_cond = nn.Sequential(nn.Linear(8, 16))
 
         # ===== Time Context =====
         self.time_mlp = nn.Sequential(nn.Linear(26, 16), nn.ReLU())
