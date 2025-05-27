@@ -1,4 +1,4 @@
-# backend/source/ai/trainFirstETA.py
+# backend/source/ai/trainSecondETA.py
 
 import os
 import sys
@@ -7,14 +7,13 @@ import torch
 import argparse
 import pandas as pd
 import torch.nn as nn
-from collections import defaultdict
 from datetime import datetime, timedelta
 from torch.utils.data import DataLoader
-from FirstETAModel import FirstETAModel
+from SecondETAModel import SecondETAModel
 
 # === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
-MODEL_DIR = os.path.join(BASE_DIR, "data", "model", "firstETA")
+MODEL_DIR = os.path.join(BASE_DIR, "data", "model", "secondETA")
 MODEL_SAVE_PATH_1 = None
 MODEL_SAVE_PATH_2 = None
 SELF_REVIEW_PATH = None
@@ -46,7 +45,7 @@ def train_model(phase: str):
     df = pd.read_parquet(parquet_path)  # parquet 파일 읽기
 
     # === 모델 정의 및 전날 모델 불러오기 ===
-    model = FirstETAModel().to(device)
+    model = SecondETAModel().to(device)
     if os.path.exists(model_load_path):
         print(f"[INFO] Loading previous model from: {model_load_path}")
         model.load_state_dict(torch.load(model_load_path, map_location=device))
@@ -59,9 +58,8 @@ def train_model(phase: str):
 
     # self_review일 때는 prev_pred_elapsed가 반드시 있어야 함
     if phase == "self_review":
-        assert "x_prev_pred_elapsed" in x_cols, "self_review인데 x_prev_pred_elapsed가 없음"
-
-    y_col = "y"
+        for i in range(1, 6):
+            assert f"x_prev_pred_elapsed_{i}" in x_cols
 
     # 딕셔너리로 feature 구성
     x_dict = {}
@@ -80,7 +78,8 @@ def train_model(phase: str):
 
         x_dict[key] = tensor.to(device)
 
-    y = torch.tensor(df[y_col].values, dtype=torch.float32).unsqueeze(1).to(device)
+    y_cols = [f"y_{i}" for i in range(1, 6)]
+    y = torch.tensor(df[y_cols].values, dtype=torch.float32).to(device)
 
     # dataset은 리스트(zip) 기반으로 구성
     dataset = list(zip(range(len(df)), *(list(x_dict.values()) + [y])))
@@ -91,7 +90,7 @@ def train_model(phase: str):
     for epoch in range(EPOCHS):
         total_loss = 0
         for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
-            batch_indices, *x_vals, batch_y = batch
+            _, *x_vals, batch_y = batch
             batch_x = dict(zip(keys, x_vals))
 
             # debug
@@ -112,44 +111,14 @@ def train_model(phase: str):
 
             # === self-review residual penalty ===
             if phase == "self_review":
-                prev_pred = batch_x["prev_pred_elapsed"].detach().unsqueeze(1)
+                prev_pred = torch.cat([batch_x[f"prev_pred_elapsed_{i}"].detach() for i in range(1, 6)], dim=1)
                 penalty = nn.functional.relu(batch_y - prev_pred).mean()
                 loss = hetero_loss + 0.3 * penalty
                 # print(f"[E{epoch+1}] hetero_loss: {hetero_loss.item():.4f} | penalty: {penalty.item():.4f}") # DEBUG
 
-
-            # === [여기에 ranking loss를 이동] ===
-            if "trip_group_id" in df.columns and "ord" in df.columns:
-                # 각 배치 인덱스에 대한 trip_group_id를 수집
-                trip_ids = df["trip_group_id"].values[[i.item() for i in batch_indices]]
-                ords = torch.tensor(df["ord"].values[[i.item() for i in batch_indices]], dtype=torch.float32).to(device)
-                preds = pred_mean.squeeze()
-
-                trip_to_local_indices = defaultdict(list)
-                for local_idx, trip in enumerate(trip_ids):
-                    trip_to_local_indices[trip].append(local_idx)
-
-                ranking_loss = 0
-                count = 0
-                for indices in trip_to_local_indices.values():
-                    if len(indices) < 2:
-                        continue
-                    ord_subset = ords[indices]
-                    pred_subset = preds[indices]
-
-                    sorted_idx = torch.argsort(ord_subset)
-                    ord_sorted = ord_subset[sorted_idx]
-                    pred_sorted = pred_subset[sorted_idx]
-
-                    for i in range(len(ord_sorted) - 1):
-                        if ord_sorted[i] < ord_sorted[i + 1]:  # 동률은 스킵
-                            ranking_loss += nn.functional.relu(pred_sorted[i] - pred_sorted[i + 1])
-                            count += 1
-
-                if count > 0:
-                    ranking_loss = ranking_loss / count
-                    loss += 0.2 * ranking_loss
-                    # print(f"[E{epoch+1}] ranking_loss: {ranking_loss.item():.4f}") # DEBUG
+            # pred_mean이 (B, 5) → ORD+1 ~ ORD+5에 대해 순서 보장
+            ranking_loss = nn.functional.relu(pred_mean[:, :-1] - pred_mean[:, 1:]).mean()
+            loss += 0.2 * ranking_loss
 
             # print(f"[E{epoch+1}] pred_mean: min={pred_mean.min().item():.4f}, max={pred_mean.max().item():.4f}, mean={pred_mean.mean().item():.4f}") # DEBUG
 
@@ -168,7 +137,7 @@ def train_model(phase: str):
     model.eval()
     with torch.no_grad():
         test_batch = next(iter(DataLoader(dataset, batch_size=32, shuffle=True)))
-        batch_indices, *x_vals, batch_y = test_batch
+        _, *x_vals, batch_y = test_batch
         batch_x = dict(zip(keys, x_vals))
 
         pred_mean, _ = model(batch_x)
@@ -177,7 +146,9 @@ def train_model(phase: str):
 
         print("\n=== 학습 후 추론 테스트 (pred vs real) ===")
         for i in range(min(10, len(pred_elapsed))):
-            print(f"[{i}] Pred: {pred_elapsed[i]:.2f}s | Real: {real_elapsed[i]:.2f}s")
+            pred_vals = ", ".join([f"{v:.2f}" for v in pred_elapsed[i].tolist()])
+            real_vals = ", ".join([f"{v:.2f}" for v in real_elapsed[i].tolist()])
+            print(f"[{i}] Pred: [{pred_vals}] | Real: [{real_vals}]")
 
 # === main 함수 진입점 ===
 if __name__ == "__main__":
@@ -191,8 +162,8 @@ if __name__ == "__main__":
     
     MODEL_SAVE_PATH_1 = os.path.join(MODEL_DIR, "self_review", f"{DATE}.pth")
     MODEL_SAVE_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{DATE}.pth")
-    SELF_REVIEW_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review", f"{DATE}.parquet")
-    REPLAY_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay", f"{DATE}.parquet")
+    SELF_REVIEW_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "self_review", f"{DATE}.parquet")
+    REPLAY_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "replay", f"{DATE}.parquet")
     YESTERDAY_MODEL_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{YESTERDAY}.pth")
 
     now = time.time()
