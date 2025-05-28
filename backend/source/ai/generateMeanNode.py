@@ -87,7 +87,7 @@ def process_file(args):
                 if node_id not in pos_first_time:
                     continue
                 elapsed = (bus_time_by_ord[ord_target] - pos_first_time[node_id]).total_seconds()
-                result.append(((stdid, node_id, ord_target, group, wd, tg), elapsed))
+                result.append(((stdid, node_id, offset, group, wd, tg), elapsed))
     return result
 
 # === 메인 ===
@@ -157,20 +157,23 @@ if __name__ == "__main__":
             for stdid, node_dict in prev_data.items():
                 for node_id, ord_dict in node_dict.items():
                     for ord_key, group_dict in ord_dict.items():
-                        ord_val = int(ord_key)
+                        try:
+                            offset = int(ord_key)  # append도 상대 index로 저장되어 있다고 가정
+                        except:
+                            continue
                         for group_key, val in group_dict.items():
                             if not group_key.startswith("wd_tg_"):
                                 continue
                             s, n = val["mean"] * val["num"], val["num"]
-                            group_sum[(stdid, int(node_id), ord_val, group_key)][0] += s
-                            group_sum[(stdid, int(node_id), ord_val, group_key)][1] += n
+                            group_sum[(stdid, int(node_id), offset, group_key)][0] += s
+                            group_sum[(stdid, int(node_id), offset, group_key)][1] += n
                             _, _, wd, tg = group_key.split("_")
-                            weekday_sum[stdid][int(node_id)][ord_val][wd][0] += s
-                            weekday_sum[stdid][int(node_id)][ord_val][wd][1] += n
-                            timegroup_sum[stdid][int(node_id)][ord_val][tg][0] += s
-                            timegroup_sum[stdid][int(node_id)][ord_val][tg][1] += n
-                            total_sum[stdid][int(node_id)][ord_val][0] += s
-                            total_sum[stdid][int(node_id)][ord_val][1] += n
+                            weekday_sum[stdid][int(node_id)][offset][wd][0] += s
+                            weekday_sum[stdid][int(node_id)][offset][wd][1] += n
+                            timegroup_sum[stdid][int(node_id)][offset][tg][0] += s
+                            timegroup_sum[stdid][int(node_id)][offset][tg][1] += n
+                            total_sum[stdid][int(node_id)][offset][0] += s
+                            total_sum[stdid][int(node_id)][offset][1] += n
 
     # 평균 계산 및 저장
     mean_node = defaultdict(lambda: defaultdict(dict))
