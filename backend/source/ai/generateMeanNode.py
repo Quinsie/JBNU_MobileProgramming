@@ -120,6 +120,11 @@ if __name__ == "__main__":
                 continue
             tasks.append((stdid, fname, route_pair, TARGET_DATE))
 
+    # DEBUG
+    print(f"[DEBUG] 총 task 개수: {len(tasks)}")
+    if tasks:
+        print("[DEBUG] 예시 task:", tasks[0])
+
     all_results = []
     with Pool() as pool:
         for result in pool.imap_unordered(process_file, tasks, chunksize=50):
