@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import time
 import argparse
 from datetime import datetime, timedelta
 from collections import defaultdict
@@ -95,6 +96,8 @@ if __name__ == "__main__":
     parser.add_argument("--date", required=True)
     parser.add_argument("--mode", required=True, choices=["init", "append"])
     args = parser.parse_args()
+
+    now = time.time()
 
     TARGET_DATE = args.date
     MODE = args.mode
@@ -195,3 +198,4 @@ if __name__ == "__main__":
         json.dump(mean_node, f, ensure_ascii=False, indent=2)
 
     print(f"저장 완료: {SAVE_PATH}")
+    print("소요 시간: ", time.time() - now, "sec")
