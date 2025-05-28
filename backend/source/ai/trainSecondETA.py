@@ -21,7 +21,7 @@ REPLAY_PATH = None
 YESTERDAY_MODEL_PATH_2 = None
 
 # === 하이퍼파라미터 ===
-EPOCHS = 15
+EPOCHS = 30
 BATCH_SIZE = 512
 LR = 0.001
 
@@ -55,6 +55,7 @@ def train_model(phase: str):
 
     # x_로 시작하는 모든 column을 feature로 간주
     x_cols = [col for col in df.columns if col.startswith("x_")]
+    mask_cols = [f"mask_{i}" for i in range(1, 6)]  # 마스킹 열 추가
 
     # self_review일 때는 prev_pred_elapsed가 반드시 있어야 함
     if phase == "self_review":
@@ -80,9 +81,10 @@ def train_model(phase: str):
 
     y_cols = [f"y_{i}" for i in range(1, 6)]
     y = torch.tensor(df[y_cols].values, dtype=torch.float32).to(device)
+    mask = torch.tensor(df[mask_cols].values, dtype=torch.float32).to(device)  # shape: (B, 10)
 
     # dataset은 리스트(zip) 기반으로 구성
-    dataset = list(zip(range(len(df)), *(list(x_dict.values()) + [y])))
+    dataset = list(zip(range(len(df)), *(list(x_dict.values()) + [y, mask])))
     keys = list(x_dict.keys())
 
     # === 학습 루프 ===
@@ -90,7 +92,7 @@ def train_model(phase: str):
     for epoch in range(EPOCHS):
         total_loss = 0
         for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
-            _, *x_vals, batch_y = batch
+            _, *x_vals, batch_y, batch_mask = batch
             batch_x = dict(zip(keys, x_vals))
 
             # debug
@@ -106,18 +108,24 @@ def train_model(phase: str):
             pred_mean, pred_log_var = model(batch_x)
 
             # 기본 heteroscedastic loss 계산
-            hetero_loss = ((batch_y - pred_mean) ** 2 * torch.exp(-pred_log_var) + pred_log_var).mean()
+            diff_sq = (batch_y - pred_mean) ** 2
+            hetero_loss_per_elem = diff_sq * torch.exp(-pred_log_var) + pred_log_var
+            masked_loss = hetero_loss_per_elem * batch_mask
+            hetero_loss = masked_loss.sum() / (batch_mask.sum() + 1e-6)
             loss = hetero_loss
 
             # === self-review residual penalty ===
             if phase == "self_review":
                 prev_pred = torch.cat([batch_x[f"prev_pred_elapsed_{i}"].detach() for i in range(1, 6)], dim=1)
-                penalty = nn.functional.relu(batch_y - prev_pred).mean()
+                penalty = nn.functional.relu(batch_y - prev_pred) * batch_mask
+                penalty = penalty.sum() / (batch_mask.sum() + 1e-6)
                 loss = hetero_loss + 0.3 * penalty
                 # print(f"[E{epoch+1}] hetero_loss: {hetero_loss.item():.4f} | penalty: {penalty.item():.4f}") # DEBUG
 
             # pred_mean이 (B, 5) → ORD+1 ~ ORD+5에 대해 순서 보장
-            ranking_loss = nn.functional.relu(pred_mean[:, :-1] - pred_mean[:, 1:]).mean()
+            ranking_diff = nn.functional.relu(pred_mean[:, :-1] - pred_mean[:, 1:])         # (B, 4)
+            mask_pairwise = batch_mask[:, :-1] * batch_mask[:, 1:]                          # (B, 4)
+            ranking_loss = (ranking_diff * mask_pairwise).sum() / (mask_pairwise.sum() + 1e-6)
             loss += 0.2 * ranking_loss
 
             # print(f"[E{epoch+1}] pred_mean: min={pred_mean.min().item():.4f}, max={pred_mean.max().item():.4f}, mean={pred_mean.mean().item():.4f}") # DEBUG
@@ -137,7 +145,7 @@ def train_model(phase: str):
     model.eval()
     with torch.no_grad():
         test_batch = next(iter(DataLoader(dataset, batch_size=32, shuffle=True)))
-        _, *x_vals, batch_y = test_batch
+        _, *x_vals, batch_y, batch_mask = test_batch
         batch_x = dict(zip(keys, x_vals))
 
         pred_mean, _ = model(batch_x)

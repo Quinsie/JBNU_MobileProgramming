@@ -9,8 +9,8 @@ end_date = datetime.strptime("20250525", "%Y%m%d")  # 종료일 포함
 
 # 실행할 스크립트 및 인자 정의
 scripts = [
-    ("analyzeETAError.py", ["--date", "{date}"]),
-    ("analyzeETAError2.py", ["--date", "{date}"])
+    ("analyzeETAError.py", ["--date", "{date}"])
+    # ("analyzeETAError2.py", ["--date", "{date}"])
 ]
 
 # 날짜별 루프
