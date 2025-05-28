@@ -144,8 +144,8 @@ if __name__ == "__main__":
         weekday_sum[stdid][node_id][ord_target][wd][1] += 1
         timegroup_sum[stdid][node_id][ord_target][tg][0] += elapsed
         timegroup_sum[stdid][node_id][ord_target][tg][1] += 1
-        total_sum[stdid][node_id][0] += elapsed
-        total_sum[stdid][node_id][1] += 1
+        total_sum[stdid][node_id][ord_target][0] += elapsed
+        total_sum[stdid][node_id][ord_target][1] += 1
 
     # append 모드 처리
     if MODE == "append":
@@ -169,8 +169,8 @@ if __name__ == "__main__":
                             weekday_sum[stdid][int(node_id)][ord_val][wd][1] += n
                             timegroup_sum[stdid][int(node_id)][ord_val][tg][0] += s
                             timegroup_sum[stdid][int(node_id)][ord_val][tg][1] += n
-                            total_sum[stdid][int(node_id)][0] += s
-                            total_sum[stdid][int(node_id)][1] += n
+                            total_sum[stdid][int(node_id)][ord_val][0] += s
+                            total_sum[stdid][int(node_id)][ord_val][1] += n
 
     # 평균 계산 및 저장
     mean_node = defaultdict(lambda: defaultdict(dict))
@@ -191,8 +191,8 @@ if __name__ == "__main__":
 
     for stdid in total_sum:
         for node_id in total_sum[stdid]:
-            s, n = total_sum[stdid][node_id]
-            mean_node[stdid][str(node_id)].setdefault("total", {})["total"] = {"mean": s / n, "num": n}
+            for ord_val, (s, n) in total_sum[stdid][node_id].items():
+                mean_node[stdid][str(node_id)].setdefault(str(ord_val), {})["total"] = {"mean": s / n, "num": n}
 
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(mean_node, f, ensure_ascii=False, indent=2)
