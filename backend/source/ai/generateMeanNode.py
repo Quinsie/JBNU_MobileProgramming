@@ -135,7 +135,7 @@ if __name__ == "__main__":
     group_sum = defaultdict(lambda: [0.0, 0])
     weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0]))))
     timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0]))))
-    total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+    total_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
 
     for (stdid, node_id, ord_target, group, wd, tg), elapsed in all_results:
         group_sum[(stdid, node_id, ord_target, group)][0] += elapsed
