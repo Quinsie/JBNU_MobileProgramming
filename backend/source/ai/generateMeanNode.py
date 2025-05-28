@@ -123,11 +123,6 @@ if __name__ == "__main__":
                 continue
             tasks.append((stdid, fname, route_pair))
 
-    # DEBUG
-    print(f"[DEBUG] 총 task 개수: {len(tasks)}")
-    if tasks:
-        print("[DEBUG] 예시 task:", tasks[0])
-
     all_results = []
     with Pool() as pool:
         for result in pool.imap_unordered(process_file, tasks, chunksize=50):
@@ -135,8 +130,8 @@ if __name__ == "__main__":
 
     # 누적 구조
     group_sum = defaultdict(lambda: [0.0, 0])
-    weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
-    timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0])))
+    weekday_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0]))))
+    timegroup_sum = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [0.0, 0]))))
     total_sum = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
 
     for (stdid, node_id, ord_target, group, wd, tg), elapsed in all_results:
