@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     all_results = []
     with Pool() as pool:
-        for result in pool.imap_unordered(process_file, tasks, chunksize=50):
+        for result in pool.imap_unordered(process_file, tasks, chunksize=1):
             all_results.extend(result)
 
     # 누적 구조
