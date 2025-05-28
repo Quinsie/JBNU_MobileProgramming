@@ -1,12 +1,12 @@
 # backend/source/ai/cleanBusLogs.py
-# 하루 이상 차이나는 log 강제 삭제 및 15분 이상 차이 log 삭제하는 script
+# 하루 이상 차이나는 log 강제 삭제 및 ORD간 15분 이상 차이 log 삭제, 출발 이후 2시간이 지난 모든 log를 삭제하는 script
 # 추후 trackSingleBus 수정 등으로 자정 넘은 상황에 대한 Bug를 수정할 필요 있음
 
 import os
 import json
 import time
 import multiprocessing
-from datetime import datetime
+from datetime import datetime, timedelta
 from glob import glob
 
 # ===== 경로 설정 =====
@@ -32,6 +32,9 @@ def clean_pair(file_path: str) -> tuple:
         file_date_str = extract_file_date(filename)
         if file_date_str is None:
             return (filename, 0, 0)
+        
+        start_dt = datetime.strptime(filename.split(".")[0], "%Y%m%d_%H%M")
+        end_dt = start_dt + timedelta(seconds=7200)
 
         # ===== 1. bus 로그 읽기 =====
         with open(file_path, encoding="utf-8") as f:
@@ -45,8 +48,10 @@ def clean_pair(file_path: str) -> tuple:
             t1 = datetime.strptime(logs[i - 1]["time"], "%Y-%m-%d %H:%M:%S")
             t2 = datetime.strptime(logs[i]["time"], "%Y-%m-%d %H:%M:%S")
 
-            # [조건 1] 15분 이상 차이
-            if (t2 - t1).total_seconds() > 600:
+            ord_gap = logs[i]["ord"] - logs[i - 1]["ord"]   
+            ord_gap = max(ord_gap, 1)  # 음수 방지 및 최소 1 보장
+
+            if (t2 - t1).total_seconds() > 600 * ord_gap:
                 cutoff_time = t2
                 break
 
@@ -54,6 +59,9 @@ def clean_pair(file_path: str) -> tuple:
             if logs[i]["time"].split()[0] != file_date_str:
                 cutoff_time = t2
                 break
+
+        if not cutoff_time or end_dt < cutoff_time: 
+            cutoff_time = end_dt    
 
         if cutoff_time:
             logs = [log for log in logs if datetime.strptime(log["time"], "%Y-%m-%d %H:%M:%S") < cutoff_time]
@@ -66,11 +74,12 @@ def clean_pair(file_path: str) -> tuple:
 
         # ===== 2. pos 로그 처리 =====
         pos_file = os.path.join(POS_DIR, stdid, filename)
-        original_pos_len = len(pos_data)
         pos_deleted = 0
         if os.path.exists(pos_file):
             with open(pos_file, encoding="utf-8") as f:
                 pos_data = json.load(f)
+            
+            original_pos_len = len(pos_data)
 
             if cutoff_time:
                 pos_data = [row for row in pos_data if datetime.strptime(row["time"], "%Y-%m-%d %H:%M:%S") < cutoff_time]
