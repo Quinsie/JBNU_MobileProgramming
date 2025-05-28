@@ -39,14 +39,6 @@ def process_loaded_data(args):
     stdid, fname, route_pair, pos_data, bus_data = args
     # pos_path, bus_path 관련된 모든 open() 제거
 
-    try:
-        with open(pos_path, "r", encoding="utf-8") as f:
-            pos_data = json.load(f)
-        with open(bus_path, "r", encoding="utf-8") as f:
-            bus_data = json.load(f)
-    except:
-        return []
-
     pos_first_time = {}  # node_id -> 첫 감지 시간
     for row in pos_data:
         try:
@@ -72,21 +64,20 @@ def process_loaded_data(args):
     group = f"wd_tg_{wd}_{tg}"
 
     result = []
-    for ord_str, node_list in route_pair.items():
-        try:
-            ord_base = int(ord_str)
-        except:
+    # === node_id 기준으로 최초 탐지된 시각에 대해 ===
+    for node_id, detect_time in pos_first_time.items():
+        # 해당 node가 포함된 ORD를 route_pair에서 찾아야 함
+        ord_list = [int(ord_str) for ord_str, node_list in route_pair.items() if node_id in node_list]
+        if not ord_list:
             continue
+        ord_base = min(ord_list)  # 여러 개 있을 경우 가장 빠른 ORD 하나만 기준으로 삼음
 
-        for node_id in node_list:
-            for offset in range(1, 6):  # ORD+1 ~ ORD+5
-                ord_target = ord_base + offset
-                if ord_target not in bus_time_by_ord:
-                    continue
-                if node_id not in pos_first_time:
-                    continue
-                elapsed = (bus_time_by_ord[ord_target] - pos_first_time[node_id]).total_seconds()
-                result.append(((stdid, node_id, offset, group, wd, tg), elapsed))
+        for offset in range(1, 6):  # ORD+1 ~ ORD+5
+            ord_target = ord_base + offset
+            if ord_target not in bus_time_by_ord:
+                continue
+            elapsed = (bus_time_by_ord[ord_target] - detect_time).total_seconds()
+            result.append(((stdid, node_id, offset, group, wd, tg), elapsed))
     return result
 
 # === 메인 ===
