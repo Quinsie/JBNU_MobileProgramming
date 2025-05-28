@@ -102,7 +102,10 @@ if __name__ == "__main__":
 
     tasks = []
     for stdid in os.listdir(PAIR_DIR):
-        pair_path = os.path.join(PAIR_DIR, stdid)
+        if not stdid.endswith(".json"):
+            continue
+        stdid = stdid.replace(".json", "")
+        pair_path = os.path.join(PAIR_DIR, f"{stdid}.json")
         if not os.path.isfile(pair_path):
             continue
         with open(pair_path, "r", encoding="utf-8") as f:
