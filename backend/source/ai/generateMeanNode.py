@@ -35,10 +35,9 @@ def get_weekday_type(dt):
     return {"weekday": 1, "saturday": 2, "holiday": 3}[getDayType(dt)]
 
 # === 파일 하나 처리 ===
-def process_file(args):
-    stdid, fname, route_pair = args
-    pos_path = os.path.join(POS_DIR, stdid, fname)
-    bus_path = os.path.join(BUS_DIR, stdid, fname)
+def process_loaded_data(args):
+    stdid, fname, route_pair, pos_data, bus_data = args
+    # pos_path, bus_path 관련된 모든 open() 제거
 
     try:
         with open(pos_path, "r", encoding="utf-8") as f:
@@ -122,13 +121,22 @@ if __name__ == "__main__":
         for fname in os.listdir(pos_subdir):
             if not fname.startswith(TARGET_DATE):
                 continue
-            if not os.path.exists(os.path.join(bus_subdir, fname)):
+            bus_path = os.path.join(bus_subdir, fname)
+            pos_path = os.path.join(pos_subdir, fname)
+            if not os.path.exists(bus_path):
                 continue
-            tasks.append((stdid, fname, route_pair))
+            try:
+                with open(pos_path, "r", encoding="utf-8") as f:
+                    pos_data = json.load(f)
+                with open(bus_path, "r", encoding="utf-8") as f:
+                    bus_data = json.load(f)
+            except:
+                continue
+            tasks.append((stdid, fname, route_pair, pos_data, bus_data))
 
     all_results = []
     with Pool() as pool:
-        for result in pool.imap_unordered(process_file, tasks, chunksize=1):
+        for result in pool.imap_unordered(process_loaded_data, tasks, chunksize=50):
             all_results.extend(result)
 
     # 누적 구조
