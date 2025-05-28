@@ -191,8 +191,8 @@ if __name__ == "__main__":
 
     for stdid in total_sum:
         for node_id in total_sum[stdid]:
-            for ord_val, (s, n) in total_sum[stdid][node_id].items():
-                mean_node[stdid][str(node_id)].setdefault(str(ord_val), {})["total"] = {"mean": s / n, "num": n}
+            s, n = total_sum[stdid][node_id]
+            mean_node[stdid][str(node_id)].setdefault("total", {})["total"] = {"mean": s / n, "num": n}
 
     with open(SAVE_PATH, "w", encoding="utf-8") as f:
         json.dump(mean_node, f, ensure_ascii=False, indent=2)
