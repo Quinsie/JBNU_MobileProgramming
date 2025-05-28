@@ -121,7 +121,7 @@ if __name__ == "__main__":
                 continue
             if not os.path.exists(os.path.join(bus_subdir, fname)):
                 continue
-            tasks.append((stdid, fname, route_pair, TARGET_DATE))
+            tasks.append((stdid, fname, route_pair))
 
     # DEBUG
     print(f"[DEBUG] 총 task 개수: {len(tasks)}")
