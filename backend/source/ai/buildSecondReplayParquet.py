@@ -93,7 +93,7 @@ def process_single_file(task):
         now_ord = route_nodes_ord[now_node]
         arr_time = datetime.datetime.strptime(record["time"], "%Y-%m-%d %H:%M:%S") # first arrival time
 
-        # get all means first
+        # === MEANS ===
         mn_dict = mean_node.get(stdid, {}).get(str(now_node), {})
         raw_mn_total = mn_dict.get("total", {}).get("mean", None)
         raw_mn_weekday = mn_dict.get(f"weekday_{weekday}", {}).get("mean", None)
@@ -109,7 +109,7 @@ def process_single_file(task):
         mn_weekday = normalize(raw_mn_weekday, 0, 3000) if raw_mn_weekday is not None else mn_total
         mn_timegroup = normalize(raw_mn_timegroup, 0, 3000) if raw_mn_timegroup is not None else mn_total
 
-        
+
 
     return rows
 
