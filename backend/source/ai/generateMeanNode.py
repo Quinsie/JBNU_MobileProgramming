@@ -10,26 +10,19 @@ from collections import defaultdict
 from multiprocessing import Pool
 
 # === 경로 설정 ===
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(BASE_DIR)
+
 POS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_pos")
 BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 PAIR_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_pair")
+
 SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "node")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
+# === 보조 함수 ===
 from source.utils.getDayType import getDayType
-
-# === 시간대 및 요일 그룹핑 ===
-def get_time_group(dt):
-    m = dt.hour * 60 + dt.minute
-    if 330 <= m < 420: return 1
-    elif 420 <= m < 540: return 2
-    elif 540 <= m < 690: return 3
-    elif 690 <= m < 840: return 4
-    elif 840 <= m < 1020: return 5
-    elif 1020 <= m < 1140: return 6
-    elif 1140 <= m < 1260: return 7
-    else: return 8
+from source.utils.getTimeGroup import getTimeGroup
 
 def get_weekday_type(dt):
     return {"weekday": 1, "saturday": 2, "holiday": 3}[getDayType(dt)]
@@ -60,7 +53,7 @@ def process_loaded_data(args):
     if not departure_dt:
         return []
     wd = str(get_weekday_type(departure_dt))
-    tg = str(get_time_group(departure_dt))
+    tg = str(getTimeGroup(departure_dt))
     group = f"wd_tg_{wd}_{tg}"
 
     result = []

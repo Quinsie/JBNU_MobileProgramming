@@ -4,7 +4,6 @@ import os
 import sys
 import json
 import time
-import math
 import argparse
 import pandas as pd
 from datetime import datetime, timedelta
@@ -12,96 +11,44 @@ from multiprocessing import Pool, cpu_count
 
 # === 환경 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
-LABEL_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "label_stops.json")
 sys.path.append(BASE_DIR)
 
-from source.utils.getDayType import getDayType
-
+WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
-STOP_TO_ROUTES_PATH = os.path.join(BASE_DIR, "data", "processed", "stop_to_routes.json")
-STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
+
+LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
 NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
-WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
+LABEL_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "label_stops.json")
+STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
+STOP_TO_ROUTES_PATH = os.path.join(BASE_DIR, "data", "processed", "stop_to_routes.json")
 
 SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "replay")
 os.makedirs(SAVE_PATH, exist_ok=True)
 
-# === 보조 함수 정의 ===
-def get_time_group(departure_time):
-    minutes = departure_time.hour * 60 + departure_time.minute
-    if 330 <= minutes < 420: return 1
-    elif 420 <= minutes < 540: return 2
-    elif 540 <= minutes < 690: return 3
-    elif 690 <= minutes < 840: return 4
-    elif 840 <= minutes < 1020: return 5
-    elif 1020 <= minutes < 1140: return 6
-    elif 1140 <= minutes < 1260: return 7
-    else: return 8
+# === 보조 함수 ===
+from source.utils.getDayType import getDayType
+from source.utils.getTimeGroup import getTimeGroup
+from source.utils.normalize import normalize
+from source.utils.timeToSinCos import time_to_sin_cos
+from source.utils.fallbackWeather import fallback_weather
+from source.utils.extractRouteInfo import extract_route_info
 
-def normalize(value, min_val, max_val):
-    return max(min((value - min_val) / (max_val - min_val), 1), 0)
-
-def time_to_sin_cos(dt):
-    minutes = dt.hour * 60 + dt.minute
-    angle = 2 * math.pi * (minutes / 1440)
-    return math.sin(angle), math.cos(angle)
-
-# === 날씨 fallback용 보조 함수 ===
-def fallback_weather(target_time: datetime, nx_ny: str, weather_all: dict):
-    tried_timestamps = sorted(weather_all.keys(), reverse=True)
-
-    for i in range(4):  # 최대 5 fallback까지 시도
-        closest_key = None
-        for ts in tried_timestamps:
-            ts_dt = datetime.strptime(ts, "%Y%m%d_%H%M")
-            if ts_dt <= target_time:
-                closest_key = ts
-                break
-
-        if closest_key is None:
-            target_time -= timedelta(minutes=10)
-            continue
-
-        grid_data = weather_all[closest_key]
-        # nx_ny가 없거나 값이 None이면 fallback
-        if nx_ny in grid_data and grid_data[nx_ny] is not None:
-            val = grid_data[nx_ny]
-            if ( val['PTY'] is not None and val['PTY'] >= 0 and
-                val['RN1'] is not None and val['RN1'] >= 0 and
-                val['T1H'] is not None ):
-                return val
-
-        # 인접 격자 탐색
-        nx, ny = map(int, nx_ny.split("_"))
-        for dx in [-1, 0, 1]:
-            for dy in [-1, 0, 1]:
-                if dx == 0 and dy == 0: continue
-                key2 = f"{nx+dx}_{ny+dy}"
-                if key2 in grid_data and grid_data[key2] is not None:
-                    val2 = grid_data[key2]
-                    if ( val2['PTY'] is not None and val2['PTY'] >= 0 and
-                        val2['RN1'] is not None and val2['RN1'] >= 0 and
-                        val2['T1H'] is not None ):
-                        return val2
-
-        target_time -= timedelta(minutes=10)
-
-    return {"PTY": 0, "RN1": 0.0, "T1H": 20.0}  # fallback 실패 시 기본값
+def init_worker(w1, w2, w3, w4, w5, w6, w7, w8):
+    global weather_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed
+    global mean_interval, label_bus, label_stops
+    
+    weather_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed = w1, w2, w3, w4, w5
+    mean_interval, label_bus, label_stops = w6, w7, w8
 
 # === 개별 파일 처리 함수 ===
 def process_single_file(args):
-    stdid, fname, target_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops = args
+    stdid, fname, target_date = args
 
     rows = []
     stdid_path = os.path.join(RAW_DIR, stdid)
-    route_id = stdid_number.get(stdid, "000X0")
-    bus_number_str = route_id[:-2]
-    bus_number = int(label_bus.get(bus_number_str, 0))  # fallback index=0
-    direction = 0 if route_id[-2] == 'A' else 1
-    branch = int(route_id[-1])
+    bus_number, direction, branch = extract_route_info(stdid, stdid_number, label_bus)
     hhmm = fname.replace(".json", "").split("_")[-1]
     trip_group_id = f"{target_date}_{hhmm}_{stdid}"
 
@@ -113,7 +60,7 @@ def process_single_file(args):
     base_time = datetime.strptime(logs[0]['time'], "%Y-%m-%d %H:%M:%S")
     day_type = getDayType(base_time)
     weekday = {"weekday": 1, "saturday": 2, "holiday": 3}[day_type]
-    timegroup = get_time_group(base_time)
+    timegroup = getTimeGroup(base_time)
     wd_tg = weekday * 8 + (timegroup - 1)
     max_ord = max([r['ord'] for r in logs])
 
@@ -233,6 +180,7 @@ def process_single_file(args):
 def build_replay_parquet(target_date):
     print(f"[INFO] 시작: {target_date} replay 전처리")
     mean_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d") # mean은 이틀 전
+    raw_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
 
     with open(os.path.join(MEAN_ELAPSED_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
         mean_elapsed = json.load(f)
@@ -258,7 +206,7 @@ def build_replay_parquet(target_date):
 
     weather_all = {}
     for file in os.listdir(WEATHER_DIR):
-        if file.endswith(".json"):
+        if file.endswith(".json") and file.startswith(raw_date):
             key = file.replace(".json", "")
             with open(os.path.join(WEATHER_DIR, file), encoding='utf-8') as f:
                 weather_all[key] = json.load(f)
@@ -267,14 +215,16 @@ def build_replay_parquet(target_date):
     task_list = []
     for stdid in os.listdir(RAW_DIR):
         stdid_path = os.path.join(RAW_DIR, stdid)
-        if not os.path.isdir(stdid_path): continue
         for fname in os.listdir(stdid_path):
             if not fname.endswith(".json"): continue
-            raw_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
             if not fname.startswith(raw_date): continue
-            task_list.append((stdid, fname, raw_date, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, weather_all, label_bus, label_stops))
+            task_list.append((stdid, fname, raw_date))
 
-    with Pool(cpu_count()) as pool:
+    with Pool(cpu_count(),
+              initializer=init_worker,
+              initargs=(weather_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, 
+                        mean_interval, label_bus, label_stops)
+              ) as pool:
         results = pool.map(process_single_file, task_list)
 
     rows = [row for group in results for row in group]

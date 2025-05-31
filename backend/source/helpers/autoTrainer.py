@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 s = time.time()
 # 시작일자, 종료일자 설정
 start_date = datetime.strptime("20250513", "%Y%m%d")
-end_date = datetime.strptime("20250526", "%Y%m%d")  # 종료일 포함
+end_date = datetime.strptime("20250601", "%Y%m%d")  # 종료일 포함
 
 # loop 이전 사전 스크립트
 pre_scripts = [

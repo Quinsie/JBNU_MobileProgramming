@@ -11,76 +11,43 @@ from datetime import datetime, timedelta
 from multiprocessing import Pool, cpu_count
 
 # === 경로 설정 ===
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
-from source.utils.getDayType import getDayType
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(BASE_DIR)
 
 RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
+FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
-STOP_TO_ROUTES_PATH = os.path.join(BASE_DIR, "data", "processed", "stop_to_routes.json")
-STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
-NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
+
 LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
 LABEL_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "label_stops.json")
-FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
+NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
+STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
+STOP_TO_ROUTES_PATH = os.path.join(BASE_DIR, "data", "processed", "stop_to_routes.json")
 ETA_TABLE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "eta_table", "first_model")
+
 SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "first_train", "self_review")
 os.makedirs(SAVE_PATH, exist_ok=True)
 
 # === 보조 함수 ===
-def normalize(value, min_val, max_val):
-    return max(min((value - min_val) / (max_val - min_val), 1), 0)
+from source.utils.normalize import normalize
+from source.utils.getDayType import getDayType
+from source.utils.fallbackForecast import fallback_forecast
+from source.utils.getTimeGroup import getTimeGroup
+from source.utils.normalize import normalize
+from source.utils.timeToSinCos import time_to_sin_cos
 
-def get_timegroup(dt):
-    minutes = dt.hour * 60 + dt.minute
-    if 330 <= minutes < 420: return 1
-    elif 420 <= minutes < 540: return 2
-    elif 540 <= minutes < 690: return 3
-    elif 690 <= minutes < 840: return 4
-    elif 840 <= minutes < 1020: return 5
-    elif 1020 <= minutes < 1140: return 6
-    elif 1140 <= minutes < 1260: return 7
-    else: return 8
+def init_worker(w1, w2, w3, w4, w5, w6, w7, w8, w9):
+    global forecast_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed
+    global mean_interval, label_bus, label_stops, eta_table
+    
+    forecast_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed = w1, w2, w3, w4, w5
+    mean_interval, label_bus, label_stops, eta_table = w6, w7, w8, w9
 
-def time_to_sin_cos(dt):
-    minutes = dt.hour * 60 + dt.minute
-    angle = 2 * math.pi * (minutes / 1440)
-    return math.sin(angle), math.cos(angle)
 
-def load_json(path):
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
-
-def forecast_lookup(target_dt, nx_ny, forecast_all):
-    target_keys = [(target_dt - timedelta(hours=h)).strftime('%Y%m%d_%H00') for h in range(0, 4)]
-    fallback_dates = [
-        target_dt.strftime('%Y%m%d'),
-        (target_dt - timedelta(days=1)).strftime('%Y%m%d'),
-        (target_dt - timedelta(days=2)).strftime('%Y%m%d')
-    ]
-    for date_key in fallback_dates:
-        forecast = forecast_all.get(date_key)
-        if not forecast:
-            continue
-        for ts in target_keys:
-            if ts in forecast:
-                nx, ny = map(int, nx_ny.split('_'))
-                for dx in [0, -1, 1]:
-                    for dy in [0, -1, 1]:
-                        key2 = f"{nx + dx}_{ny + dy}"
-                        data = forecast[ts].get(key2)
-                        if (data and all(k in data for k in ('TMP', 'PCP', 'PTY')) and
-                            data['PTY'] is not None and int(data['PTY']) >= 0 and
-                            data['PCP'] is not None and int(data['PCP'] >= 0)):
-                            return {
-                                'T1H': normalize(data['TMP'], -30, 50),
-                                'RN1': normalize(data['PCP'], 0, 100),
-                                'PTY': int(data['PTY'])
-                            }
-    return {'T1H': normalize(20.0, -30, 50), 'RN1': normalize(0.0, 0, 100), 'PTY': 0}
-
+# === 개별 파일 처리 함수 ===
 def process_single_file(args):
-    stdid, fname, target_date, ord_lookup, eta_table, label_bus, label_stops, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, forecast_all = args
+    stdid, fname, target_date = args
 
     rows = []
     route_info = stdid_number[str(stdid)]
@@ -98,7 +65,7 @@ def process_single_file(args):
     dep_sin, dep_cos = time_to_sin_cos(base_time)
     weekday_type = getDayType(base_time)
     weekday = {"weekday": 1, "saturday": 2, "holiday": 3}[weekday_type]
-    tg = get_timegroup(base_time)
+    tg = getTimeGroup(base_time)
     wd_tg = weekday * 8 + (tg - 1)
     trip_group_id = f"{target_date}_{hhmm}_{stdid}"
     eta_key = f"{stdid}_{hhmm.replace(':', '')}"
@@ -117,7 +84,7 @@ def process_single_file(args):
         if stop_id is None: continue
         stop_idx = int(label_stops.get(str(stop_id), 0))
         nx_ny = nx_ny_stops.get(f"{stdid}_{ord}", "63_89")
-        weather = forecast_lookup(arr_time, nx_ny, forecast_all)
+        weather = fallback_forecast(arr_time, nx_ny, forecast_all)
 
         # mean
         me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
@@ -205,8 +172,8 @@ def process_single_file(args):
             "x_mean_interval_timegroup": mi_timegroup,
             "x_mean_interval_wd_tg": mi_wd_tg,
             "x_weather_PTY": weather['PTY'],
-            "x_weather_RN1": weather['RN1'],
-            "x_weather_T1H": weather['T1H'],
+            "x_weather_RN1": normalize(weather['RN1'], 0, 100),
+            "x_weather_T1H": normalize(weather['T1H'], -30, 50),
             "x_departure_time_sin": dep_sin,
             "x_departure_time_cos": dep_cos,
             "x_ord_ratio": round(ord / max_ord, 4),
@@ -221,15 +188,29 @@ def build_review_parquet(target_date):
     mean_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=2)).strftime("%Y%m%d")
     raw_date = (datetime.strptime(target_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
 
-    mean_elapsed = load_json(os.path.join(MEAN_ELAPSED_DIR, f"{mean_date}.json"))
-    mean_interval = load_json(os.path.join(MEAN_INTERVAL_DIR, f"{mean_date}.json"))
-    stop_to_routes = load_json(STOP_TO_ROUTES_PATH)
-    stdid_number = load_json(STDID_NUMBER_PATH)
-    nx_ny_stops = load_json(NX_NY_STOP_PATH)
-    label_bus = load_json(LABEL_BUS_PATH)
-    label_stops = load_json(LABEL_STOP_PATH)
-    forecast_all = {f.replace(".json", ""): load_json(os.path.join(FORECAST_DIR, f)) for f in os.listdir(FORECAST_DIR)}
-    eta_table = load_json(os.path.join(ETA_TABLE_PATH, f"{raw_date}.json"))
+    with open(os.path.join(MEAN_ELAPSED_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
+        mean_elapsed = json.load(f)
+    with open(os.path.join(MEAN_INTERVAL_DIR, f"{mean_date}.json"), encoding='utf-8') as f:
+        mean_interval = json.load(f)
+    with open(STOP_TO_ROUTES_PATH, encoding='utf-8') as f:
+        stop_to_routes = json.load(f)
+    with open(STDID_NUMBER_PATH, encoding='utf-8') as f:
+        stdid_number = json.load(f)
+    with open(NX_NY_STOP_PATH, encoding='utf-8') as f:
+        nx_ny_stops = json.load(f)
+    with open(LABEL_BUS_PATH, encoding="utf-8") as f:
+        label_bus = json.load(f)
+    with open(LABEL_STOP_PATH, encoding="utf-8") as f:
+        label_stops = json.load(f)
+    with open(os.path.join(ETA_TABLE_PATH, f"{raw_date}.json"), encoding='utf-8') as f:
+        eta_table = json.load(f)
+
+    forecast_all = {}
+    for file in os.listdir(FORECAST_DIR):
+        if file.endswith(".json") and (file.startswith(target_date) or file.startswith(raw_date) or file.startswith(mean_date)):
+            key = file.replace(".json", "")
+            with open(os.path.join(FORECAST_DIR, file), encoding='utf-8') as f:
+                forecast_all[key] = json.load(f)
 
     ord_lookup = {}
     for stop_id, routes in stop_to_routes.items():
@@ -243,9 +224,13 @@ def build_review_parquet(target_date):
         for fname in os.listdir(stdid_path):
             if not fname.endswith(".json"): continue
             if not fname.startswith(raw_date): continue
-            task_list.append((stdid, fname, target_date, ord_lookup, eta_table, label_bus, label_stops, stdid_number, nx_ny_stops, mean_elapsed, mean_interval, forecast_all))
+            task_list.append((stdid, fname, target_date))
 
-    with Pool(cpu_count()) as pool:
+    with Pool(cpu_count(),
+              initializer=init_worker,
+              initargs=(forecast_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, 
+                        mean_interval, label_bus, label_stops, eta_table)
+              ) as pool:
         results = pool.map(process_single_file, task_list)
 
     rows = [r for group in results for r in group]

@@ -9,21 +9,14 @@ from collections import defaultdict
 from multiprocessing import Pool
 
 # 경로 설정
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")); sys.path.append(BASE_DIR)
-RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
-from source.utils.getDayType import getDayType
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(BASE_DIR)
 
-# 시간대 그룹 (8단계)
-def get_time_group(departure_time):
-    minutes = departure_time.hour * 60 + departure_time.minute
-    if 330 <= minutes < 420: return 1
-    elif 420 <= minutes < 540: return 2
-    elif 540 <= minutes < 690: return 3
-    elif 690 <= minutes < 840: return 4
-    elif 840 <= minutes < 1020: return 5
-    elif 1020 <= minutes < 1140: return 6
-    elif 1140 <= minutes < 1260: return 7
-    else: return 8
+RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
+
+# 보조 함수
+from source.utils.getDayType import getDayType
+from source.utils.getTimeGroup import getTimeGroup
 
 # 요일 그룹핑: 1(평일), 2(토), 3(공휴일)
 def get_weekday_type(departure_time):
@@ -38,7 +31,7 @@ def process_file(args):
     departure_time = datetime.strptime(f"{TARGET_DATE}_{time_str}", "%Y%m%d_%H%M")
 
     wd = str(get_weekday_type(departure_time))
-    tg = str(get_time_group(departure_time))
+    tg = str(getTimeGroup(departure_time))
     group = f"wd_tg_{wd}_{tg}"
 
     with open(file_path, "r", encoding="utf-8") as f:

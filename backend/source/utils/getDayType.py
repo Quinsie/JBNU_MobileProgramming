@@ -1,11 +1,11 @@
 # backend/source/utils/getDayType.py
 
 import holidays
-from datetime import datetime
+import datetime
 
 kr_holidays = holidays.KR()
 
-def getDayType(date: datetime) -> str:
+def getDayType(date: datetime.datetime) -> str:
     if date in kr_holidays: # 공휴일
         return "holiday"
     weekday = date.weekday()
