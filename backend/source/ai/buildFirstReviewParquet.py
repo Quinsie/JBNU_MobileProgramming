@@ -19,6 +19,7 @@ FORECAST_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "forecast")
 MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
 
+LAST_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "last_stop.json")
 LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
 LABEL_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "label_stops.json")
 NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
@@ -37,12 +38,12 @@ from source.utils.getTimeGroup import getTimeGroup
 from source.utils.normalize import normalize
 from source.utils.timeToSinCos import time_to_sin_cos
 
-def init_worker(w1, w2, w3, w4, w5, w6, w7, w8, w9):
+def init_worker(w1, w2, w3, w4, w5, w6, w7, w8, w9, w10):
     global forecast_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed
-    global mean_interval, label_bus, label_stops, eta_table
+    global mean_interval, label_bus, label_stops, eta_table, last_stop
     
     forecast_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed = w1, w2, w3, w4, w5
-    mean_interval, label_bus, label_stops, eta_table = w6, w7, w8, w9
+    mean_interval, label_bus, label_stops, eta_table, last_stop = w6, w7, w8, w9, w10
 
 # === 개별 파일 처리 함수 ===
 def process_single_file(args):
@@ -69,7 +70,7 @@ def process_single_file(args):
     trip_group_id = f"{target_date}_{hhmm}_{stdid}"
     eta_key = f"{stdid}_{hhmm.replace(':', '')}"
     eta_dict = eta_table.get(eta_key, {})
-    max_ord = max([r['ord'] for r in logs])
+    max_ord = last_stop[stdid]
 
     for record in logs[1:]:
         ord = record['ord']
@@ -188,6 +189,8 @@ def build_review_parquet(target_date):
         label_stops = json.load(f)
     with open(os.path.join(ETA_TABLE_PATH, f"{raw_date}.json"), encoding='utf-8') as f:
         eta_table = json.load(f)
+    with open(LAST_STOP_PATH, encoding='utf-8') as f:
+        last_stop = json.load(f)
 
     forecast_all = {}
     for file in os.listdir(FORECAST_DIR):
@@ -213,7 +216,7 @@ def build_review_parquet(target_date):
     with Pool(cpu_count(),
               initializer=init_worker,
               initargs=(forecast_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, 
-                        mean_interval, label_bus, label_stops, eta_table)
+                        mean_interval, label_bus, label_stops, eta_table, last_stop)
               ) as pool:
         results = pool.map(process_single_file, task_list)
 

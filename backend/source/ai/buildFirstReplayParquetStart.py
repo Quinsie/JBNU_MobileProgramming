@@ -18,9 +18,10 @@ RAW_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 MEAN_ELAPSED_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "elapsed")
 MEAN_INTERVAL_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "interval")
 
+LAST_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "last_stop.json")
 LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
-NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 LABEL_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "label_stops.json")
+NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
 STOP_TO_ROUTES_PATH = os.path.join(BASE_DIR, "data", "processed", "stop_to_routes.json")
 
@@ -34,12 +35,12 @@ from source.utils.normalize import normalize
 from source.utils.timeToSinCos import time_to_sin_cos
 from source.utils.fallbackWeather import fallback_weather
 
-def init_worker(w1, w2, w3, w4, w5, w6, w7, w8):
+def init_worker(w1, w2, w3, w4, w5, w6, w7, w8, w9):
     global weather_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed
-    global mean_interval, label_bus, label_stops
+    global mean_interval, label_bus, label_stops, last_stop
     
     weather_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed = w1, w2, w3, w4, w5
-    mean_interval, label_bus, label_stops = w6, w7, w8
+    mean_interval, label_bus, label_stops, last_stop = w6, w7, w8, w9
 
 # === 개별 파일 처리 함수 ===
 def process_single_file(args):
@@ -65,7 +66,7 @@ def process_single_file(args):
     weekday = {"weekday": 1, "saturday": 2, "holiday": 3}[day_type]
     timegroup = getTimeGroup(base_time)
     wd_tg = weekday * 8 + (timegroup - 1)
-    max_ord = max([r['ord'] for r in logs])
+    max_ord = last_stop[stdid]
 
     for record in logs[1:]:
         ord = record['ord']
@@ -188,6 +189,8 @@ def build_replay_parquet(target_date, mean_date):
         label_bus = json.load(f)
     with open(LABEL_STOP_PATH, encoding="utf-8") as f:
         label_stops = json.load(f)
+    with open(LAST_STOP_PATH, encoding='utf-8') as f:
+        last_stop = json.load(f)
 
     # 역매핑 딕셔너리 생성 (성능 개선용)
     ord_lookup = {}  # (stdid, ord) → stop_id
@@ -217,7 +220,7 @@ def build_replay_parquet(target_date, mean_date):
     with Pool(cpu_count(),
               initializer=init_worker,
               initargs=(weather_all, ord_lookup, stdid_number, nx_ny_stops, mean_elapsed, 
-                        mean_interval, label_bus, label_stops)
+                        mean_interval, label_bus, label_stops, last_stop)
               ) as pool:
         results = pool.map(process_single_file, task_list)
 

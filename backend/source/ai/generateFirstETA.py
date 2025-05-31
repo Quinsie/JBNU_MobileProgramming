@@ -247,7 +247,8 @@ if __name__ == "__main__":
     model_obj = FirstETAModel(); model_obj.load_state_dict(torch.load(model_pth, map_location=device))
     set_global_model(model_obj.to(device))
 
-    task_args = [(nx_ny_stops, entry, target_date, wd_label, stdid_number, label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
+    task_args = [(nx_ny_stops, entry, target_date, wd_label, stdid_number,
+                  label_bus, label_stops, mean_elapsed, mean_interval, forecast_all) for entry in dep_data]
     
     def unpack_and_infer(args): return infer_single(*args)
     results = [unpack_and_infer(args) for args in task_args]

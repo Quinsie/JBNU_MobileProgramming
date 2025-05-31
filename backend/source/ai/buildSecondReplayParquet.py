@@ -71,6 +71,7 @@ def process_single_file(task):
     for ord, node_list in route_nodes_pair.items():
         for node_id in node_list:
             route_nodes_ord[int(node_id)] = int(ord)
+    last_key = sorted(route_nodes_pair.keys(), key= lambda x: int(x))[-1]
 
     basetime = datetime.datetime.strptime(bus_log[0]['time'], "%Y-%m-%d %H:%M:%S")
     day_type = getDayType(basetime)
@@ -78,6 +79,7 @@ def process_single_file(task):
     timegroup = getTimeGroup(basetime)
     wd_tg = weekday * 8 + (timegroup - 1)
     max_ord = max([r['ord'] for r in bus_log])
+    max_node = route_nodes_pair[last_key][-1]
 
     # === Preprocess start for row ===
     prev_node = None
@@ -109,7 +111,7 @@ def process_single_file(task):
         mn_weekday = normalize(raw_mn_weekday, 0, 3000) if raw_mn_weekday is not None else mn_total
         mn_timegroup = normalize(raw_mn_timegroup, 0, 3000) if raw_mn_timegroup is not None else mn_total
 
-
+        
 
     return rows
 
