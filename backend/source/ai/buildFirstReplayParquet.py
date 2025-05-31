@@ -70,6 +70,15 @@ def process_single_file(args):
         arr_time = datetime.strptime(record['time'], "%Y-%m-%d %H:%M:%S")
         real_elapsed = (arr_time - base_time).total_seconds()
 
+        stop_id = ord_lookup.get((stdid, ord), None)
+        if stop_id is None:
+            continue
+        try:
+            stop_id_str = str(stop_id)  # string이어도 int로 강제 변환
+            stop_id_index = int(label_stops.get(stop_id_str, 0))  # fallback index=0
+        except ValueError:
+            continue  # 혹시라도 이상한 값 들어올 경우 방어
+
         me_dict = mean_elapsed.get(stdid, {}).get(str(ord), {})
         pme_dict = mean_elapsed.get(stdid, {}).get(str(ord - 1), {})
         mi_dict = mean_interval.get(stop_id, {})
@@ -102,15 +111,6 @@ def process_single_file(args):
 
         pme_weekday = normalize(raw_pme_weekday, 0, 7200) if raw_pme_weekday is not None else pme_total
         pme_timegroup = normalize(raw_pme_timegroup, 0, 7200) if raw_pme_timegroup is not None else pme_total
-
-        stop_id = ord_lookup.get((stdid, ord), None)
-        if stop_id is None:
-            continue
-        try:
-            stop_id_str = str(stop_id)  # string이어도 int로 강제 변환
-            stop_id_index = int(label_stops.get(stop_id_str, 0))  # fallback index=0
-        except ValueError:
-            continue  # 혹시라도 이상한 값 들어올 경우 방어
 
         raw_mi_total = mi_dict.get("total", {}).get("mean", None)
         raw_mi_weekday = mi_dict.get(f"weekday_{weekday}", {}).get("mean", None)

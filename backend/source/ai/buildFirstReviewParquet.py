@@ -83,8 +83,6 @@ def process_single_file(args):
         stop_id = ord_lookup.get((stdid, ord), None)
         if stop_id is None: continue
         stop_idx = int(label_stops.get(str(stop_id), 0))
-        nx_ny = nx_ny_stops.get(f"{stdid}_{ord}", "63_89")
-        weather = fallback_forecast(arr_time, nx_ny, forecast_all)
 
         # mean
         me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
@@ -133,6 +131,9 @@ def process_single_file(args):
         
         pme_weekday = normalize(raw_pme_weekday, 0, 7200) if raw_pme_weekday is not None else pme_total       
         pme_timegroup = normalize(raw_pme_timegroup, 0, 7200) if raw_pme_timegroup is not None else pme_total
+
+        nx_ny = nx_ny_stops.get(f"{stdid}_{ord}", "63_89")
+        weather = fallback_forecast(arr_time, nx_ny, forecast_all)
 
         row = {
             "trip_group_id": trip_group_id,
