@@ -75,6 +75,8 @@ def process_single_file(args):
 
         me_dict = mean_elapsed.get(stdid, {}).get(str(ord), {})
         pme_dict = mean_elapsed.get(stdid, {}).get(str(ord - 1), {})
+        mi_dict = mean_interval.get(stop_id, {})
+        if not me_dict or not pme_dict or not mi_dict: continue
 
         raw_me_total = me_dict.get("total", {}).get("mean", None)
         raw_me_weekday = me_dict.get(f"weekday_{weekday}", {}).get("mean", None)
@@ -112,8 +114,6 @@ def process_single_file(args):
             stop_id_index = int(label_stops.get(stop_id_str, 0))  # fallback index=0
         except ValueError:
             continue  # 혹시라도 이상한 값 들어올 경우 방어
-
-        mi_dict = mean_interval.get(stop_id, {})
 
         raw_mi_total = mi_dict.get("total", {}).get("mean", None)
         raw_mi_weekday = mi_dict.get(f"weekday_{weekday}", {}).get("mean", None)

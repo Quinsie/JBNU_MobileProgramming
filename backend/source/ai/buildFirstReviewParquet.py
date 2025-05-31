@@ -90,6 +90,7 @@ def process_single_file(args):
         me = mean_elapsed.get(str(stdid), {}).get(str(ord), {})
         mi = mean_interval.get(str(stop_id), {})
         pme = mean_elapsed.get(str(stdid), {}).get(str(ord - 1), {})
+        if not me or not mi or not pme: continue
 
         raw_me_total = me.get("total", {}).get("mean", None)
         raw_me_wd_tg = me.get(f"wd_tg_{weekday}_{tg}", {}).get("mean", None)
