@@ -36,4 +36,4 @@ while current_date <= end_date:
     
     current_date += timedelta(days=1)
 
-print("소요 시간: ", time.time() - now, "sec")
+print("소요 시간: ", round(time.time() - now, 1), "sec")

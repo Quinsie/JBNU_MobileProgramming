@@ -199,4 +199,4 @@ if __name__ == "__main__":
 
     now = time.time()
     train_model(args.mode)
-    print("총 학습 시간: ", time.time() - now, "sec")
+    print("총 학습 시간: ", round(time.time() - now, 1), "sec")

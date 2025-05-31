@@ -44,7 +44,7 @@ print("전처리 시작")
 for cmd in pre_scripts:
     print(f"실행 중: {' '.join(cmd)}")
     subprocess.run(cmd)
-print("전처리 끝, 소요 시간: ", time.time() - now, "sec")
+print("전처리 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
 
 now = time.time()
 print("ai/ 시작")
@@ -64,7 +64,7 @@ while current_date <= end_date:
         subprocess.run(full_command)
     
     current_date += timedelta(days=1)
-print("ai/ 끝, 소요 시간: ", time.time() - now, "sec")
+print("ai/ 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
 
 # now = time.time()
 # print("ai2/ 시작")
@@ -85,4 +85,4 @@ print("ai/ 끝, 소요 시간: ", time.time() - now, "sec")
 #     current_date += timedelta(days=1)
 # print("ai2/ 끝, 소요 시간: ", time.time() - now, "sec")
 
-print("총 소요 시간: ", time.time() - s, "sec")
+print("총 소요 시간: ", round(time.time() - s, 1), "sec")

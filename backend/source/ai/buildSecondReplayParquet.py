@@ -5,7 +5,7 @@ import os
 import sys
 import json
 import time
-import pandas
+import pandas as pd
 import argparse
 import datetime
 import multiprocessing
@@ -68,10 +68,9 @@ def process_single_file(task):
         route_nodes_pair = json.load(f)
     # route node reverse mapping
     route_nodes_ord = {}
-    for ord_str, node_list in route_nodes_pair.items():
-        ord_int = int(ord_str)
+    for ord, node_list in route_nodes_pair.items():
         for node_id in node_list:
-            route_nodes_ord[node_id] = ord_int
+            route_nodes_ord[int(node_id)] = int(ord)
 
     basetime = datetime.datetime.strptime(bus_log[0]['time'], "%Y-%m-%d %H:%M:%S")
     day_type = getDayType(basetime)
@@ -80,7 +79,37 @@ def process_single_file(task):
     wd_tg = weekday * 8 + (timegroup - 1)
     max_ord = max([r['ord'] for r in bus_log])
 
-    
+    # === Preprocess start for row ===
+    prev_node = None
+    for record in pos_log:
+        # process for unique NODE_ID(route node)
+        node_block = record.get("matched_route_node")
+        if not node_block: continue
+        now_node = node_block.get("NODE_ID")
+        if now_node is None: continue
+        if now_node == prev_node: continue
+        prev_node = now_node
+
+        now_ord = route_nodes_ord[now_node]
+        arr_time = datetime.datetime.strptime(record["time"], "%Y-%m-%d %H:%M:%S") # first arrival time
+
+        # get all means first
+        mn_dict = mean_node.get(stdid, {}).get(str(now_node), {})
+        raw_mn_total = mn_dict.get("total", {}).get("mean", None)
+        raw_mn_weekday = mn_dict.get(f"weekday_{weekday}", {}).get("mean", None)
+        raw_mn_timegroup = mn_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
+        raw_mn_wd_tg = mn_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+
+        # fallback logic
+        mn_total = normalize(raw_mn_total, 0, 3000) if raw_mn_total is not None else 0.0
+        if raw_mn_wd_tg is not None: mn_wd_tg = normalize(raw_mn_wd_tg, 0, 3000)
+        elif raw_mn_weekday is not None: mn_wd_tg = normalize(raw_mn_weekday, 0, 3000)
+        elif raw_mn_timegroup is not None: mn_wd_tg = normalize(raw_mn_timegroup, 0, 3000)
+        else: mn_wd_tg = mn_total
+        mn_weekday = normalize(raw_mn_weekday, 0, 3000) if raw_mn_weekday is not None else mn_total
+        mn_timegroup = normalize(raw_mn_timegroup, 0, 3000) if raw_mn_timegroup is not None else mn_total
+
+        
 
     return rows
 
@@ -123,7 +152,7 @@ def build_second_replay_parquet(target_date):
         bus_path = os.path.join(BUS_DIR, stdid)
         for fname in os.listdir(bus_path):
             if not fname.startswith(raw_date): continue
-            fname.replace(".json", "")
+            if not fname.endswith(".json"): continue
             task_list.append((stdid, fname, raw_date))
     
     with multiprocessing.Pool(multiprocessing.cpu_count(),
@@ -134,7 +163,7 @@ def build_second_replay_parquet(target_date):
         results = pool.map(process_single_file, task_list)
 
     rows = [row for group in results for row in group]
-    df = pandas.DataFrame(rows)
+    df = pd.DataFrame(rows)
     df.to_parquet(os.path.join(SAVE_PATH, f"{target_date}.parquet"), index=False)
     print(f"[INFO] 전처리 완료. 저장 위치: {os.path.join(SAVE_PATH, target_date + '.parquet')}")
 

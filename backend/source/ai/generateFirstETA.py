@@ -257,4 +257,4 @@ if __name__ == "__main__":
         json.dump(final, f, ensure_ascii=False, indent=2)
 
     print(f"[INFO] ETA 저장 완료: {date_str} / 총 {len(final)}개 운행")
-    print("소요 시간: ", time.time() - now, "sec")
+    print("소요 시간: ", round(time.time() - now, 1), "sec")

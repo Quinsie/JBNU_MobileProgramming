@@ -5,6 +5,7 @@
 import os
 import json
 import time
+import argparse
 import multiprocessing
 from datetime import datetime, timedelta
 from glob import glob
@@ -96,8 +97,26 @@ def clean_pair(file_path: str) -> tuple:
 
 if __name__ == "__main__":
     now = time.time()
-    all_files = glob(os.path.join(BUS_DIR, "*", "*.json"))
-    print(f"[INFO] 전체 파일 개수: {len(all_files)}")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start", required=True, help="시작 날짜 (YYYYMMDD)")
+    parser.add_argument("--end", required=True, help="끝 날짜 (YYYYMMDD)")
+    args = parser.parse_args()
+
+    start_date = datetime.strptime(args.start, "%Y%m%d").date()
+    end_date = datetime.strptime(args.end, "%Y%m%d").date()
+
+    all_files = []
+    for path in glob(os.path.join(BUS_DIR, "*", "*.json")):
+        basename = os.path.basename(path)
+        try:
+            file_date = datetime.strptime(basename.split("_")[0], "%Y%m%d").date()
+            if start_date <= file_date <= end_date:
+                all_files.append(path)
+        except:
+            continue
+
+    print(f"[INFO] 필터링된 파일 개수: {len(all_files)}")
 
     with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
         results = pool.map(clean_pair, all_files)

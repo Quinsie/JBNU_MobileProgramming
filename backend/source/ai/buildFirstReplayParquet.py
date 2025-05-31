@@ -77,6 +77,18 @@ def process_single_file(args):
         raw_pme_total = pme_dict.get("total", {}).get("mean", None)
         pme_total = normalize(raw_pme_total, 0, 7200) if raw_pme_total is not None else 0.0
 
+        raw_me_wd_tg = me_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if raw_me_wd_tg is not None: me_wd_tg = normalize(raw_me_wd_tg, 0, 7200)
+        elif raw_me_weekday is not None: me_wd_tg = normalize(raw_me_weekday, 0, 7200)
+        elif raw_me_timegroup is not None: me_wd_tg = normalize(raw_me_timegroup, 0, 7200)
+        else: me_wd_tg = me_total
+
+        raw_pme_wd_tg = pme_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if raw_pme_wd_tg is not None: pme_wd_tg = normalize(raw_pme_wd_tg, 0, 7200)
+        elif raw_pme_weekday is not None: pme_wd_tg = normalize(raw_pme_weekday, 0, 7200)
+        elif raw_pme_timegroup is not None: pme_wd_tg = normalize(raw_pme_timegroup, 0, 7200)
+        else: pme_wd_tg = pme_total
+
         raw_me_weekday = me_dict.get(f"weekday_{weekday}", {}).get("mean", None)
         me_weekday = normalize(raw_me_weekday, 0, 7200) if raw_me_weekday is not None else me_total
         raw_pme_weekday = pme_dict.get(f"weekday_{weekday}", {}).get("mean", None)
@@ -86,26 +98,6 @@ def process_single_file(args):
         me_timegroup = normalize(raw_me_timegroup, 0, 7200) if raw_me_timegroup is not None else me_total
         raw_pme_timegroup = pme_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
         pme_timegroup = normalize(raw_pme_timegroup, 0, 7200) if raw_pme_timegroup is not None else pme_total
-
-        raw_me_wd_tg = me_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
-        if raw_me_wd_tg is not None:
-            me_wd_tg = normalize(raw_me_wd_tg, 0, 7200)
-        elif raw_me_weekday is not None:
-            me_wd_tg = me_weekday
-        elif raw_me_timegroup is not None:
-            me_wd_tg = me_timegroup
-        else:
-            me_wd_tg = me_total
-
-        raw_pme_wd_tg = pme_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
-        if raw_pme_wd_tg is not None:
-            pme_wd_tg = normalize(raw_pme_wd_tg, 0, 7200)
-        elif raw_pme_weekday is not None:
-            pme_wd_tg = pme_weekday
-        elif raw_pme_timegroup is not None:
-            pme_wd_tg = pme_timegroup
-        else:
-            pme_wd_tg = pme_total
 
         stop_id = ord_lookup.get((stdid, ord), None)
         if stop_id is None:
@@ -121,21 +113,17 @@ def process_single_file(args):
         raw_mi_total = mi_dict.get("total", {}).get("mean", None)
         mi_total = normalize(raw_mi_total, 0, 600) if raw_mi_total is not None else 0.0
 
+        raw_mi_wd_tg = mi_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if raw_mi_wd_tg is not None: mi_wd_tg = normalize(raw_mi_wd_tg, 0, 600)
+        elif raw_mi_weekday is not None: mi_wd_tg = normalize(raw_mi_weekday, 0, 600)
+        elif raw_mi_timegroup is not None: mi_wd_tg = normalize(raw_mi_timegroup, 0, 600)
+        else: mi_wd_tg = mi_total
+
         raw_mi_weekday = mi_dict.get(f"weekday_{weekday}", {}).get("mean", None)
         mi_weekday = normalize(raw_mi_weekday, 0, 600) if raw_mi_weekday is not None else mi_total
 
         raw_mi_timegroup = mi_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
         mi_timegroup = normalize(raw_mi_timegroup, 0, 600) if raw_mi_timegroup is not None else mi_total
-
-        raw_mi_wd_tg = mi_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
-        if raw_mi_wd_tg is not None:
-            mi_wd_tg = normalize(raw_mi_wd_tg, 0, 600)
-        elif raw_mi_weekday is not None:
-            mi_wd_tg = mi_weekday
-        elif raw_mi_timegroup is not None:
-            mi_wd_tg = mi_timegroup
-        else:
-            mi_wd_tg = mi_total
 
         nx_ny = nx_ny_stops.get(f"{stdid}_{ord}", "63_89")
         weather = fallback_weather(arr_time, nx_ny, weather_all)
@@ -239,4 +227,4 @@ if __name__ == "__main__":
 
     now = time.time()
     build_replay_parquet(args.date)
-    print("총 소요 시간: ", time.time() - now, "sec")
+    print("총 소요 시간: ", round(time.time() - now, 1), "sec")
