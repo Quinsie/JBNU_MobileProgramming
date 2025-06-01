@@ -58,8 +58,9 @@ class SecondETAModel(nn.Module):
         self.head_logvar = nn.Linear(32, 5)
 
     def forward(self, x):
-        print("sin:", x['departure_time_sin'].shape)
-        print("cos:", x['departure_time_cos'].shape)
+        print("route_context:", route_context.shape)
+        print("time_context:", time_context.shape)
+        print("prev_eta:", prev_eta.shape)
 
         # === Route-related ===
         bus = self.bus_emb(x['bus_number'])     # (B, 8)
