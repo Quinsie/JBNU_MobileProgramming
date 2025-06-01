@@ -6,14 +6,14 @@ from datetime import datetime, timedelta
 
 s = time.time()
 # 시작일자, 종료일자 설정
-start_date = datetime.strptime("20250520", "%Y%m%d")
+start_date = datetime.strptime("20250513", "%Y%m%d")
 end_date = datetime.strptime("20250601", "%Y%m%d")  # 종료일 포함
 
 # loop 이전 사전 스크립트
 pre_scripts = [
-    #["python3", "../ai/buildFirstReplayParquetStart.py", "--date", "20250519"],
-    ["python3", "../ai/trainFirstETA.py", "--date", "20250519", "--mode", "replay"],
-    ["python3", "../ai/generateFirstETA.py", "--date", "20250519"],
+    ["python3", "../ai/buildFirstReplayParquetStart.py", "--date", "20250512"],
+    ["python3", "../ai/trainFirstETA.py", "--date", "20250512", "--mode", "replay"],
+    ["python3", "../ai/generateFirstETA.py", "--date", "20250512"],
 ]
 
 # 실행할 스크립트 및 인자 정의
