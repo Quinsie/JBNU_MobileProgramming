@@ -105,7 +105,18 @@ class SecondETAModel(nn.Module):
         
         ord_context_adj = self.ord_vector_cond(node_id)
         ord_context_raw = torch.cat(ord_context_list, dim=1)  # => [B, 240] 돼야 함
-        print("ord_context_raw.shape:", ord_context_raw.shape)
+
+        print("ord_context_raw", ord_context_raw.shape)
+        print("ord_context_adj", ord_context_adj.shape)
+
+        if ord_context_adj.dim() == 3:
+            print("squeezing ord_context_adj:", ord_context_adj.shape)
+            ord_context_adj = ord_context_adj.squeeze(1)
+
+        if ord_context_raw.dim() == 3:
+            print("squeezing ord_context_raw:", ord_context_raw.shape)
+            ord_context_raw = ord_context_raw.squeeze(1)
+
         ord_context = ord_context_adj + ord_context_raw
         route_context = self.route_context_mlp(ord_context)
         if route_context.dim() == 3:
