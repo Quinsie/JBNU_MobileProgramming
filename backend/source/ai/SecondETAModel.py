@@ -101,6 +101,8 @@ class SecondETAModel(nn.Module):
         if route_context.dim() == 3:
             route_context = route_context.squeeze(1)
         
+        print("route_context:", route_context.shape)
+        
         # === Time Context ===
         weekday_emb = self.weekday_emb(x['weekday'].squeeze(1))
         timegroup_emb = self.timegroup_emb(x['timegroup'].squeeze(1))
@@ -109,6 +111,8 @@ class SecondETAModel(nn.Module):
             weekday_emb, timegroup_emb, weekday_timegroup_emb, 
             x['departure_time_sin'], x['departure_time_cos']
             ], dim=1))  # (B, 16)
+    
+        print("time_context:", time_context.shape)
         
         # === Self Review 용 Prev ETA ===
         prev_eta_feats = []
@@ -120,6 +124,8 @@ class SecondETAModel(nn.Module):
             prev_eta_feats.append(prev_eta_i)
 
         prev_eta = torch.cat(prev_eta_feats, dim=1)  # → (B, 20)
+
+        print("prev_eta:", prev_eta.shape)
 
         # === final MLP ===
         full_input = torch.cat([route_context, time_context, prev_eta], dim=1) # dim 80
