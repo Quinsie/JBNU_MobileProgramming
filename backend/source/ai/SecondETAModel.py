@@ -70,21 +70,13 @@ class SecondETAModel(nn.Module):
 
         node_id_adj = self.node_id_cond(branch)                         # (B, 20)
         node_id_ratio_raw = self.node_id_ratio_mlp(x['node_id_ratio'])          # (B, 20)
-        print("node_id_ratio raw shape:", x['node_id_ratio'].shape)
         node_id = node_id_adj + node_id_ratio_raw                       # node_id complete, 20 dim
-
-        print("bus", bus.shape)
-        print("direction", direction.shape)
-        print("branch", branch.shape)
-        print("node_id", node_id.shape)
-
+        
         # === ORD Context ===
         ord_context_list = []
-        print("input keys:", x.keys())
         for i in range(1, 6):
             ord_i_ratio = self.next_node_id_ratio_mlp(x[f'ord_{i}_ratio'])  # 48 dim
             if ord_i_ratio.dim() == 3:
-                print("squeezing ord_i_ratio:", ord_i_ratio.shape)
                 ord_i_ratio = ord_i_ratio.squeeze(1)
             
             average_congestion = self.avg_cong_mlp(x[f'avg_{i}_congestion'])    # 24 dim
@@ -100,35 +92,24 @@ class SecondETAModel(nn.Module):
 
             ord_merge = self.ord_merge_mlp(torch.cat([average_congestion, weather_context, mean_interval], dim=1))
             if ord_merge.dim() == 3:
-                print("squeezing ord_merge:", ord_merge.shape)
                 ord_merge = ord_merge.squeeze(1)
 
             ord_i_context = ord_i_ratio + ord_merge
             if ord_i_context.dim() == 3:
-                print("squeezing ord_i_context:", ord_i_context.shape)
                 ord_i_context = ord_i_context.squeeze(1)  # squeeze dim=1
             ord_context_list.append(ord_i_context)
         
         ord_context_adj = self.ord_vector_cond(node_id)
         ord_context_raw = torch.cat(ord_context_list, dim=1)  # => [B, 240] 돼야 함
-
-        print("ord_context_raw", ord_context_raw.shape)
-        print("ord_context_adj", ord_context_adj.shape)
-
         if ord_context_adj.dim() == 3:
-            print("squeezing ord_context_adj:", ord_context_adj.shape)
             ord_context_adj = ord_context_adj.squeeze(1)
-
         if ord_context_raw.dim() == 3:
-            print("squeezing ord_context_raw:", ord_context_raw.shape)
             ord_context_raw = ord_context_raw.squeeze(1)
 
         ord_context = ord_context_adj + ord_context_raw
         route_context = self.route_context_mlp(ord_context)
         if route_context.dim() == 3:
             route_context = route_context.squeeze(1)
-        
-        print("route_context:", route_context.shape)
         
         # === Time Context ===
         weekday_emb = self.weekday_emb(x['weekday'].squeeze(1))
@@ -138,8 +119,6 @@ class SecondETAModel(nn.Module):
             weekday_emb, timegroup_emb, weekday_timegroup_emb, 
             x['departure_time_sin'], x['departure_time_cos']
             ], dim=1))  # (B, 16)
-    
-        print("time_context:", time_context.shape)
         
         # === Self Review 용 Prev ETA ===
         prev_eta_feats = []
@@ -151,8 +130,6 @@ class SecondETAModel(nn.Module):
             prev_eta_feats.append(prev_eta_i)
 
         prev_eta = torch.cat(prev_eta_feats, dim=1)  # → (B, 20)
-
-        print("prev_eta:", prev_eta.shape)
 
         # === final MLP ===
         full_input = torch.cat([route_context, time_context, prev_eta], dim=1) # dim 80
