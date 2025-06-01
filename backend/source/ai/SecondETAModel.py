@@ -58,10 +58,6 @@ class SecondETAModel(nn.Module):
         self.head_logvar = nn.Linear(32, 5)
 
     def forward(self, x):
-        print("route_context:", route_context.shape)
-        print("time_context:", time_context.shape)
-        print("prev_eta:", prev_eta.shape)
-
         # === Route-related ===
         bus = self.bus_emb(x['bus_number'])     # (B, 8)
         dir_adj = self.dir_cond(bus)            # (B, 12)
@@ -120,6 +116,10 @@ class SecondETAModel(nn.Module):
             prev_eta_feats.append(prev_eta_i)
 
         prev_eta = torch.cat(prev_eta_feats, dim=1)  # → (B, 20)
+
+        print("route_context:", route_context.shape)
+        print("time_context:", time_context.shape)
+        print("prev_eta:", prev_eta.shape)
 
         # === final MLP ===
         full_input = torch.cat([route_context, time_context, prev_eta], dim=1) # dim 80
