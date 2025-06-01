@@ -69,7 +69,8 @@ class SecondETAModel(nn.Module):
         branch = branch_raw + branch_adj            # branch complete, 16 dim
 
         node_id_adj = self.node_id_cond(branch)                         # (B, 20)
-        node_id_ratio_raw = self.node_id_ratio_mlp(x['node_id_ratio'].squeeze(1))          # (B, 20)
+        node_id_ratio_raw = self.node_id_ratio_mlp(x['node_id_ratio'])          # (B, 20)
+        print("node_id_ratio raw shape:", x['node_id_ratio'].shape)
         node_id = node_id_adj + node_id_ratio_raw                       # node_id complete, 20 dim
 
         print("bus", bus.shape)
