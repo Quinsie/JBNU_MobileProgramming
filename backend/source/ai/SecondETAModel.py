@@ -83,9 +83,9 @@ class SecondETAModel(nn.Module):
             weather_context = self.weather_mlp(torch.cat([pty, x[f'weather_{i}_RN1'], x[f'weather_{i}_T1H']], dim=1))   # 8 dim
 
             mi_total = self.mean_interval_total_mlp(x[f'mean_interval_{i}_total'])
-            mi_wd = self.mean_interval_wd_mlp(torch.cat([x[f'mean_interval_{i}_weekday'], self.weekday_emb(x['weekday'])], dim=1))
-            mi_tg = self.mean_interval_tg_mlp(torch.cat([x[f'mean_interval_{i}_timegroup'], self.timegroup_emb(x['timegroup'])], dim=1))
-            mi_wdtg = self.mean_interval_wd_tg_mlp(torch.cat([x[f'mean_interval_{i}_weekday_timegroup'], self.weekday_emb(x['weekday_timegroup'])], dim=1))
+            mi_wd = self.mean_interval_wd_mlp(torch.cat([x[f'mean_interval_{i}_weekday'], self.weekday_emb(x['weekday'].squeeze(1))], dim=1))
+            mi_tg = self.mean_interval_tg_mlp(torch.cat([x[f'mean_interval_{i}_timegroup'], self.timegroup_emb(x['timegroup'].squeeze(1))], dim=1))
+            mi_wdtg = self.mean_interval_wd_tg_mlp(torch.cat([x[f'mean_interval_{i}_weekday_timegroup'], self.weekday_emb(x['weekday_timegroup'].squeeze(1))], dim=1))
             mean_interval = self.mean_interval_merge(torch.cat([mi_total, mi_wd, mi_tg, mi_wdtg], dim=1))   # 16 dim
 
             ord_merge = self.ord_merge_mlp(torch.cat([average_congestion, weather_context, mean_interval], dim=1))
@@ -98,9 +98,9 @@ class SecondETAModel(nn.Module):
         route_context = self.route_context_mlp(ord_context)
         
         # === Time Context ===
-        weekday_emb = self.weekday_emb(x['weekday'])
-        timegroup_emb = self.timegroup_emb(x['timegroup'])
-        weekday_timegroup_emb = self.wd_tg_emb(x['weekday_timegroup'])
+        weekday_emb = self.weekday_emb(x['weekday'].squeeze(1))
+        timegroup_emb = self.timegroup_emb(x['timegroup'].squeeze(1))
+        weekday_timegroup_emb = self.wd_tg_emb(x['weekday_timegroup'].squeeze(1))
         time_context = self.time_mlp(torch.cat([weekday_emb, timegroup_emb, weekday_timegroup_emb, x['departure_time_sin'], x['departure_time_cos']], dim=1))  # (B, 16)
         
         # === Self Review 용 Prev ETA ===
