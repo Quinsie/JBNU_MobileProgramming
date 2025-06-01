@@ -59,17 +59,17 @@ class SecondETAModel(nn.Module):
 
     def forward(self, x):
         # === Route-related ===
-        bus = self.bus_emb(x['bus_number'])     # (B, 8)
+        bus = self.bus_emb(x['bus_number'].squeeze(1))     # (B, 8)
         dir_adj = self.dir_cond(bus)            # (B, 12)
-        dir_raw = self.dir_emb(x['direction'])  # (B, 12)
+        dir_raw = self.dir_emb(x['direction'].squeeze(1))  # (B, 12)
         direction = dir_raw + dir_adj           # dir complete, 12 dim
 
         branch_adj = self.branch_cond(direction)    # (B, 16)
-        branch_raw = self.branch_emb(x['branch'])   # (B, 16)     
+        branch_raw = self.branch_emb(x['branch'].squeeze(1))   # (B, 16)     
         branch = branch_raw + branch_adj            # branch complete, 16 dim
 
         node_id_adj = self.node_id_cond(branch)                         # (B, 20)
-        node_id_ratio_raw = self.node_id_ratio_mlp(x['node_id_ratio'])          # (B, 20)
+        node_id_ratio_raw = self.node_id_ratio_mlp(x['node_id_ratio'].squeeze(1))          # (B, 20)
         node_id = node_id_adj + node_id_ratio_raw                       # node_id complete, 20 dim
 
         print("bus", bus.shape)
