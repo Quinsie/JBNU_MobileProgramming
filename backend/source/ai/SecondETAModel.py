@@ -74,6 +74,7 @@ class SecondETAModel(nn.Module):
 
         # === ORD Context ===
         ord_context_list = []
+        print("input keys:", x.keys())
         for i in range(1, 6):
             ord_i_ratio = self.next_node_id_ratio_mlp(x[f'ord_{i}_ratio'])  # 48 dim
             if ord_i_ratio.dim() == 3:
@@ -95,7 +96,7 @@ class SecondETAModel(nn.Module):
             if ord_merge.dim() == 3:
                 print("squeezing ord_merge:", ord_merge.shape)
                 ord_merge = ord_merge.squeeze(1)
-                
+
             ord_i_context = ord_i_ratio + ord_merge
             if ord_i_context.dim() == 3:
                 print("squeezing ord_i_context:", ord_i_context.shape)
