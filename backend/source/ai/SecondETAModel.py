@@ -106,7 +106,7 @@ class SecondETAModel(nn.Module):
         # === Self Review 용 Prev ETA ===
         prev_eta_feats = []
         for i in range(1, 6):
-            prev_eta_i = self.prev_pred_mlp(x[f'prev_pred_elapsed_{i}'].squeeze(1))
+            prev_eta_i = self.prev_pred_mlp(x[f'prev_pred_elapsed_{i}'].view(-1, 1))
             prev_eta_feats.append(prev_eta_i)
         prev_eta = torch.cat(prev_eta_feats, dim=1)
 
