@@ -52,7 +52,7 @@ class SecondETAModel(nn.Module):
         self.prev_pred_mlp = nn.Sequential(nn.Linear(1, 4), nn.ReLU())
 
         # ===== Final MLP =====
-        self.final_mlp = nn.Sequential(nn.Linear(80, 96), nn.ReLU(), nn.Linear(96, 48), nn.ReLU(), nn.Linear(48, 32), nn.ReLU())
+        self.final_mlp = nn.Sequential(nn.Linear(84, 96), nn.ReLU(), nn.Linear(96, 48), nn.ReLU(), nn.Linear(48, 32), nn.ReLU())
         
         self.head_mean = nn.Sequential(nn.Linear(32, 5), nn.Sigmoid())
         self.head_logvar = nn.Linear(32, 5)
