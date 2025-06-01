@@ -51,10 +51,10 @@ async def run_traffic():
         if is_within_active_hours():
             log("runAll", "교통 수집 시작")
             subprocess.Popen(["python3", "trafficCollector.py"], cwd="backend/source/scripts")
-            await asyncio.sleep(5)  # 수집 여유 시간
-            log("runAll", "교통 혼잡도 매핑 시작")
-            subprocess.Popen(["python3", "mapCongestion.py"], cwd="backend/source/scripts")
-            await asyncio.sleep(55)  # 남은 시간 대기 (총 60초 주기)
+            await asyncio.sleep(60)  # 수집 여유 시간
+            # log("runAll", "교통 혼잡도 매핑 시작")
+            # subprocess.Popen(["python3", "mapCongestion.py"], cwd="backend/source/scripts")
+            # await asyncio.sleep(55)  # 남은 시간 대기 (총 60초 주기)
         else:
             log("runAll", "교통 수집 대기 중 (비활성 시간)")
             await asyncio.sleep(900)  # 15분 간격 로그

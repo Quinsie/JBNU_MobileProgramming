@@ -18,9 +18,9 @@ MEAN_NODE_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "node")
 WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
 BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 POS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_pos")
-TRAFFIC_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_congestion")
 ROUTE_NODES_PAIR_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_pair")
 
+LAST_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "last_stop.json")
 LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
 NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
@@ -38,10 +38,10 @@ from source.utils.extractRouteInfo import extract_route_info
 
 def init_worker(w1, w2, w3, w4, w5, w6):
     global mean_node, stdid_number, nx_ny_stops, label_bus
-    global weather_all, traffic_all
+    global weather_all, last_stop
 
     mean_node, stdid_number, nx_ny_stops, label_bus = w1, w2, w3, w4
-    weather_all, traffic_all = w5, w6
+    weather_all, last_stop = w5, w6
 
 # === Process single file :: Multiprocessing ===
 def process_single_file(task):
@@ -78,8 +78,9 @@ def process_single_file(task):
     weekday = {"weekday": 1, "saturday": 2, "holiday": 3}[day_type]
     timegroup = getTimeGroup(basetime)
     wd_tg = weekday * 8 + (timegroup - 1)
-    max_ord = max([r['ord'] for r in bus_log])
+    max_ord = last_stop[stdid]
     max_node = route_nodes_pair[last_key][-1]
+    dep_sin, dep_cos = time_to_sin_cos(basetime)
 
     # === Preprocess start for row ===
     prev_node = None
@@ -87,36 +88,119 @@ def process_single_file(task):
         # process for unique NODE_ID(route node)
         node_block = record.get("matched_route_node")
         if not node_block: continue
-        now_node = node_block.get("NODE_ID")
+        now_node = node_block.get("NODE_ID") # node id ratio
         if now_node is None: continue
         if now_node == prev_node: continue
         prev_node = now_node
+        node_id_ratio = round(now_node / max_node, 4)
 
         now_ord = route_nodes_ord[now_node]
-        arr_time = datetime.datetime.strptime(record["time"], "%Y-%m-%d %H:%M:%S") # first arrival time
+        arr_time = datetime.datetime.strptime(record["time"], "%Y-%m-%d %H:%M:%S")
+        mask = [1, 1, 1, 1, 1]
 
-        # === MEANS ===
+        # === Prepare to process each nodes ===
         mn_dict = mean_node.get(stdid, {}).get(str(now_node), {})
-        raw_mn_total = mn_dict.get("total", {}).get("mean", None)
-        raw_mn_weekday = mn_dict.get(f"weekday_{weekday}", {}).get("mean", None)
-        raw_mn_timegroup = mn_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
-        raw_mn_wd_tg = mn_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+        if not mn_dict: continue # avoid zero means
 
-        # fallback logic
-        mn_total = normalize(raw_mn_total, 0, 3000) if raw_mn_total is not None else 0.0
-        if raw_mn_wd_tg is not None: mn_wd_tg = normalize(raw_mn_wd_tg, 0, 3000)
-        elif raw_mn_weekday is not None: mn_wd_tg = normalize(raw_mn_weekday, 0, 3000)
-        elif raw_mn_timegroup is not None: mn_wd_tg = normalize(raw_mn_timegroup, 0, 3000)
-        else: mn_wd_tg = mn_total
-        mn_weekday = normalize(raw_mn_weekday, 0, 3000) if raw_mn_weekday is not None else mn_total
-        mn_timegroup = normalize(raw_mn_timegroup, 0, 3000) if raw_mn_timegroup is not None else mn_total
+        # === X Features ===
+        mn_total_list = [0, 0, 0, 0, 0]
+        mn_weekday_list = [0, 0, 0, 0, 0]
+        mn_timegroup_list = [0, 0, 0, 0, 0]
+        mn_wd_tg_list = [0, 0, 0, 0, 0]
+        pty_list = [0, 0, 0, 0, 0]
+        rn1_list = [0.0, 0.0, 0.0, 0.0, 0.0]
+        t1h_list = [0.0, 0.0, 0.0, 0.0, 0.0]
+        ord_ratio_list = [0.0, 0.0, 0.0, 0.0, 0.0]
+        avg_congestion_list = [0.0, 0.0, 0.0, 0.0, 0.0]
+        y_list = [0.0, 0.0, 0.0, 0.0, 0.0]
+
+        ord_node_id_list = [0, 0, 0, 0, 0] # use for AVG congestion
+        # === Process for each ORDs ===
+        for i in range(1, 6):
+            # check range
+            target_ord = now_ord + i
+            if target_ord > max_ord:
+                mask[i - 1] = 0
+                continue
+
+            # if mean info not exists for ord
+            ord_mn_dict = mn_dict.get(str(i), {})
+            if not ord_mn_dict:
+                mask[i - 1] = 0
+                continue
+
+            raw_mn_total = mn_dict.get("total", {}).get("mean", None)
+            raw_mn_weekday = mn_dict.get(f"weekday_{weekday}", {}).get("mean", None)
+            raw_mn_timegroup = mn_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
+            raw_mn_wd_tg = mn_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+
+            # fallback logic
+            mn_total = normalize(raw_mn_total, 0, 3000) if raw_mn_total is not None else 0.0
+            if raw_mn_wd_tg is not None: mn_wd_tg = normalize(raw_mn_wd_tg, 0, 3000)
+            elif raw_mn_weekday is not None: mn_wd_tg = normalize(raw_mn_weekday, 0, 3000)
+            elif raw_mn_timegroup is not None: mn_wd_tg = normalize(raw_mn_timegroup, 0, 3000)
+            else: mn_wd_tg = mn_total
+            mn_weekday = normalize(raw_mn_weekday, 0, 3000) if raw_mn_weekday is not None else mn_total
+            mn_timegroup = normalize(raw_mn_timegroup, 0, 3000) if raw_mn_timegroup is not None else mn_total
+
+            mn_total_list[i - 1] = mn_total
+            mn_weekday_list[i - 1] = mn_weekday
+            mn_timegroup_list[i - 1] = mn_timegroup
+            mn_wd_tg_list[i - 1] = mn_wd_tg
+
+            nx_ny = nx_ny_stops.get(f"{stdid}_{target_ord}", "63_89")
+            weather = fallback_weather(arr_time, nx_ny, weather_all)
+            pty_list[i - 1] = weather["PTY"]
+            rn1_list[i - 1] = weather["RN1"]
+            t1h_list[i - 1] = weather["T1H"]
+
+            ord_node_id = route_nodes_pair[str(target_ord)][0] # oid {i} ratio
+            ord_ratio_list[i - 1] = round(ord_node_id / max_node, 4)
+            ord_node_id_list[i - 1] = ord_node_id
+
+            target_time_str = next((item["time"] for item in bus_log if item["ord"] == target_ord), None)
+            target_time = datetime.datetime.strptime(target_time_str, "%Y-%m-%d %H:%M:%S")
+
+            y_list[i - 1] = normalize((target_time - arr_time).total_seconds(), 0, 3000)
+
+        # AVG Congestion prefix sum
 
         
+        row = {
+            "trip_group_id": trip_group_id,
+            "node_id": now_node,
+            "x_bus_number": bus_number,
+            "x_direction": direction,
+            "x_branch": branch,
+            "x_weekday": weekday,
+            "x_timegroup": timegroup,
+            "x_weekday_timegroup": wd_tg,
+            "x_departure_time_sin": dep_sin,
+            "x_departure_time_cos": dep_cos,
+            "x_node_id_ratio": node_id_ratio
+        }
+
+        for i in range(5):
+            idx = i + 1
+            row[f"y_{idx}"] = y_list[i]
+            row[f"x_mean_interval_{idx}_total"] = mn_total_list[i]
+            row[f"x_mean_interval_{idx}_weekday"] = mn_weekday_list[i]
+            row[f"x_mean_interval_{idx}_timegroup"] = mn_timegroup_list[i]
+            row[f"x_mean_interval_{idx}_weekday_timegroup"] = mn_wd_tg_list[i]
+            row[f"x_ord_{idx}_ratio"] = ord_ratio_list[i]
+            row[f"x_weather_{idx}_PTY"] = pty_list[i]
+            row[f"x_weather_{idx}_RN1"] = rn1_list[i]
+            row[f"x_weather_{idx}_T1H"] = t1h_list[i],
+            row[f"x_avg_{idx}_congestion"] = avg_congestion_list[i],
+            row[f"x_prev_pred_elapsed_{idx}"] = 0.0
+
+        rows.append(row)
 
     return rows
 
 # === Main Preprocessing Function ===
 def build_second_replay_parquet(target_date):
+
     print(f"[INFO] 시작: {target_date} replay 전처리 [Second Model]")
 
     mean_date = (datetime.datetime.strptime(target_date, "%Y%m%d") - 
@@ -133,6 +217,8 @@ def build_second_replay_parquet(target_date):
         nx_ny_stops = json.load(f)
     with open(LABEL_BUS_PATH, encoding="utf-8") as f:
         label_bus = json.load(f)
+    with open(LAST_STOP_PATH, encoding='utf-8') as f:
+        last_stop = json.load(f)
     
     weather_all = {}
     for file in os.listdir(WEATHER_DIR):
@@ -140,13 +226,6 @@ def build_second_replay_parquet(target_date):
             key = file.replace(".json", "")
             with open(os.path.join(WEATHER_DIR, file), encoding='utf-8') as f:
                 weather_all[key] = json.load(f)
-    
-    traffic_all = {}
-    for file in os.listdir(TRAFFIC_DIR):
-        if file.endswith(".json") and file.startswith(raw_date):
-            key = file.replace(".json", "")
-            with open(os.path.join(TRAFFIC_DIR, file), encoding='utf-8') as f:
-                traffic_all[key] = json.load(f)
 
     # prepare to execute
     task_list = []
@@ -160,7 +239,7 @@ def build_second_replay_parquet(target_date):
     with multiprocessing.Pool(multiprocessing.cpu_count(),
                               initializer=init_worker,
                               initargs=(mean_node, stdid_number, nx_ny_stops, label_bus,
-                                        weather_all, traffic_all)
+                                        weather_all, last_stop)
                              ) as pool:
         results = pool.map(process_single_file, task_list)
 
