@@ -76,6 +76,9 @@ class SecondETAModel(nn.Module):
         ord_context_list = []
         for i in range(1, 6):
             ord_i_ratio = self.next_node_id_ratio_mlp(x[f'ord_{i}_ratio'])  # 48 dim
+            if ord_i_ratio.dim() == 3:
+                print("squeezing ord_i_ratio:", ord_i_ratio.shape)
+                ord_i_ratio = ord_i_ratio.squeeze(1)
             
             average_congestion = self.avg_cong_mlp(x[f'avg_{i}_congestion'])    # 24 dim
             
@@ -89,9 +92,14 @@ class SecondETAModel(nn.Module):
             mean_interval = self.mean_interval_merge(torch.cat([mi_total, mi_wd, mi_tg, mi_wdtg], dim=1))   # 16 dim
 
             ord_merge = self.ord_merge_mlp(torch.cat([average_congestion, weather_context, mean_interval], dim=1))
+            if ord_merge.dim() == 3:
+                print("squeezing ord_merge:", ord_merge.shape)
+                ord_merge = ord_merge.squeeze(1)
+                
             ord_i_context = ord_i_ratio + ord_merge
             if ord_i_context.dim() == 3:
-                ord_i_context = ord_i_context.squeeze(1)  # (B, 48)
+                print("squeezing ord_i_context:", ord_i_context.shape)
+                ord_i_context = ord_i_context.squeeze(1)  # squeeze dim=1
             ord_context_list.append(ord_i_context)
         
         ord_context_adj = self.ord_vector_cond(node_id)
