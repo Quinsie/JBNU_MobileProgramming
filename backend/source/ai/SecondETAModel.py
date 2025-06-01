@@ -80,7 +80,7 @@ class SecondETAModel(nn.Module):
             average_congestion = self.avg_cong_mlp(x[f'avg_{i}_congestion'])    # 24 dim
             
             pty = self.pty_emb(x[f'weather_{i}_PTY'])
-            weather_context = self.weather_mlp(torch.cat([pty, x[f'weather_{i}_RN1'], x['weather_{i}_T1H']], dim=1))   # 8 dim
+            weather_context = self.weather_mlp(torch.cat([pty, x[f'weather_{i}_RN1'], x[f'weather_{i}_T1H']], dim=1))   # 8 dim
 
             mi_total = self.mean_interval_total_mlp(x[f'mean_interval_{i}_total'])
             mi_wd = self.mean_interval_wd_mlp(torch.cat([x[f'mean_interval_{i}_weekday'], self.weekday_emb(x['weekday'])], dim=1))
