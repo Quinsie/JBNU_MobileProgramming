@@ -156,6 +156,9 @@ def process_single_file(task):
             ord_ratio_list[i - 1] = round(ord_node_id / max_node, 4)
 
             target_time_str = next((item["time"] for item in bus_log if item["ord"] == target_ord), None)
+            if target_time_str is None:
+                mask[i - 1] = 0
+                continue
             target_time = datetime.datetime.strptime(target_time_str, "%Y-%m-%d %H:%M:%S")
 
             y_list[i - 1] = normalize((target_time - arr_time).total_seconds(), 0, 3000)
