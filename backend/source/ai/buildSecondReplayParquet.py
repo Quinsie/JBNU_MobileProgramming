@@ -127,10 +127,10 @@ def process_single_file(task):
                 mask[i - 1] = 0
                 continue
 
-            raw_mn_total = mn_dict.get("total", {}).get("mean", None)
-            raw_mn_weekday = mn_dict.get(f"weekday_{weekday}", {}).get("mean", None)
-            raw_mn_timegroup = mn_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
-            raw_mn_wd_tg = mn_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
+            raw_mn_total = ord_mn_dict.get("total", {}).get("mean", None)
+            raw_mn_weekday = ord_mn_dict.get(f"weekday_{weekday}", {}).get("mean", None)
+            raw_mn_timegroup = ord_mn_dict.get(f"timegroup_{timegroup}", {}).get("mean", None)
+            raw_mn_wd_tg = ord_mn_dict.get(f"wd_tg_{weekday}_{timegroup}", {}).get("mean", None)
 
             # fallback logic
             mn_total = normalize(raw_mn_total, 0, 3000) if raw_mn_total is not None else 0.0
