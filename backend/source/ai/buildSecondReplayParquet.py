@@ -166,6 +166,7 @@ def process_single_file(task):
         # === Compose Features per Row ===
         row = {
             "trip_group_id": trip_group_id,
+            "ord": now_ord,
             "node_id": now_node,
             "x_bus_number": bus_number,
             "x_direction": direction,
