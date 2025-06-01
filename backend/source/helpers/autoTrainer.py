@@ -11,19 +11,7 @@ end_date = datetime.strptime("20250601", "%Y%m%d")  # 종료일 포함
 
 # loop 이전 사전 스크립트
 pre_scripts = [
-    # ["python3", "../ai/generateMeanElapsed.py", "--date", "20250505", "--mode", "init"],
-    # ["python3", "../ai/generateMeanInterval.py", "--date", "20250505", "--mode", "init"],
-    # ["python3", "../ai/buildFirstReplayParquet.py", "--date", "20250507"],
-    # ["python3", "../ai2/buildFirstReplayParquet.py", "--date", "20250507"],
-    # ["python3", "../ai/insertDummyRows"],
-    # ["python3", "../ai2/insertDummyRows"],
-    # ["python3", "../ai/trainFirstETA.py", "--date", "20250507", "--mode", "replay"],
-    # ["python3", "../ai2/trainFirstETA.py", "--date", "20250507", "--mode", "replay"],
-    # ["python3", "../ai/generateMeanElapsed.py", "--date", "20250506", "--mode", "append"],
-    # ["python3", "../ai/generateMeanInterval.py", "--date", "20250506", "--mode", "append"],
-    # ["python3", "../ai/generateFirstETA.py", "--date", "20250507"],
-    # ["python3", "../ai2/generateFirstETA.py", "--date", "20250507"]
-    ["python3", "../ai/buildFirstReplayParquetStart.py", "--date", "20250519"],
+    #["python3", "../ai/buildFirstReplayParquetStart.py", "--date", "20250519"],
     ["python3", "../ai/trainFirstETA.py", "--date", "20250519", "--mode", "replay"],
     ["python3", "../ai/generateFirstETA.py", "--date", "20250519"],
 ]
