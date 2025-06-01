@@ -90,6 +90,8 @@ class SecondETAModel(nn.Module):
 
             ord_merge = self.ord_merge_mlp(torch.cat([average_congestion, weather_context, mean_interval], dim=1))
             ord_i_context = ord_i_ratio + ord_merge
+            if ord_i_context.dim() == 3:
+                ord_i_context = ord_i_context.squeeze(1)  # (B, 48)
             ord_context_list.append(ord_i_context)
         
         ord_context_adj = self.ord_vector_cond(node_id)
@@ -116,10 +118,6 @@ class SecondETAModel(nn.Module):
             prev_eta_feats.append(prev_eta_i)
 
         prev_eta = torch.cat(prev_eta_feats, dim=1)  # → (B, 20)
-
-        print("route_context:", route_context.shape)
-        print("time_context:", time_context.shape)
-        print("prev_eta:", prev_eta.shape)
 
         # === final MLP ===
         full_input = torch.cat([route_context, time_context, prev_eta], dim=1) # dim 80
