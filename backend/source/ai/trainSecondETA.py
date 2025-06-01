@@ -153,8 +153,9 @@ def train_model(phase: str):
         batch_x = dict(zip(keys, x_vals))
 
         pred_mean, _ = model(batch_x)
-        pred_elapsed = pred_mean.squeeze() * 7200
-        real_elapsed = batch_y.squeeze() * 7200
+        pred_mean = pred_mean.masked_fill(batch_mask == 0, 0.0)
+        pred_elapsed = pred_mean.squeeze() * 3000
+        real_elapsed = batch_y.squeeze() * 3000
 
         print("\n=== 학습 후 추론 테스트 (pred vs real) ===")
         for i in range(min(10, len(pred_elapsed))):
