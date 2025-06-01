@@ -16,11 +16,14 @@ sys.path.append(BASE_DIR)
 
 MEAN_NODE_DIR = os.path.join(BASE_DIR, "data", "processed", "mean", "node")
 WEATHER_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "weather")
+TRAFFIC_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "traffic")
 BUS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_bus")
 POS_DIR = os.path.join(BASE_DIR, "data", "raw", "dynamicInfo", "realtime_pos")
 ROUTE_NODES_PAIR_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_pair")
+ROUTE_NODES_MAPPED_DIR = os.path.join(BASE_DIR, "data", "processed", "route_nodes_mapped")
 
 LAST_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "last_stop.json")
+LAST_NODE_PATH = os.path.join(BASE_DIR, "data", "processed", "last_node.json")
 LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
 NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
@@ -35,13 +38,16 @@ from source.utils.normalize import normalize
 from source.utils.timeToSinCos import time_to_sin_cos
 from source.utils.fallbackWeather import fallback_weather
 from source.utils.extractRouteInfo import extract_route_info
+from source.utils.getAvgCongestion import get_avg_congestion_list
 
-def init_worker(w1, w2, w3, w4, w5, w6):
+def init_worker(w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11):
     global mean_node, stdid_number, nx_ny_stops, label_bus
-    global weather_all, last_stop
+    global weather_all, last_stop, last_node, traffic_all
+    global route_nodes_mapped, route_nodes_pair, route_nodes_ord
 
     mean_node, stdid_number, nx_ny_stops, label_bus = w1, w2, w3, w4
-    weather_all, last_stop = w5, w6
+    weather_all, last_stop, last_node, traffic_all = w5, w6, w7, w8
+    route_nodes_mapped, route_nodes_pair, route_nodes_ord = w9, w10, w11
 
 # === Process single file :: Multiprocessing ===
 def process_single_file(task):
@@ -64,22 +70,13 @@ def process_single_file(task):
         pos_log = json.load(f)
     if len(pos_log) < 2: return []
 
-    with open(os.path.join(ROUTE_NODES_PAIR_DIR, f"{stdid}.json"), encoding='utf-8') as f:
-        route_nodes_pair = json.load(f)
-    # route node reverse mapping
-    route_nodes_ord = {}
-    for ord, node_list in route_nodes_pair.items():
-        for node_id in node_list:
-            route_nodes_ord[int(node_id)] = int(ord)
-    last_key = sorted(route_nodes_pair.keys(), key= lambda x: int(x))[-1]
-
     basetime = datetime.datetime.strptime(bus_log[0]['time'], "%Y-%m-%d %H:%M:%S")
     day_type = getDayType(basetime)
     weekday = {"weekday": 1, "saturday": 2, "holiday": 3}[day_type]
     timegroup = getTimeGroup(basetime)
     wd_tg = weekday * 8 + (timegroup - 1)
     max_ord = last_stop[stdid]
-    max_node = route_nodes_pair[last_key][-1]
+    max_node = last_node[stdid]
     dep_sin, dep_cos = time_to_sin_cos(basetime)
 
     # === Preprocess start for row ===
@@ -94,7 +91,7 @@ def process_single_file(task):
         prev_node = now_node
         node_id_ratio = round(now_node / max_node, 4)
 
-        now_ord = route_nodes_ord[now_node]
+        now_ord = route_nodes_ord[stdid][now_node]
         arr_time = datetime.datetime.strptime(record["time"], "%Y-%m-%d %H:%M:%S")
         mask = [1, 1, 1, 1, 1]
 
@@ -103,18 +100,19 @@ def process_single_file(task):
         if not mn_dict: continue # avoid zero means
 
         # === X Features ===
-        mn_total_list = [0, 0, 0, 0, 0]
-        mn_weekday_list = [0, 0, 0, 0, 0]
-        mn_timegroup_list = [0, 0, 0, 0, 0]
-        mn_wd_tg_list = [0, 0, 0, 0, 0]
-        pty_list = [0, 0, 0, 0, 0]
-        rn1_list = [0.0, 0.0, 0.0, 0.0, 0.0]
-        t1h_list = [0.0, 0.0, 0.0, 0.0, 0.0]
-        ord_ratio_list = [0.0, 0.0, 0.0, 0.0, 0.0]
-        avg_congestion_list = [0.0, 0.0, 0.0, 0.0, 0.0]
-        y_list = [0.0, 0.0, 0.0, 0.0, 0.0]
+        mn_total_list = [0 for _ in range(5)]
+        mn_weekday_list = [0 for _ in range(5)]
+        mn_timegroup_list = [0 for _ in range(5)]
+        mn_wd_tg_list = [0 for _ in range(5)]
+        pty_list = [0 for _ in range(5)]
+        rn1_list = [0.0 for _ in range(5)]
+        t1h_list = [0.0 for _ in range(5)]
+        ord_ratio_list = [0.0 for _ in range(5)]
+        y_list = [0.0 for _ in range(5)]
+        avg_congestion_list = get_avg_congestion_list(
+            now_ord, max_ord, now_node, route_nodes_pair, route_nodes_mapped, traffic_all, arr_time, stdid
+        )
 
-        ord_node_id_list = [0, 0, 0, 0, 0] # use for AVG congestion
         # === Process for each ORDs ===
         for i in range(1, 6):
             # check range
@@ -154,18 +152,15 @@ def process_single_file(task):
             rn1_list[i - 1] = weather["RN1"]
             t1h_list[i - 1] = weather["T1H"]
 
-            ord_node_id = route_nodes_pair[str(target_ord)][0] # oid {i} ratio
+            ord_node_id = route_nodes_pair[stdid][str(target_ord)][0] # oid {i} ratio
             ord_ratio_list[i - 1] = round(ord_node_id / max_node, 4)
-            ord_node_id_list[i - 1] = ord_node_id
 
             target_time_str = next((item["time"] for item in bus_log if item["ord"] == target_ord), None)
             target_time = datetime.datetime.strptime(target_time_str, "%Y-%m-%d %H:%M:%S")
 
             y_list[i - 1] = normalize((target_time - arr_time).total_seconds(), 0, 3000)
-
-        # AVG Congestion prefix sum
-
         
+        # === Compose Features per Row ===
         row = {
             "trip_group_id": trip_group_id,
             "node_id": now_node,
@@ -183,6 +178,7 @@ def process_single_file(task):
         for i in range(5):
             idx = i + 1
             row[f"y_{idx}"] = y_list[i]
+            row[f"mask_{idx}"] = mask[i]
             row[f"x_mean_interval_{idx}_total"] = mn_total_list[i]
             row[f"x_mean_interval_{idx}_weekday"] = mn_weekday_list[i]
             row[f"x_mean_interval_{idx}_timegroup"] = mn_timegroup_list[i]
@@ -190,8 +186,8 @@ def process_single_file(task):
             row[f"x_ord_{idx}_ratio"] = ord_ratio_list[i]
             row[f"x_weather_{idx}_PTY"] = pty_list[i]
             row[f"x_weather_{idx}_RN1"] = rn1_list[i]
-            row[f"x_weather_{idx}_T1H"] = t1h_list[i],
-            row[f"x_avg_{idx}_congestion"] = avg_congestion_list[i],
+            row[f"x_weather_{idx}_T1H"] = t1h_list[i]
+            row[f"x_avg_{idx}_congestion"] = avg_congestion_list[i]
             row[f"x_prev_pred_elapsed_{idx}"] = 0.0
 
         rows.append(row)
@@ -219,13 +215,45 @@ def build_second_replay_parquet(target_date):
         label_bus = json.load(f)
     with open(LAST_STOP_PATH, encoding='utf-8') as f:
         last_stop = json.load(f)
-    
+    with open(LAST_NODE_PATH, encoding='utf-8') as f:
+        last_node = json.load(f)
+
+    traffic_all = {}
+    for file in os.listdir(TRAFFIC_DIR):
+        if file.endswith(".json") and file.startswith(raw_date):
+            key = file.replace(".json", "")
+            with open(os.path.join(TRAFFIC_DIR, file), encoding='utf-8') as f:
+                records = json.load(f)
+                traffic_all[key] = {}
+                for item in records:
+                    traffic_all[key][(item["id"], item["sub"])] = item["grade"]
+
     weather_all = {}
     for file in os.listdir(WEATHER_DIR):
         if file.endswith(".json") and file.startswith(raw_date):
             key = file.replace(".json", "")
             with open(os.path.join(WEATHER_DIR, file), encoding='utf-8') as f:
                 weather_all[key] = json.load(f)
+    
+    route_nodes_mapped = {}
+    for file in os.listdir(ROUTE_NODES_MAPPED_DIR):
+        if file.endswith(".json"):
+            stdid = file.replace(".json", "")
+            with open(os.path.join(ROUTE_NODES_MAPPED_DIR, file), encoding='utf-8') as f:
+                route_nodes_mapped[stdid] = json.load(f).get("resultList", []) # by stdid
+    
+    route_nodes_pair = {}
+    route_nodes_ord = {}
+    for file in os.listdir(ROUTE_NODES_PAIR_DIR):
+        if file.endswith(".json"):
+            stdid = file.replace(".json", "")
+            with open(os.path.join(ROUTE_NODES_PAIR_DIR, file), encoding='utf-8') as f:
+                route_nodes_pair[stdid] = json.load(f) # by stdid
+
+                route_nodes_ord[stdid] = {}
+                for ord_str, node_list in route_nodes_pair[stdid].items():
+                    for node_id in node_list:
+                        route_nodes_ord[stdid][int(node_id)] = int(ord_str)
 
     # prepare to execute
     task_list = []
@@ -239,7 +267,8 @@ def build_second_replay_parquet(target_date):
     with multiprocessing.Pool(multiprocessing.cpu_count(),
                               initializer=init_worker,
                               initargs=(mean_node, stdid_number, nx_ny_stops, label_bus,
-                                        weather_all, last_stop)
+                                        weather_all, last_stop, last_node, traffic_all,
+                                        route_nodes_mapped, route_nodes_pair, route_nodes_ord)
                              ) as pool:
         results = pool.map(process_single_file, task_list)
 

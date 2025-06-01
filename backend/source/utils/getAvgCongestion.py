@@ -1,76 +1,41 @@
 # backend/source/utils/getAvgCongestion.py
 
-import os
-import json
-from typing import List
+import datetime
 
-def getSingleAvgCongestion(stdid: str, start_node: int, target_node: int, dt_str: str, base_dir: str) -> float:
-    try:
-        file_path = os.path.join(base_dir, f"{dt_str}.json")
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+def get_avg_congestion_list(now_ord, max_ord, now_node, route_nodes_pair, route_nodes_mapped, traffic_all, arr_time, stdid):
+    ord_node_id_list = [0 for _ in range(5)]
+    avg_congestion_list = [0.0 for _ in range(5)]
+    length = 0
 
-        route_data = data.get(stdid, {})
-        if not route_data:
-            return 1.0
+    for i in range(1, 6):
+        target_ord = now_ord + i
+        if target_ord > max_ord:
+            length = i - 1
+            break
+        ord_node_id_list[i - 1] = route_nodes_pair[stdid][str(target_ord)][0]
 
-        if start_node > target_node:
-            start_node, target_node = target_node, start_node
+    total = 0.0; num = 0; now_idx = 0
+    for i in range(now_node, max(ord_node_id_list) + 1):
+        if i == ord_node_id_list[now_idx]:
+            avg_congestion_list[now_idx] = total / num if num > 0 else 0.0
+            now_idx += 1
+            if now_idx >= length:
+                break
 
-        grades = []
-        for nid in range(start_node, target_node + 1):
-            info = route_data.get(str(nid), {})
-            grade = info.get("grade", None)
-            if grade in ("1", "2", "3"):
-                grades.append(int(grade))
+        if not route_nodes_mapped[stdid][i].get("matched"):
+            total += 1; num += 1
+            continue
 
-        return sum(grades) / len(grades) if grades else 1.0
+        now_id = route_nodes_mapped[stdid][i]["matched"]["id"]
+        now_sub = route_nodes_mapped[stdid][i]["matched"]["sub"]
+        now_grade = 1
+        for j in range(5):
+            time_key = (arr_time - datetime.timedelta(minutes=j)).strftime("%Y%m%d_%H%M")
+            if time_key in traffic_all:
+                record = traffic_all[time_key].get((now_id, now_sub))
+                if record is not None and 1 <= int(record) <= 3:
+                    now_grade = int(record)
+                    break
+        total += now_grade; num += 1
 
-    except Exception:
-        return 1.0
-
-def getMultiAvgCongestion(stdid: str, start_node: int, target_nodes: List[int], dt_str: str, base_dir: str) -> List[float]:
-    try:
-        file_path = os.path.join(base_dir, f"{dt_str}.json")
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        route_data = data.get(stdid, {})
-        if not route_data:
-            return [1.0 for _ in target_nodes]
-
-        # start_node ~ max(target_node)까지 미리 누적 계산
-        max_target = max(target_nodes)
-        if start_node > max_target:
-            start_node, max_target = max_target, start_node
-
-        grades = []
-        for nid in range(start_node, max_target + 1):
-            info = route_data.get(str(nid), {})
-            grade = info.get("grade", None)
-            if grade in ("1", "2", "3"):
-                grades.append(int(grade))
-            else:
-                grades.append(1)
-
-        # 누적합 구성
-        cum_sum = [0]
-        for g in grades:
-            cum_sum.append(cum_sum[-1] + g)
-
-        result = []
-        for target_node in target_nodes:
-            a, b = sorted((start_node, target_node))
-            left = a - start_node
-            right = b - start_node + 1
-            length = right - left
-            if length <= 0:
-                result.append(1.0)
-            else:
-                avg = (cum_sum[right] - cum_sum[left]) / length
-                result.append(avg)
-
-        return result
-
-    except Exception:
-        return [1.0 for _ in target_nodes]
+    return avg_congestion_list
