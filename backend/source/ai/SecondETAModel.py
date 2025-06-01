@@ -58,6 +58,9 @@ class SecondETAModel(nn.Module):
         self.head_logvar = nn.Linear(32, 5)
 
     def forward(self, x):
+        print("sin:", x['departure_time_sin'].shape)
+        print("cos:", x['departure_time_cos'].shape)
+
         # === Route-related ===
         bus = self.bus_emb(x['bus_number'])     # (B, 8)
         dir_adj = self.dir_cond(bus)            # (B, 12)
@@ -103,7 +106,7 @@ class SecondETAModel(nn.Module):
         weekday_timegroup_emb = self.wd_tg_emb(x['weekday_timegroup'].squeeze(1))
         time_context = self.time_mlp(torch.cat([
             weekday_emb, timegroup_emb, weekday_timegroup_emb, 
-            x['departure_time_sin'].squeeze(-1), x['departure_time_cos'].squeeze(-1)
+            x['departure_time_sin'], x['departure_time_cos']
             ], dim=1))  # (B, 16)
         
         # === Self Review 용 Prev ETA ===
