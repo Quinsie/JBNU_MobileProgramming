@@ -98,6 +98,8 @@ class SecondETAModel(nn.Module):
         ord_context_raw = torch.cat(ord_context_list, dim=1)
         ord_context = ord_context_adj + ord_context_raw
         route_context = self.route_context_mlp(ord_context)
+        if route_context.dim() == 3:
+            route_context = route_context.squeeze(1)
         
         # === Time Context ===
         weekday_emb = self.weekday_emb(x['weekday'].squeeze(1))
