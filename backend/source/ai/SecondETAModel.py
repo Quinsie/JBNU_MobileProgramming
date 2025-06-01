@@ -101,14 +101,16 @@ class SecondETAModel(nn.Module):
         weekday_emb = self.weekday_emb(x['weekday'].squeeze(1))
         timegroup_emb = self.timegroup_emb(x['timegroup'].squeeze(1))
         weekday_timegroup_emb = self.wd_tg_emb(x['weekday_timegroup'].squeeze(1))
-        time_context = self.time_mlp(torch.cat([weekday_emb, timegroup_emb, weekday_timegroup_emb, x['departure_time_sin'], x['departure_time_cos']], dim=1))  # (B, 16)
+        time_context = self.time_mlp(torch.cat([
+            weekday_emb, timegroup_emb, weekday_timegroup_emb, 
+            x['departure_time_sin'].squeeze(-1), x['departure_time_cos'].squeeze(-1)
+            ], dim=1))  # (B, 16)
         
         # === Self Review 용 Prev ETA ===
         prev_eta_feats = []
         for i in range(1, 6):
             prev_eta_raw = x[f'prev_pred_elapsed_{i}']
             prev_eta_i = self.prev_pred_mlp(prev_eta_raw.view(-1, 1))
-            print(f"[DEBUG] prev_eta_i.shape = {prev_eta_i.shape}")
             if prev_eta_i.dim() == 3:
                 prev_eta_i = prev_eta_i.squeeze(1)
             prev_eta_feats.append(prev_eta_i)
