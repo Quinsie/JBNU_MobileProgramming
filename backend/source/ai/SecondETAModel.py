@@ -72,6 +72,11 @@ class SecondETAModel(nn.Module):
         node_id_ratio_raw = self.node_id_ratio_mlp(x['node_id_ratio'])          # (B, 20)
         node_id = node_id_adj + node_id_ratio_raw                       # node_id complete, 20 dim
 
+        print("bus", bus.shape)
+        print("direction", direction.shape)
+        print("branch", branch.shape)
+        print("node_id", node_id.shape)
+
         # === ORD Context ===
         ord_context_list = []
         print("input keys:", x.keys())
