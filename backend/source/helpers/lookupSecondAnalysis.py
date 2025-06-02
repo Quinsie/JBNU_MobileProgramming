@@ -16,21 +16,19 @@ def load_analysis_data(date_str, base_dir=os.path.join(BASE_DIR, "data", "proces
 def print_metrics(title, metrics_dict):
     print(f"\n==== {title.upper()} ====\n")
 
-    ord_keys = list(metrics_dict.keys())  # ['ORD+1', ..., 'ORD+5']
-    metric_names = list(metrics_dict[ord_keys[0]].keys())  # ['mae', 'rmse', ...]
+    ord_keys = list(metrics_dict.keys())
+    metric_names = list(metrics_dict[ord_keys[0]].keys())
 
-    # 헤더 출력
     header = f"{'METRIC':>15}" + "".join([f"{ord_key:>12}" for ord_key in ord_keys])
     print(header)
     print("-" * len(header))
 
-    # 지표별 행 출력
     for metric in metric_names:
         row = f"{metric.upper():>15}"
         for ord_key in ord_keys:
             val = metrics_dict[ord_key][metric]
             if isinstance(val, float):
-                row += f"{val:>12,.3f}"  # 1000단위 콤마 + 소수점 3자리
+                row += f"{val:>12,.3f}"
             else:
                 row += f"{str(val):>12}"
         print(row)
