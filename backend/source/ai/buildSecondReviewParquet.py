@@ -4,6 +4,7 @@ import os
 import json
 import argparse
 import pandas as pd
+from datetime import datetime, timedelta
 
 # === BASE 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -32,4 +33,5 @@ if __name__ == "__main__":
     parser.add_argument("--date", required=True, help="대상 날짜 (YYYYmmDD 형식)")
     args = parser.parse_args()
 
-    convert_json_to_parquet(args.date)
+    target_date = datetime.strptime(args.date, "%Y%m%d") - timedelta(days=1)
+    convert_json_to_parquet(datetime.strftime(target_date, "%Y%m%d"))

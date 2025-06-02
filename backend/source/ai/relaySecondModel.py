@@ -5,6 +5,9 @@ from multiprocessing import Queue
 from multiprocessing.managers import BaseManager
 import time
 
+# 실행날짜 기억하고, json파일로 저장은 "당일 날짜"로 진행해야된다.
+# 절대 잊지 말 것!!!
+
 # === Queue 생성 ===
 q = Queue()
 

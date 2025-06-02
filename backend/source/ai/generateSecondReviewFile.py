@@ -309,7 +309,7 @@ def build_second_review_base(target_date):
         for i in range(5):
             row[f"x_prev_pred_elapsed_{i+1}"] = pred_list[i]
 
-    save_file = os.path.join(SAVE_PATH, f"{target_date}.json")
+    save_file = os.path.join(SAVE_PATH, f"{raw_date}.json")
     with open(save_file, "w", encoding="utf-8") as f:
         json.dump(rows, f, ensure_ascii=False)
     print(f"[INFO] Saved review base JSON: {save_file}")
