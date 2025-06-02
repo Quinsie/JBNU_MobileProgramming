@@ -50,13 +50,13 @@ while current_date <= end_date:
     date_minus1 = (current_date - timedelta(days=1)).strftime("%Y%m%d")
     print(f"\n==== [{date_str}] 시작 ====")
 
-    # === 요일 유형 및 요일값 판단
+    # === getDayType 기반으로 batch size 결정 ===
     day_type = getDayType(current_date)
-    weekday = current_date.weekday()  # 0 = 월요일
+    weekday = current_date.weekday()  # 0 = 월요일, ..., 6 = 일요일
 
-    if day_type in ["saturday", "holiday"]:
+    if day_type == "holiday":
         batch_size = "64"
-    elif day_type == "weekday" and weekday == 0:
+    elif day_type == "weekday" and weekday in [0, 1]:  # 월, 화
         batch_size = "64"
     else:
         batch_size = "128"
@@ -65,7 +65,6 @@ while current_date <= end_date:
         target_date = date_minus1 if "Mean" in script else date_str
         args = [arg.format(date=target_date) for arg in args_template]
 
-        # trainFirstETA.py일 경우에만 --batch 추가
         if script == "trainFirstETA.py":
             args += ["--batch", batch_size]
 
@@ -74,6 +73,7 @@ while current_date <= end_date:
         subprocess.run(full_command)
 
     current_date += timedelta(days=1)
+    
 print("ai/ 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
 
 print("총 소요 시간: ", round(time.time() - s, 1), "sec")
