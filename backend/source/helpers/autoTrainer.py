@@ -13,6 +13,9 @@ end_date = datetime.strptime("20250603", "%Y%m%d")  # 종료일 포함
 
 # loop 이전 사전 스크립트
 pre_scripts = [
+    ["python3", "../ai/cleanBusLogs.py", "--start", "20250601", "--end", "20250602"],
+    ["python3", "autoMeanGenerator.py"],
+
     ["python3", "../ai/buildFirstReplayParquetStart.py", "--date", "20250512"],
     ["python3", "../ai/buildSecondReplayParquetStart.py", "--date", "20250512"],
     ["python3", "../ai/trainFirstETA.py", "--date", "20250512", "--mode", "replay"],
@@ -27,9 +30,9 @@ scripts = [
     ("trainFirstETA.py", ["--date", "{date}", "--mode", "self_review"]),
     ("buildFirstReplayParquet.py", ["--date", "{date}"]),
     ("trainFirstETA.py", ["--date", "{date}", "--mode", "replay"]),
-    ("generateMeanElapsed.py", ["--date", "{date}", "--mode", "append"]),
-    ("generateMeanInterval.py", ["--date", "{date}", "--mode", "append"]),
-    ("generateMeanNode.py", ["--date", "{date}", "--mode", "append"]),
+    #("generateMeanElapsed.py", ["--date", "{date}", "--mode", "append"]),
+    #("generateMeanInterval.py", ["--date", "{date}", "--mode", "append"]),
+    #("generateMeanNode.py", ["--date", "{date}", "--mode", "append"]),
     ("generateFirstETA.py", ["--date", "{date}"]),
 
     ("generateSecondReviewFile.py", ["--date", "{date}"]),

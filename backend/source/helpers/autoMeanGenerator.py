@@ -6,15 +6,19 @@ from datetime import datetime, timedelta
 
 # 시작일자, 종료일자 설정
 start_date = datetime.strptime("20250506", "%Y%m%d")
-end_date = datetime.strptime("20250527", "%Y%m%d")  # 종료일 포함
+end_date = datetime.strptime("20250602", "%Y%m%d")  # 종료일 포함
 
 # loop 이전 사전 스크립트
 pre_scripts = [
+    ["python3", "../ai/generateMeanElapsed.py", "--date", "20250505", "--mode", "init"],
+    ["python3", "../ai/generateMeanInterval.py", "--date", "20250505", "--mode", "init"],
     ["python3", "../ai/generateMeanNode.py", "--date", "20250505", "--mode", "init"]
 ]
 
 # 실행할 스크립트 및 인자 정의
 scripts = [
+    ("../ai/generateMeanElapsed.py", ["--date", "{date}", "--mode", "append"]),
+    ("../ai/generateMeanInterval.py", ["--date", "{date}", "--mode", "append"]),
     ("../ai/generateMeanNode.py", ["--date", "{date}", "--mode", "append"])
 ]
 
