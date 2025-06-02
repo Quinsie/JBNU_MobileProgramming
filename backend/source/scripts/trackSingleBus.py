@@ -6,6 +6,7 @@ import json
 import time
 import requests
 from datetime import datetime
+from multiprocessing.managers import BaseManager
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
@@ -156,6 +157,28 @@ def track_bus(stdid, start_time_str):
 
             matched = get_closest_route_node(lat, lng, ord, node_list, ord_pair_map, last_node_id)
             if matched:
+                # ADD TO QUEUE LOGIC
+                if matched["NODE_ID"] != last_node_id:
+                    try:
+                        class QueueManager(BaseManager): pass
+                        QueueManager.register("get_queue")
+
+                        manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                        manager.connect()
+                        q = manager.get_queue()
+
+                        q.put({
+                            "stdid": stdid,
+                            "dep_time": start_time_str, # strftime
+                            "timestamp": now_time,
+                            "node_id": matched["NODE_ID"]
+                        })
+
+                        log("trackSingleBus", f"[QUEUE] route_node 전송 완료: node_id={matched['NODE_ID']}")
+                    
+                    except Exception as error:
+                        log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {error}")
+
                 last_node_id = matched["NODE_ID"]
 
             if ord != current_ord:
