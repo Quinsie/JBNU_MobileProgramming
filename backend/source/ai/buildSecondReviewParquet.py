@@ -13,10 +13,10 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 REVIEW_JSON_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "self_review")
 REVIEW_PARQUET_DIR = REVIEW_JSON_DIR  # 같은 경로에 저장
 
-def convert_json_to_parquet(target_date):
+def convert_json_to_parquet(target_date, save_date):
     print("[INFO] Review Parquet 제작 시작...")
     json_path = os.path.join(REVIEW_JSON_DIR, f"{target_date}.json")
-    parquet_path = os.path.join(REVIEW_PARQUET_DIR, f"{target_date}.parquet")
+    parquet_path = os.path.join(REVIEW_PARQUET_DIR, f"{save_date}.parquet")
 
     if not os.path.exists(json_path):
         print(f"[ERROR] JSON 파일이 존재하지 않습니다: {json_path}")
@@ -37,5 +37,5 @@ if __name__ == "__main__":
 
     now = time.time()
     target_date = datetime.strptime(args.date, "%Y%m%d") - timedelta(days=1)
-    convert_json_to_parquet(datetime.strftime(target_date, "%Y%m%d"))
+    convert_json_to_parquet(datetime.strftime(target_date, "%Y%m%d"), args.date)
     print("소요 시간: ", round(time.time() - now, 1), "sec")
