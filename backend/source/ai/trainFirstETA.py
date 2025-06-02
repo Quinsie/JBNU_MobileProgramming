@@ -85,7 +85,7 @@ def train_model(phase: str):
     y = torch.tensor(df[y_col].values, dtype=torch.float32).unsqueeze(1).to(device)
 
     # dataset은 리스트(zip) 기반으로 구성
-    dataset = list(zip(range(len(df)), *(list(x_dict.values()) + [y])))
+    dataset = zip(range(len(df)), *(list(x_dict.values()) + [y]))
     keys = list(x_dict.keys())
 
     # === 학습 루프 ===

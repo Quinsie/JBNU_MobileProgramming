@@ -88,7 +88,7 @@ def train_model(phase: str):
     mask = torch.tensor(df[mask_cols].values, dtype=torch.float32).to(device)  # shape: (B, 10)
 
     # dataset은 리스트(zip) 기반으로 구성
-    dataset = list(zip(range(len(df)), *(list(x_dict.values()) + [y, mask])))
+    dataset = zip(range(len(df)), *(list(x_dict.values()) + [y, mask]))
     keys = list(x_dict.keys())
 
     # === 학습 루프 ===
