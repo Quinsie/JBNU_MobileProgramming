@@ -16,18 +16,23 @@ def load_analysis_data(date_str, base_dir=os.path.join(BASE_DIR, "data", "proces
 def print_metrics(title, metrics_dict):
     print(f"\n==== {title.upper()} ====\n")
 
-    ord_keys = list(metrics_dict.keys())  # e.g., ['ORD+1', ..., 'ORD+5']
-    metric_names = list(metrics_dict[ord_keys[0]].keys())  # e.g., ['mae', 'rmse', ...]
+    ord_keys = list(metrics_dict.keys())  # ['ORD+1', ..., 'ORD+5']
+    metric_names = list(metrics_dict[ord_keys[0]].keys())  # ['mae', 'rmse', ...]
 
-    # 헤더 출력
-    header = f"{'ORD':>8}" + "".join([f"{m.upper():>12}" for m in metric_names])
+    # 헤더: ORD+1 ~ ORD+5
+    header = f"{'METRIC':>12}" + "".join([f"{ord_key:>12}" for ord_key in ord_keys])
     print(header)
     print("-" * len(header))
 
-    # 각 ORD 행 출력
-    for ord_key in ord_keys:
-        values = metrics_dict[ord_key]
-        row = f"{ord_key:>8}" + "".join([f"{values[m]:>12,.3f}" if isinstance(values[m], float) else f"{values[m]:>12}" for m in metric_names])
+    # 각 지표별 행 출력
+    for m in metric_names:
+        row = f"{m.upper():>12}"  # 지표명 (ex: MAE)
+        for ord_key in ord_keys:
+            val = metrics_dict[ord_key][m]
+            if isinstance(val, float):
+                row += f"{val:>12,.3f}"
+            else:
+                row += f"{str(val):>12}"
         print(row)
 
 def main():
