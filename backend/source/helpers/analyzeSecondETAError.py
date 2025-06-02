@@ -12,7 +12,7 @@ from collections import defaultdict
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
-REVIEW_JSON_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "review")
+REVIEW_JSON_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "self_review")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "analysis", "second_model")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
