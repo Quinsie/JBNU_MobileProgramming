@@ -19,7 +19,7 @@ def print_metrics(title, metrics_dict):
     ord_keys = list(metrics_dict.keys())
     metric_names = list(metrics_dict[ord_keys[0]].keys())
 
-    header = f"{'METRIC':>15}" + "".join([f"{ord_key:>12}" for ord_key in ord_keys])
+    header = f"{'METRIC':>20}" + "".join([f"{ord_key:>20}" for ord_key in ord_keys])
     print(header)
     print("-" * len(header))
 
