@@ -1,18 +1,24 @@
 # backend/source/helpers/autoTrainer.py
 
+import os
+import sys
 import time
 import subprocess
 from datetime import datetime, timedelta
 
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(BASE_DIR)
+from source.utils.getDayType import getDayType
+
 s = time.time()
 # 시작일자, 종료일자 설정
-start_date = datetime.strptime("20250602", "%Y%m%d")
+start_date = datetime.strptime("20250513", "%Y%m%d")
 end_date = datetime.strptime("20250602", "%Y%m%d")  # 종료일 포함
 
 # loop 이전 사전 스크립트
 pre_scripts = [
     ["python3", "../ai/buildFirstReplayParquetStart.py", "--date", "20250512"],
-    ["python3", "../ai/trainFirstETA.py", "--date", "20250512", "--mode", "replay"],
+    ["python3", "../ai/trainFirstETA.py", "--date", "20250512", "--mode", "replay", "--batch", "128"],
     ["python3", "../ai/generateFirstETA.py", "--date", "20250512"],
 ]
 
@@ -28,12 +34,12 @@ scripts = [
 ]
 
 # 전처리 부분
-# now = time.time()
-# print("전처리 시작")
-# for cmd in pre_scripts:
-#     print(f"실행 중: {' '.join(cmd)}")
-#     subprocess.run(cmd)
-# print("전처리 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
+now = time.time()
+print("전처리 시작")
+for cmd in pre_scripts:
+    print(f"실행 중: {' '.join(cmd)}")
+    subprocess.run(cmd)
+print("전처리 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
 
 now = time.time()
 print("ai/ 시작")
@@ -43,35 +49,31 @@ while current_date <= end_date:
     date_str = current_date.strftime("%Y%m%d")
     date_minus1 = (current_date - timedelta(days=1)).strftime("%Y%m%d")
     print(f"\n==== [{date_str}] 시작 ====")
-    
+
+    # === 요일 유형 및 요일값 판단
+    day_type = getDayType(current_date)
+    weekday = current_date.weekday()  # 0 = 월요일
+
+    if day_type in ["saturday", "holiday"]:
+        batch_size = "64"
+    elif day_type == "weekday" and weekday == 0:
+        batch_size = "64"
+    else:
+        batch_size = "128"
+
     for script, args_template in scripts:
-        # 날짜 결정 (일부 스크립트는 하루 전 날짜 사용)
         target_date = date_minus1 if "Mean" in script else date_str
         args = [arg.format(date=target_date) for arg in args_template]
+
+        # trainFirstETA.py일 경우에만 --batch 추가
+        if script == "trainFirstETA.py":
+            args += ["--batch", batch_size]
+
         full_command = ["python3", f"../ai/{script}"] + args
         print(f"실행 중: {' '.join(full_command)}")
         subprocess.run(full_command)
-    
+
     current_date += timedelta(days=1)
 print("ai/ 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
-
-# now = time.time()
-# print("ai2/ 시작")
-# current_date = start_date
-# while current_date <= end_date:
-#     date_str = current_date.strftime("%Y%m%d")
-#     print(f"\n==== [{date_str}] 시작 ====")
-    
-#     for script, args_template in scripts:
-#         # 날짜 결정 (일부 스크립트는 하루 전 날짜 사용)
-#         if "Mean" in script: continue
-#         target_date =  date_str
-#         args = [arg.format(date=target_date) for arg in args_template]
-#         full_command = ["python3", f"../ai2/{script}"] + args
-#         print(f"실행 중: {' '.join(full_command)}")
-#         subprocess.run(full_command)
-    
-#     current_date += timedelta(days=1)
-# print("ai2/ 끝, 소요 시간: ", time.time() - now, "sec")
 
 print("총 소요 시간: ", round(time.time() - s, 1), "sec")
