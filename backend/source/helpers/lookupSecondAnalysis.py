@@ -28,9 +28,9 @@ def print_metrics(title, metrics_dict):
         for ord_key in ord_keys:
             val = metrics_dict[ord_key][metric]
             if isinstance(val, float):
-                row += f"{val:>12,.3f}"
+                row += f"{val:>20,.3f}"
             else:
-                row += f"{str(val):>12}"
+                row += f"{str(val):>20}"
         print(row)
 
 def main():
