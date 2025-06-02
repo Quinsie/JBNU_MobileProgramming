@@ -34,6 +34,7 @@ os.makedirs(SAVE_PATH, exist_ok=True)
 
 # === sub Functions Load ===
 from inferenceSecondModel import infer_eta_batch
+from inferenceSecondModel import prepare_input_tensor
 from inferenceSecondModel import load_second_eta_model
 from source.utils.getDayType import getDayType
 from source.utils.getTimeGroup import getTimeGroup
@@ -288,24 +289,22 @@ def build_second_review_base(target_date):
     model_path = os.path.join(BASE_DIR, "data", "model", "secondETA", "replay", f"{raw_date}.pth")
     model = load_second_eta_model(model_path, device)
     
-    # === 추론 (미니배치 적용) ===
+    # === Inference :: applied mini-batch ===
     batch_size = 2048
     preds = []
 
     for i in range(0, len(rows), batch_size):
         batch = rows[i:i+batch_size]
-        
-        # ✔️ 1. 추론용 입력만 따로 추출
+
         x_batch = []
         for row in batch:
-            x_row = {k.replace("x_", ""): v for k, v in row.items() if k.startswith("x_")}
-            x_batch.append(x_row)
-        
-        # ✔️ 2. 추론
+            x_raw = {k.replace("x_", ""): v for k, v in row.items() if k.startswith("x_")}
+            x_tensor = prepare_input_tensor(x_raw, device)  # ← 여기서 tensor화
+            x_batch.append(x_tensor)
+
         batch_preds = infer_eta_batch(model, x_batch, device)
         preds.extend(batch_preds)
 
-    # ✔️ 3. 결과는 원래 row에 다시 삽입
     for row, pred_list in zip(rows, preds):
         for i in range(5):
             row[f"x_prev_pred_elapsed_{i+1}"] = pred_list[i]
