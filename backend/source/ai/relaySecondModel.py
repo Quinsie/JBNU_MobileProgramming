@@ -1,4 +1,4 @@
-# backend/source/scripts/relayWorker.py
+# backend/source/ai/relaySecondModel.py
 
 from queue import Empty
 from multiprocessing import Queue

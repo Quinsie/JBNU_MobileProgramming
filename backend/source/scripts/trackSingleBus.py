@@ -168,6 +168,7 @@ def track_bus(stdid, start_time_str):
                         q = manager.get_queue()
 
                         q.put({
+                            "type": 0, # route node log
                             "stdid": stdid,
                             "dep_time": start_time_str, # strftime
                             "timestamp": now_time,
@@ -190,6 +191,26 @@ def track_bus(stdid, start_time_str):
                 stop_reached_logs.append({"ord": ord, "time": now_time})
                 last_movement = time.time()
                 log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord} 도착: {now_time}")
+                # send ord to queue
+                try:
+                    class QueueManager(BaseManager): pass
+                    QueueManager.register("get_queue")
+                    manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                    manager.connect()
+                    q = manager.get_queue()
+
+                    q.put({
+                        "type": 1, # ORD arrival log
+                        "stdid": stdid,
+                        "dep_time": start_time_str, # strftime
+                        "timestamp": now_time,
+                        "ord": ord
+                    })
+
+                    log("trackSingleBus", f"[QUEUE] ORD 전송 완료: ord={ord}")
+
+                except Exception as error:
+                    log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {error}")
 
                 if ord == end_ord_minus1:
                     reached_end_minus1 = True

@@ -86,6 +86,33 @@ async def run_scheduler():
             has_started = False
             await asyncio.sleep(900)  # 15분 간격 로그
 
+async def run_relay_second_model():
+    has_started = False
+    while True:
+        if is_within_active_hours():
+            if not has_started:
+                is_running = False
+                for p in psutil.process_iter(attrs=["pid", "cmdline"]):
+                    try:
+                        cmdline = p.info.get("cmdline") or []
+                        if p.info["pid"] != os.getpid() and "relaySecondModel.py" in " ".join(cmdline):
+                            is_running = True
+                            break
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        continue
+
+                if is_running:
+                    log("runAll", "이미 relaySecondModel.py 실행 중, 생략")
+                else:
+                    log("runAll", "relaySecondModel 실행")
+                    subprocess.Popen(["python3", "relaySecondModel.py"], cwd="backend/source/ai")
+                    has_started = True
+            await asyncio.sleep(60)
+        else:
+            log("runAll", "relaySecondModel 대기 중 (비활성 시간)")
+            has_started = False
+            await asyncio.sleep(900)
+
 async def run_forecast():
     has_run_today = False
     while True:
@@ -114,6 +141,7 @@ async def main():
         run_traffic(),
         run_scheduler(),
         run_forecast(),
+        run_relay_second_model(),
         run_zombie_cleaner()
     )
 
