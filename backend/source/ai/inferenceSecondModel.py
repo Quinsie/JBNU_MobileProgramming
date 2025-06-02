@@ -32,7 +32,9 @@ def load_second_eta_model(model_path: str, device: torch.device) -> SecondETAMod
 def prepare_input_tensor(x_row: dict, device: torch.device) -> dict:
     tensor = {}
     for k, v in x_row.items():
-        if k in FLOAT_KEYS:
+        if isinstance(v, torch.Tensor):
+            tensor[k] = v.clone().detach().unsqueeze(0).to(device)
+        elif k in FLOAT_KEYS:
             tensor[k] = torch.tensor(v, dtype=torch.float32, device=device).unsqueeze(0)
         elif k in LONG_KEYS:
             tensor[k] = torch.tensor(v, dtype=torch.long, device=device).unsqueeze(0)
