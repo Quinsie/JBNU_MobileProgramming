@@ -29,7 +29,7 @@ scripts = [
     ("trainFirstETA.py", ["--date", "{date}", "--mode", "replay"]),
     ("generateMeanElapsed.py", ["--date", "{date}", "--mode", "append"]),
     ("generateMeanInterval.py", ["--date", "{date}", "--mode", "append"]),
-    ("generateMeanNode.py", ["--date", "{date}", "--mode", "append"])
+    ("generateMeanNode.py", ["--date", "{date}", "--mode", "append"]),
     ("generateFirstETA.py", ["--date", "{date}"]),
 
     ("generateSecondReviewFile.py", ["--date", "{date}"]),
