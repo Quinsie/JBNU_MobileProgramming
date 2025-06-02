@@ -90,7 +90,7 @@ def analyze_second_eta(date_str):
         "timegroup": evaluate_group(df, "x_timegroup"),
         "wd_tg": evaluate_group(df, "x_weekday_timegroup"),
         "stdid": evaluate_group(df, df["trip_group_id"].str.split("_").str[-1]),  # stdid
-        "bus_number": evaluate_group(df["x_bus_number"].astype(str)),  # numeric code
+        "bus_number": evaluate_group(df, df["x_bus_number"].astype(str)),  # numeric code
         "ord_ratio": evaluate_group(df, "ord_ratio_group")
     }
 
