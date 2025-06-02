@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 
 s = time.time()
 # 시작일자, 종료일자 설정
-start_date = datetime.strptime("20250513", "%Y%m%d")
-end_date = datetime.strptime("20250601", "%Y%m%d")  # 종료일 포함
+start_date = datetime.strptime("20250602", "%Y%m%d")
+end_date = datetime.strptime("20250602", "%Y%m%d")  # 종료일 포함
 
 # loop 이전 사전 스크립트
 pre_scripts = [
@@ -27,12 +27,13 @@ scripts = [
     ("generateFirstETA.py", ["--date", "{date}"]),
 ]
 
-now = time.time()
-print("전처리 시작")
-for cmd in pre_scripts:
-    print(f"실행 중: {' '.join(cmd)}")
-    subprocess.run(cmd)
-print("전처리 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
+# 전처리 부분
+# now = time.time()
+# print("전처리 시작")
+# for cmd in pre_scripts:
+#     print(f"실행 중: {' '.join(cmd)}")
+#     subprocess.run(cmd)
+# print("전처리 끝, 소요 시간: ", round(time.time() - now, 1), "sec")
 
 now = time.time()
 print("ai/ 시작")
