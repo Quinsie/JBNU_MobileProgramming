@@ -9,7 +9,7 @@ import pandas as pd
 import torch.nn as nn
 from collections import defaultdict
 from datetime import datetime, timedelta
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from FirstETAModel import FirstETAModel
 
 # === 경로 설정 ===
@@ -30,6 +30,20 @@ LR = 0.0007
 
 # === 디바이스 설정 ===
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+class ZipDataset(Dataset):
+    def __init__(self, x_dict, y):
+        self.x_dict = x_dict
+        self.y = y
+        self.length = y.shape[0]
+        self.keys = list(x_dict.keys())
+    
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, idx):
+        x = {k: self.x_dict[k][idx] for k in self.keys}
+        return idx, x, self.y[idx]
 
 def train_model(phase: str):
     # === phase에 따라 학습용 parquet 경로 선택 ===
@@ -55,6 +69,8 @@ def train_model(phase: str):
     else:
         print(f"[INFO] No previous model found at {model_load_path}. Initializing new model.")
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+
+    num_batches = len(df) // BATCH_SIZE + (len(df) % BATCH_SIZE > 0)
 
     # x_로 시작하는 모든 column을 feature로 간주
     x_cols = [col for col in df.columns if col.startswith("x_")]
@@ -83,18 +99,14 @@ def train_model(phase: str):
         x_dict[key] = tensor.to(device)
 
     y = torch.tensor(df[y_col].values, dtype=torch.float32).unsqueeze(1).to(device)
-
-    # dataset은 리스트(zip) 기반으로 구성
-    dataset = zip(range(len(df)), *(list(x_dict.values()) + [y]))
-    keys = list(x_dict.keys())
+    dataset = ZipDataset(x_dict, y)
 
     # === 학습 루프 ===
     model.train()
     for epoch in range(EPOCHS):
         total_loss = 0
         for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
-            batch_indices, *x_vals, batch_y = batch
-            batch_x = dict(zip(keys, x_vals))
+            batch_indices, batch_x, batch_y = batch
 
             # debug
             # for key in batch_x:
@@ -159,7 +171,7 @@ def train_model(phase: str):
             optimizer.step()
             total_loss += loss.item()
         # 에폭당 평균 loss와 최대 예측값 출력
-        print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {total_loss/len(dataset):.4f} | pred_mean: min={pred_mean.min().item():.4f}, max={pred_mean.max().item():.4f}, mean={pred_mean.mean().item():.4f}")
+        print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {total_loss/num_batches:.4f} | pred_mean: min={pred_mean.min().item():.4f}, max={pred_mean.max().item():.4f}, mean={pred_mean.mean().item():.4f}")
 
     # === 모델 저장 ===
     os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
@@ -170,8 +182,7 @@ def train_model(phase: str):
     model.eval()
     with torch.no_grad():
         test_batch = next(iter(DataLoader(dataset, batch_size=32, shuffle=True)))
-        batch_indices, *x_vals, batch_y = test_batch
-        batch_x = dict(zip(keys, x_vals))
+        batch_indices, batch_x, batch_y = test_batch
 
         pred_mean, _ = model(batch_x)
         pred_elapsed = pred_mean.squeeze() * 7200

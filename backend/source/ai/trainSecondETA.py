@@ -8,7 +8,7 @@ import argparse
 import pandas as pd
 import torch.nn as nn
 from datetime import datetime, timedelta
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from SecondETAModel import SecondETAModel
 
 # === 경로 설정 ===
@@ -29,6 +29,21 @@ LR = 0.001
 
 # === 디바이스 설정 ===
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+class ZipDataset(Dataset):
+    def __init__(self, x_dict, y, mask):
+        self.x_dict = x_dict
+        self.y = y
+        self.mask = mask
+        self.keys = list(x_dict.keys())
+        self.length = y.shape[0]
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, idx):
+        x_vals = [self.x_dict[key][idx] for key in self.keys]
+        return idx, *x_vals, self.y[idx], self.mask[idx]
 
 def train_model(phase: str):
     # === phase에 따라 학습용 parquet 경로 선택 ===
@@ -88,7 +103,7 @@ def train_model(phase: str):
     mask = torch.tensor(df[mask_cols].values, dtype=torch.float32).to(device)  # shape: (B, 10)
 
     # dataset은 리스트(zip) 기반으로 구성
-    dataset = zip(range(len(df)), *(list(x_dict.values()) + [y, mask]))
+    dataset = ZipDataset(x_dict, y, mask)
     keys = list(x_dict.keys())
 
     # === 학습 루프 ===
