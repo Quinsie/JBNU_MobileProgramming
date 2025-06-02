@@ -57,7 +57,7 @@ def main():
 
     options = category_map[sel_key]
     if sel_key == "total":
-        print_metrics("overall", data["overall"])
+        print_metrics("overall", data["overall"]["overall"])
         return
 
     print(f"\n선택 가능한 {sel_key} 하위 그룹:")
