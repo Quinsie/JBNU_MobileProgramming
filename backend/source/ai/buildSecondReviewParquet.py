@@ -29,6 +29,12 @@ def convert_json_to_parquet(target_date, save_date):
     df.to_parquet(parquet_path, index=False)
     print(f"[INFO] 저장 완료: {parquet_path}")
 
+    try:
+        os.remove(json_path)
+        print(f"[INFO] JSON 파일 삭제 완료: {json_path}")
+    except Exception as e:
+        print(f"[WARN] JSON 파일 삭제 실패: {e}")
+
 # === CLI ===
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
