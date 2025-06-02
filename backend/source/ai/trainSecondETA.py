@@ -23,8 +23,8 @@ REPLAY_PATH = None
 YESTERDAY_MODEL_PATH_2 = None
 
 # === 하이퍼파라미터 ===
-EPOCHS = 30
-BATCH_SIZE = 512
+EPOCHS = 20
+BATCH_SIZE = 256
 LR = 0.001
 
 # === 디바이스 설정 ===
