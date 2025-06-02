@@ -112,11 +112,18 @@ def train_model(phase: str):
             pred_mean, pred_log_var = model(batch_x)
 
             # 기본 heteroscedastic loss 계산
-            diff_sq = (batch_y - pred_mean) ** 2
-            hetero_loss_per_elem = diff_sq * torch.exp(-pred_log_var) + pred_log_var
-            masked_loss = hetero_loss_per_elem * batch_mask
-            hetero_loss = masked_loss.sum() / (batch_mask.sum() + 1e-6)
-            loss = hetero_loss
+            # ORD+1 ~ ORD+5 가중치: 앞쪽이 더 중요
+            weights = [3.0, 2.0, 1.5, 1.2, 1.0]  # 완만한 감소
+
+            hetero_loss = 0
+            for i in range(5):
+                diff_sq = (batch_y[:, i] - pred_mean[:, i]) ** 2
+                log_var = pred_log_var[:, i]
+                loss_i = diff_sq * torch.exp(-log_var) + log_var
+                loss_i = loss_i * batch_mask[:, i]
+                hetero_loss += weights[i] * (loss_i.sum() / (batch_mask[:, i].sum() + 1e-6))
+
+            loss = hetero_loss / sum(weights)  # 평균화
 
             # === self-review residual penalty ===
             if phase == "self_review":
