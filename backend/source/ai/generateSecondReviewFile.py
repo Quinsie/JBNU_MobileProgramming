@@ -294,10 +294,18 @@ def build_second_review_base(target_date):
 
     for i in range(0, len(rows), batch_size):
         batch = rows[i:i+batch_size]
-        batch_preds = infer_eta_batch(model, batch, device)
+        
+        # ✔️ 1. 추론용 입력만 따로 추출
+        x_batch = []
+        for row in batch:
+            x_row = {k.replace("x_", ""): v for k, v in row.items() if k.startswith("x_")}
+            x_batch.append(x_row)
+        
+        # ✔️ 2. 추론
+        batch_preds = infer_eta_batch(model, x_batch, device)
         preds.extend(batch_preds)
 
-    # === 결과를 row에 반영 ===
+    # ✔️ 3. 결과는 원래 row에 다시 삽입
     for row, pred_list in zip(rows, preds):
         for i in range(5):
             row[f"x_prev_pred_elapsed_{i+1}"] = pred_list[i]
