@@ -24,14 +24,14 @@ REPLAY_PATH = None
 YESTERDAY_MODEL_PATH_2 = None
 
 # === 하이퍼파라미터 ===
-EPOCHS = 15
-# BATCH_SIZE = 64
-LR = 0.001
+EPOCHS = 25
+BATCH_SIZE = 64
+LR = 0.0007
 
 # === 디바이스 설정 ===
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def train_model(phase: str, batch_size: int):
+def train_model(phase: str):
     # === phase에 따라 학습용 parquet 경로 선택 ===
     if phase == "self_review":
         parquet_path = SELF_REVIEW_PATH
@@ -92,7 +92,7 @@ def train_model(phase: str, batch_size: int):
     model.train()
     for epoch in range(EPOCHS):
         total_loss = 0
-        for batch in DataLoader(dataset, batch_size=batch_size, shuffle=True):
+        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
             batch_indices, *x_vals, batch_y = batch
             batch_x = dict(zip(keys, x_vals))
 
@@ -186,7 +186,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", required=True, choices=["self_review", "replay"], help="학습 단계: self_review 또는 replay")
     parser.add_argument("--date", required=True, help="학습 날짜 (YYYYMMDD)")
-    parser.add_argument("--batch", type=int, default=128, help="학습 배치 사이즈(기본:128)")
     args = parser.parse_args()
 
     DATE = args.date
@@ -199,5 +198,5 @@ if __name__ == "__main__":
     YESTERDAY_MODEL_PATH_2 = os.path.join(MODEL_DIR, "replay", f"{YESTERDAY}.pth")
 
     now = time.time()
-    train_model(args.mode, args.batch)
+    train_model(args.mode)
     print("총 학습 시간: ", round(time.time() - now, 1), "sec")
