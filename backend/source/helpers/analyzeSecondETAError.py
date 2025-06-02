@@ -49,7 +49,7 @@ def calculate_metrics(pred, true):
 # === 그룹별 집계 함수 ===
 def evaluate_group(df, groupby_key):
     result = {}
-    for key, group in df.groupby(groupby_key):
+    for key, group in df.groupby(groupby_key, observed=True):
         stat = {}
         for i in range(1, 6):
             pred = group[f"x_prev_pred_elapsed_{i}"] * 3000
