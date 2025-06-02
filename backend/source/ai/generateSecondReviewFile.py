@@ -287,7 +287,15 @@ def build_second_review_base(target_date):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model_path = os.path.join(BASE_DIR, "data", "model", "secondETA", "replay", f"{raw_date}.pth")
     model = load_second_eta_model(model_path, device)
-    preds = infer_eta_batch(model, rows, device)  # shape: (len(rows), 5)
+    
+    # === 추론 (미니배치 적용) ===
+    batch_size = 2048
+    preds = []
+
+    for i in range(0, len(rows), batch_size):
+        batch = rows[i:i+batch_size]
+        batch_preds = infer_eta_batch(model, batch, device)
+        preds.extend(batch_preds)
 
     # === 결과를 row에 반영 ===
     for row, pred_list in zip(rows, preds):
