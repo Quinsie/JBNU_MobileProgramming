@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 # === BASE 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
-REVIEW_JSON_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "review")
+REVIEW_JSON_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "self_review")
 REVIEW_PARQUET_DIR = REVIEW_JSON_DIR  # 같은 경로에 저장
 
 def convert_json_to_parquet(target_date):

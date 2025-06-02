@@ -29,7 +29,7 @@ LABEL_BUS_PATH = os.path.join(BASE_DIR, "data", "processed", "label_bus.json")
 NX_NY_STOP_PATH = os.path.join(BASE_DIR, "data", "processed", "nx_ny_stops.json")
 STDID_NUMBER_PATH = os.path.join(BASE_DIR, "data", "processed", "stdid_number.json")
 
-SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "review")
+SAVE_PATH = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "self_review")
 os.makedirs(SAVE_PATH, exist_ok=True)
 
 # === sub Functions Load ===
