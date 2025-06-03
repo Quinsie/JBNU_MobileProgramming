@@ -175,7 +175,7 @@ def track_bus(stdid, start_time_str):
                             "node_id": matched["NODE_ID"]
                         })
 
-                        log("trackSingleBus", f"[QUEUE] route_node 전송 완료: node_id={matched['NODE_ID']}")
+                        log("trackSingleBus", f"[QUEUE] route_node 전송 완료: {stdid}-{matched['NODE_ID']}")
                     
                     except Exception as e:
                         log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {e}")
@@ -207,7 +207,7 @@ def track_bus(stdid, start_time_str):
                         "ord": ord
                     })
 
-                    log("trackSingleBus", f"[QUEUE] ORD 전송 완료: ord={ord}")
+                    log("trackSingleBus", f"[QUEUE] ORD 전송 완료: {stdid}-{ord}")
 
                 except Exception as e:
                     log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {e}")
