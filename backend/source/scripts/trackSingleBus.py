@@ -142,9 +142,43 @@ def track_bus(stdid, start_time_str):
                 if reached_end_minus1 and time.time() - last_movement > 30:
                     now_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     stop_reached_logs.append({"ord": end_ord, "time": now_time, "note": "종점-1 도달 이후 버스 추적 끊김 → 종점 도달로 간주"})
+
+                    try:
+                        class QueueManager(BaseManager): pass
+                        QueueManager.register("get_queue")
+                        manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                        manager.connect()
+                        q = manager.get_queue()
+                        q.put({
+                            "type": 2, # endpoint
+                            "stdid": stdid,
+                            "dep_time": start_time_str, # strftime
+                            "timestamp": now_time,
+                            "ord": end_ord
+                        })
+                        log("trackSingleBus", f"[QUEUE] end_point 전송 완료: {stdid}_{end_ord}")
+                    except Exception as e:
+                        log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
+
                     log("trackSingleBus", f"{stdid} 종점 도달(ORD {end_ord} 감지 실패, ORD {end_ord_minus1} 이후 추적 끊김)")
                     break
+
                 if time.time() - last_movement > 10 * 60:
+                    try:
+                        class QueueManager(BaseManager): pass
+                        QueueManager.register("get_queue")
+                        manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                        manager.connect()
+                        q = manager.get_queue()
+                        q.put({
+                            "type": 3, # timeout
+                            "stdid": stdid,
+                            "dep_time": start_time_str # strftime
+                        })
+                        log("trackSingleBus", f"[QUEUE] timeout 전송 완료: {stdid}")
+                    except Exception as e:
+                        log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
+
                     log("trackSingleBus", f"{stdid} 타임아웃: 10분 이상 인식 못함")
                     break
                 time.sleep(5)
@@ -175,10 +209,10 @@ def track_bus(stdid, start_time_str):
                             "node_id": matched["NODE_ID"]
                         })
 
-                        log("trackSingleBus", f"[QUEUE] route_node 전송 완료: {stdid}-{matched['NODE_ID']}")
+                        log("trackSingleBus", f"[QUEUE] route_node 전송 완료: {stdid}_{matched['NODE_ID']}")
                     
                     except Exception as e:
-                        log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {e}")
+                        log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
 
                 last_node_id = matched["NODE_ID"]
 
@@ -207,10 +241,10 @@ def track_bus(stdid, start_time_str):
                         "ord": ord
                     })
 
-                    log("trackSingleBus", f"[QUEUE] ORD 전송 완료: {stdid}-{ord}")
+                    log("trackSingleBus", f"[QUEUE] ORD 전송 완료: {stdid}_{ord}")
 
                 except Exception as e:
-                    log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {e}")
+                    log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
 
                 if ord == end_ord_minus1:
                     reached_end_minus1 = True
@@ -223,6 +257,20 @@ def track_bus(stdid, start_time_str):
             })
 
             if ord_stay_start and time.time() - ord_stay_start > 10 * 60:
+                try:
+                    class QueueManager(BaseManager): pass
+                    QueueManager.register("get_queue")
+                    manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                    manager.connect()
+                    q = manager.get_queue()
+                    q.put({
+                        "type": 3, # timeout
+                        "stdid": stdid,
+                        "dep_time": start_time_str # strftime
+                    })
+                    log("trackSingleBus", f"[QUEUE] timeout 전송 완료: {stdid}")
+                except Exception as e:
+                    log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
                 log("trackSingleBus", f"{stdid}_{tracked_plate} ORD {ord}에서 10분 이상 머무름 → 타임아웃 종료")
                 break
 
@@ -236,6 +284,24 @@ def track_bus(stdid, start_time_str):
                     dist_to_end = haversine_distance(lat, lng, end_stop["LAT"], end_stop["LNG"])
                     if dist_to_end <= 100:
                         stop_reached_logs.append({"ord": end_ord, "time": now_time, "note": "종점 근접 거리 기반 도달 판정"})
+                        
+                        try:
+                            class QueueManager(BaseManager): pass
+                            QueueManager.register("get_queue")
+                            manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                            manager.connect()
+                            q = manager.get_queue()
+                            q.put({
+                                "type": 2, # endpoint
+                                "stdid": stdid,
+                                "dep_time": start_time_str, # strftime
+                                "timestamp": now_time,
+                                "ord": end_ord
+                            })
+                            log("trackSingleBus", f"[QUEUE] end_point 전송 완료: {stdid}_{end_ord}")
+                        except Exception as e:
+                            log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
+
                         log("trackSingleBus", f"{stdid}_{tracked_plate} 종점 근접 거리 도달 ({dist_to_end:.3f}m), ORD {end_ord} 도착")
                         break
 
