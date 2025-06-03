@@ -239,7 +239,7 @@ def track_bus(stdid, start_time_str):
                         log("trackSingleBus", f"{stdid}_{tracked_plate} 종점 근접 거리 도달 ({dist_to_end:.3f}m), ORD {end_ord} 도착")
                         break
 
-            time.sleep(10)
+            time.sleep(5)
 
     except KeyboardInterrupt:
         log("trackSingleBus", f"{stdid} 수동 중단됨. 로그 저장 중...")
