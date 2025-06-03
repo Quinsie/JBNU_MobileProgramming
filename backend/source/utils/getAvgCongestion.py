@@ -13,6 +13,11 @@ def get_avg_congestion_list(now_ord, max_ord, now_node, route_nodes_pair, route_
             length = i - 1
             break
         ord_node_id_list[i - 1] = route_nodes_pair[stdid][str(target_ord)][0]
+    
+    print("=============================")
+    print("ord_node_id_list: ", end='')
+    for i in ord_node_id_list: print(i, end = ' ')
+    print()
 
     total = 0.0; num = 0; now_idx = 0
     for i in range(now_node, max(ord_node_id_list) + 1):
