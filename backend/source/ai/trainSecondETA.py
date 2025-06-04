@@ -24,7 +24,7 @@ YESTERDAY_MODEL_PATH_2 = None
 
 # === 하이퍼파라미터 ===
 EPOCHS = 20
-BATCH_SIZE = 256
+BATCH_SIZE = 512
 LR = 0.001
 
 # === 디바이스 설정 ===
