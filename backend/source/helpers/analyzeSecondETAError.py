@@ -6,13 +6,13 @@ import json
 import argparse
 import numpy as np
 import pandas as pd
-from collections import defaultdict
+from datetime import datetime, timedelta
 
 # === 경로 설정 ===
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(BASE_DIR)
 
-REVIEW_JSON_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "self_review")
+REVIEW_DIR = os.path.join(BASE_DIR, "data", "preprocessed", "second_train", "self_review")
 SAVE_DIR = os.path.join(BASE_DIR, "data", "processed", "analysis", "second_model")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
@@ -62,17 +62,14 @@ def evaluate_group(df, groupby_key):
 def analyze_second_eta(date_str):
     print(f"[INFO] 2차 ETA 분석 시작: {date_str}")
     
-    json_path = os.path.join(REVIEW_JSON_DIR, f"{date_str}.json")
+    parquet_path = os.path.join(REVIEW_DIR, f"{date_str}.parquet")
     save_path = os.path.join(SAVE_DIR, f"{date_str}.json")
 
-    if not os.path.exists(json_path):
-        print(f"[ERROR] 파일 없음: {json_path}")
+    if not os.path.exists(parquet_path):
+        print(f"[ERROR] 파일 없음: {parquet_path}")
         return
 
-    with open(json_path, encoding="utf-8") as f:
-        data = json.load(f)
-
-    df = pd.DataFrame(data)
+    df = pd.read_parquet(parquet_path)
 
     # 정규화 해제용 열 생성
     for i in range(1, 6):
@@ -104,4 +101,6 @@ if __name__ == "__main__":
     parser.add_argument("--date", required=True, help="YYYYMMDD 날짜 형식")
     args = parser.parse_args()
 
-    analyze_second_eta(args.date)
+    tomorrow_raw = datetime.strptime(args.date, "%Y%m%d") + timedelta(days=1)
+    tomorrow = datetime.strftime(tomorrow_raw, "%Y%m%d")
+    analyze_second_eta(tomorrow)

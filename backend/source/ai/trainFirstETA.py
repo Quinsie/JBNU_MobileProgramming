@@ -24,9 +24,9 @@ REPLAY_PATH = None
 YESTERDAY_MODEL_PATH_2 = None
 
 # === 하이퍼파라미터 ===
-EPOCHS = 25
+EPOCHS = 15
 BATCH_SIZE = 64
-LR = 0.0007
+LR = 0.001
 
 # === 디바이스 설정 ===
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
