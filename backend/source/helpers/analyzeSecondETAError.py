@@ -59,11 +59,11 @@ def evaluate_group(df, groupby_key):
     return result
 
 # === 메인 분석 함수 ===
-def analyze_second_eta(date_str):
+def analyze_second_eta(date_str, today):
     print(f"[INFO] 2차 ETA 분석 시작: {date_str}")
     
     parquet_path = os.path.join(REVIEW_DIR, f"{date_str}.parquet")
-    save_path = os.path.join(SAVE_DIR, f"{date_str}.json")
+    save_path = os.path.join(SAVE_DIR, f"{today}.json")
 
     if not os.path.exists(parquet_path):
         print(f"[ERROR] 파일 없음: {parquet_path}")
@@ -103,4 +103,4 @@ if __name__ == "__main__":
 
     tomorrow_raw = datetime.strptime(args.date, "%Y%m%d") + timedelta(days=1)
     tomorrow = datetime.strftime(tomorrow_raw, "%Y%m%d")
-    analyze_second_eta(tomorrow)
+    analyze_second_eta(tomorrow, args.date)
