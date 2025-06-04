@@ -289,6 +289,23 @@ def track_bus(stdid, start_time_str):
                 break
 
             if ord == end_ord:
+                try:
+                    class QueueManager(BaseManager): pass
+                    QueueManager.register("get_queue")
+                    manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                    manager.connect()
+                    q = manager.get_queue()
+                    q.put({
+                        "type": 2, # endpoint
+                        "stdid": stdid,
+                        "dep_time": start_time_str, # strftime
+                        "timestamp": now_time,
+                        "ord": end_ord
+                    })
+                    log("trackSingleBus", f"[QUEUE] end_point 전송 완료: {stdid}_{end_ord}")
+                except Exception as e:
+                    log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
+
                 log("trackSingleBus", f"{stdid} 종점 도달")
                 break
 
