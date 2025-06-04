@@ -60,7 +60,7 @@ def evaluate_group(df, groupby_key):
 
 # === 메인 분석 함수 ===
 def analyze_second_eta(date_str, today):
-    print(f"[INFO] 2차 ETA 분석 시작: {date_str}")
+    print(f"[INFO] 2차 ETA 분석 시작: {today}")
     
     parquet_path = os.path.join(REVIEW_DIR, f"{date_str}.parquet")
     save_path = os.path.join(SAVE_DIR, f"{today}.json")
