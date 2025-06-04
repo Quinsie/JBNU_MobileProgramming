@@ -951,3 +951,6 @@ prev_pred_interval (self-review용, 이전에 예측했던 각 ord에 대한 소
  - 아무튼, 한달치 학습하는데 하루가 꼬박 걸릴 것으로 보인다. 자정이 넘고 나면 1회 재부팅 이후 학습을 시작하고자 한다.
  - 추가로, 6월 4일부터 기존 10초단위 API 호출을 5초단위로 한번 줄여볼 생각이다.
  - 괜찮을지 모르겠다. 만약 서버에서 호출을 막는다면, 다시 증가시키고 6월 4일 데이터는 버린다는 생각 해야할듯 싶다.
+
+#### 노트
+ - trackSingleBus -> relaySecondModel에서 type 0: route node, 1: ord, 2: end point, 3: timeout 의미.

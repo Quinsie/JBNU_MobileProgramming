@@ -92,6 +92,20 @@ def track_bus(stdid, start_time_str):
         while True:
             # 강제종료 마지막 fall-back
             if time.time() - start_ts > 7200:
+                try:
+                    class QueueManager(BaseManager): pass
+                    QueueManager.register("get_queue")
+                    manager = QueueManager(address=("localhost", 50000), authkey=b"abc")
+                    manager.connect()
+                    q = manager.get_queue()
+                    q.put({
+                        "type": 3, # timeout
+                        "stdid": stdid,
+                        "dep_time": start_time_str # strftime
+                    })
+                    log("trackSingleBus", f"[QUEUE] timeout 전송 완료: {stdid}")
+                except Exception as e:
+                    log("trackSingleBus", f"[QUEUE ERROR] 전송 실패: {stdid}_{e}")
                 log("trackSingleBus", f"{stdid} 추적 7200초 초과 → 강제 종료")
                 break
             

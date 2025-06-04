@@ -1,7 +1,5 @@
 # backend/source/helpers/autoTrainer.py
 
-import os
-import sys
 import time
 import subprocess
 from datetime import datetime, timedelta
