@@ -290,7 +290,7 @@ def build_second_review_base(target_date):
     model = load_second_eta_model(model_path, device)
     
     # === Inference :: applied mini-batch ===
-    batch_size = 8192
+    batch_size = 16384
     preds = []
 
     for i in range(0, len(rows), batch_size):
