@@ -24,7 +24,7 @@ YESTERDAY_MODEL_PATH_2 = None
 
 # === 하이퍼파라미터 ===
 EPOCHS = 20
-BATCH_SIZE = 512
+BATCH_SIZE = 256
 LR = 0.001
 
 # === 디바이스 설정 ===
@@ -110,7 +110,7 @@ def train_model(phase: str):
     model.train()
     for epoch in range(EPOCHS):
         total_loss = 0
-        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
+        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False):
             _, *x_vals, batch_y, batch_mask = batch
             batch_x = dict(zip(keys, x_vals))
 

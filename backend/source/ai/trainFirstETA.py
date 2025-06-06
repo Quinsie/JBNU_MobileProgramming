@@ -24,9 +24,9 @@ REPLAY_PATH = None
 YESTERDAY_MODEL_PATH_2 = None
 
 # === 하이퍼파라미터 ===
-EPOCHS = 20
+EPOCHS = 15
 BATCH_SIZE = 64
-LR = 0.0008
+LR = 0.001
 
 # === 디바이스 설정 ===
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -105,7 +105,7 @@ def train_model(phase: str):
     model.train()
     for epoch in range(EPOCHS):
         total_loss = 0
-        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
+        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False):
             batch_indices, batch_x, batch_y = batch
 
             # debug
