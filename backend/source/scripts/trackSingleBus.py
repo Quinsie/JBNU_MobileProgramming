@@ -63,7 +63,7 @@ def send_to_queue(payload: dict, log_prefix: str):
         manager.connect()
         q = manager.get_queue()
         q.put(payload)
-        log("trackSingleBus", f"[QUEUE] {log_prefix} 전송 완료: {payload}")
+        # log("trackSingleBus", f"[QUEUE] {log_prefix} 전송 완료: {payload}")
     except Exception as e:
         log("trackSingleBus", f"[QUEUE ERROR] {log_prefix} 전송 실패: {payload.get('stdid', '?')}_{e}")
 
