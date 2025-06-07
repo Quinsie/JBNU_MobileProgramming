@@ -4,8 +4,8 @@ import subprocess
 from datetime import datetime, timedelta
 
 # 시작일자, 종료일자 설정
-start_date = datetime.strptime("20250512", "%Y%m%d")
-end_date = datetime.strptime("20250602", "%Y%m%d")  # 종료일 포함
+start_date = datetime.strptime("20250519", "%Y%m%d")
+end_date = datetime.strptime("20250603", "%Y%m%d")  # 종료일 포함
 
 # 실행할 스크립트 및 인자 정의
 scripts = [

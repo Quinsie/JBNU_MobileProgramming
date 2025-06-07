@@ -105,7 +105,7 @@ def train_model(phase: str):
     model.train()
     for epoch in range(EPOCHS):
         total_loss = 0
-        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=False):
+        for batch in DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True):
             batch_indices, batch_x, batch_y = batch
 
             # debug
