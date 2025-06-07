@@ -995,3 +995,4 @@ prev_pred_interval (self-review용, 이전에 예측했던 각 ord에 대한 소
 #### 진행 상황
  - 1차는 shuffle off가, 2차는 shuffle on이 성능이 더 잘 나온다.
  - 실험 2번정도만 더 해볼 예정이다. 다음 실험은 1차: batch 64 / 2차: batch 256, 둘다 shuffle off로 14일치 데이터 전처리로 시작해볼 예정이다. (20250505-20250519)
+ - relaySecondModel 완성, 내일 잘 돌아가는지 확인하면 될듯.

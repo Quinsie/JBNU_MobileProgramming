@@ -44,9 +44,6 @@ from source.utils.fallbackWeather import fallback_weather
 from source.utils.extractRouteInfo import extract_route_info
 from source.utils.getAvgCongestion import get_avg_congestion_list
 
-# model = load_second_eta_model("/your/path/model.pth", device)
-# results = infer_eta_batch(model, [row1, row2, ...], device)
-
 def init_worker(w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11):
     global mean_node, stdid_number, nx_ny_stops, label_bus
     global weather_all, last_stop, last_node, traffic_all
